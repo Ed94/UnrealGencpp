@@ -1,0 +1,25 @@
+{
+	"FileVersion:" 3,
+	"Version": 0.19,
+	"VersionName": "0.19 Alpha",
+	"FriendlyName": "Unreal Gencpp",
+	"Description": "A C++ stage metaprogramming library setup as a plugin to integrate into Unreal Engine or a Unreal Project.",
+	"Category": "Other",
+	"CreatedBy": "Edward R. Gonzalez",
+	"CreatedByURL": "https://github.com/Ed94/unreal_gencpp",
+	"DocsURL": "https://github.com/Ed94/unreal_gencpp",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": false,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": true,
+	"Installed": false,
+	"Modules":
+	{
+		{
+			"Name": "UE_gencpp",
+			"Type": "Editor",
+			"LoadingPhase": "Default",
+		}
+	}
+}
