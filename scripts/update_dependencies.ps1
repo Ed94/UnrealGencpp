@@ -2,10 +2,12 @@ clear-host
 $misc = join-path $PSScriptRoot 'helpers/misc.ps1'
 . $misc
 
-$path_root       = git rev-parse --show-toplevel
-$path_build      = join-path $path_root   'build'
-$path_source     = join-path $path_root   'Source'
-$path_thirdparty = join-path $path_source 'Thirdparty'
+$path_root         = git rev-parse --show-toplevel
+$path_build        = join-path $path_root         'build'
+$path_source       = join-path $path_root         'Source'
+$path_thirdparty   = join-path $path_source       'Thirdparty'
+$path_UnrealGencpp = join-path $path_source       'UnrealGencpp'
+$path_gencpp       = join-path $path_UnrealGencpp 'gencpp'
 
 verify-path $path_build
 
@@ -29,6 +31,6 @@ Push-Location $path_gencpp_scripts
 	$build = join-path $path_repo_scripts 'build.ci.ps1'
 	& $build debug bootstrap unreal
 
-	Copy-Item -Path $path_repo_unreal_gen\* -Destination $path_thirdparty -Force
+	Copy-Item -Path $path_repo_unreal_gen\* -Destination $path_UnrealGencpp -Force
 
 Pop-Location
