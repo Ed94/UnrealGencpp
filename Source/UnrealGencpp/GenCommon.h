@@ -11,6 +11,7 @@ namespace GENCPP = gen;
 
 GEN_NS_BEGIN
 
+constexpr Str str_UDELEGATE                                             = txt("UDELEGATE");
 constexpr Str str_DECLARE_CLASS                                         = txt("DECLARE_CLASS");
 constexpr Str str_DECLARE_DELEGATE                                      = txt("DECLARE_DELEGATE");
 constexpr Str str_DECLARE_DELEGATE_RetVal_OneParam                      = txt("DECLARE_DELEGATE_RetVal_OneParam");
@@ -78,6 +79,7 @@ constexpr Str str_GAMEPLAYATTRIBUTE_VALUE_INITTER                       = txt("G
 constexpr Str str_LOCTEXT_NAMESPACE                                     = txt("LOCTEXT_NAMESPACE");
 constexpr Str str_PURE_VIRTUAL                                          = txt("PURE_VIRTUAL");
 constexpr Str str_IRISCORE_API                                          = txt("IRISCORE_API");
+constexpr Str str_UNREALED_API                                          = txt("UNREALED_API");
 
 #pragma region Globals
 GEN_API extern Str PathRoot;
@@ -223,3 +225,4 @@ namespace gen
 #define GENCPP_VeryVerbose(Message) UE_LOG( LogGencpp, VeryVerbose, TEXT("%s -- %hs %hs(%d)"), *Message, __builtin_File(), __func__, __builtin_LINE()  );
 #pragma endregion Logging
 
+UNREALED_API

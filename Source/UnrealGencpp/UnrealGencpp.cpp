@@ -49,6 +49,7 @@ void UnrealGencppInit(gen::Context& Ctx)
 
 	// Populate Defines
 	register_macros( args(
+		(Macro { str_UDELEGATE,                                             MT_Statement,  MF_Functional }),
 		(Macro { str_DECLARE_CLASS,                                         MT_Statement,  MF_Functional }),
 		(Macro { str_DECLARE_DELEGATE_RetVal_OneParam,                      MT_Statement,  MF_Functional }),
 		(Macro { str_DECLARE_DELEGATE_RetVal_ThreeParams,                   MT_Statement,  MF_Functional }),
@@ -120,7 +121,8 @@ void UnrealGencppInit(gen::Context& Ctx)
 		(Macro { str_PURE_VIRTUAL,                                          MT_Expression, MF_Functional | MF_Allow_As_Specifier })
 	));
 	register_macros( args(
-		(Macro { str_IRISCORE_API,                                          MT_Expression, MF_Functional | MF_Allow_As_Attribute })
+		(Macro { str_IRISCORE_API,                                          MT_Expression, MF_Functional | MF_Allow_As_Attribute }),
+		(Macro { str_UNREALED_API,                                          MT_Expression, MF_Functional | MF_Allow_As_Attribute })
 	));
 }
 

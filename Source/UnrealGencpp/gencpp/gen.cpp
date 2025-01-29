@@ -8228,27 +8228,52 @@ Code parse_complicated_definition( TokType which )
 {
 	push_scope();
 
-	bool is_inplace = false;
+	b32 is_inplace = false;
+	b32 is_fn_def  = false;
 
 	TokArray tokens = _ctx->parser.Tokens;
 
 	s32 idx         = tokens.Idx;
 	s32 level       = 0;
+	b32 had_def     = false;
+	b32 had_paren   = false;
 	for ( ; idx < array_num(tokens.Arr); idx++ )
 	{
 		if ( tokens.Arr[ idx ].Type == Tok_BraceCurly_Open )
+		{
 			level++;
+		}
 
 		if ( tokens.Arr[ idx ].Type == Tok_BraceCurly_Close )
+		{
 			level--;
+			had_def = level == 0;
+		}
 
-		if ( level == 0 && tokens.Arr[ idx ].Type == Tok_Statement_End )
+		if (level == 0 && tokens.Arr[idx].Type == Tok_Paren_Open )
+		{
+			had_paren = true;
+		}
+		
+		b32 found_fn_def = had_def && had_paren;
+
+		if ( level == 0 && (tokens.Arr[ idx ].Type == Tok_Statement_End || found_fn_def)  )
 			break;
+	}
+
+	is_fn_def = had_def && had_paren;
+	if (is_fn_def)
+	{
+		// Function definition with <which> on return type
+		Code result = parse_operator_function_or_variable(false, NullCode, NullCode);
+		// <which> <typename>(...) ... { ... }
+		parser_pop(& _ctx->parser);
+		return result;
 	}
 
 	if ( ( idx - 2 ) == tokens.Idx )
 	{
-		// Its a forward declaration only
+		// It's a forward declaration only
 		Code result = parse_forward_or_definition( which, is_inplace );
 		// <class, enum, struct, or union> <Name>;
 		parser_pop(& _ctx->parser);
