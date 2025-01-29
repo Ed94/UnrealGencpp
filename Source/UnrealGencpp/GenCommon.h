@@ -12,8 +12,11 @@ namespace GENCPP = gen;
 GEN_NS_BEGIN
 
 constexpr Str str_DECLARE_CLASS                                         = txt("DECLARE_CLASS");
+constexpr Str str_DECLARE_DELEGATE                                      = txt("DECLARE_DELEGATE");
 constexpr Str str_DECLARE_DELEGATE_RetVal_OneParam                      = txt("DECLARE_DELEGATE_RetVal_OneParam");
 constexpr Str str_DECLARE_DELEGATE_RetVal_ThreeParams                   = txt("DECLARE_DELEGATE_RetVal_ThreeParams");
+constexpr Str str_DECLARE_DELEGATE_OneParam                             = txt("DECLARE_DELEGATE_OneParam");
+constexpr Str str_DECLARE_DELEGATE_TwoParams                            = txt("DECLARE_DELEGATE_TwoParams");
 constexpr Str str_DECLARE_DELEGATE_SixParams                            = txt("DECLARE_DELEGATE_SixParams");
 constexpr Str str_DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam           = txt("DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam");
 constexpr Str str_DECLARE_DYNAMIC_MULTICAST_SPARSE_DELEGATE_FiveParams  = txt("DECLARE_DYNAMIC_MULTICAST_SPARSE_DELEGATE_FiveParams");
@@ -26,6 +29,7 @@ constexpr Str str_DECLARE_EVENT_ThreeParams                             = txt("D
 constexpr Str str_DECLARE_EVENT_TwoParams                               = txt("DECLARE_EVENT_TwoParams");
 constexpr Str str_DECLARE_FUNCTION                                      = txt("DECLARE_FUNCTION");
 constexpr Str str_DECLARE_LOG_CATEGORY_EXTERN                           = txt("DECLARE_LOG_CATEGORY_EXTERN");
+constexpr Str str_DECLARE_MULTICAST_DELEGATE                            = txt("DECLARE_MULTICAST_DELEGATE");
 constexpr Str str_DECLARE_MULTICAST_DELEGATE_OneParam                   = txt("DECLARE_MULTICAST_DELEGATE_OneParam");
 constexpr Str str_DECLARE_MULTICAST_DELEGATE_ThreeParams                = txt("DECLARE_MULTICAST_DELEGATE_ThreeParams");
 constexpr Str str_DECLARE_MULTICAST_DELEGATE_TwoParams                  = txt("DECLARE_MULTICAST_DELEGATE_TwoParams");
@@ -66,30 +70,28 @@ constexpr Str str_GAMEPLAYATTRIBUTE_VALUE_INITTER                       = txt("G
 constexpr Str str_LOCTEXT_NAMESPACE                                     = txt("LOCTEXT_NAMESPACE");
 
 #pragma region Globals
-extern Str PathRoot;
-extern Str PathEngine;
-extern Str PathEngineConfig;
-extern Str PathEnginePlugins;
-extern Str PathEngineIntermediate;
-extern Str PathProject;
-extern Str PathProjectConfig;
-extern Str PathProjectIntermediate;
-extern Str PathProjectPlugins;
+GEN_API extern Str PathRoot;
+GEN_API extern Str PathEngine;
+GEN_API extern Str PathEngineConfig;
+GEN_API extern Str PathEnginePlugins;
+GEN_API extern Str PathEngineIntermediate;
+GEN_API extern Str PathProject;
+GEN_API extern Str PathProjectConfig;
+GEN_API extern Str PathProjectIntermediate;
+GEN_API extern Str PathProjectPlugins;
 
-extern Str PathUnrealGencpp;
+GEN_API extern Str PathUnrealGencpp;
 
 // These Code objects are created before anything else after gencpp does its initializatioon
-extern Code UHT_GENERATED_BODY;
-extern Code UHT_UCLASS;
-extern Code UHT_UPROPERTY;
-extern Code UHT_USTRUCT;
-
-extern Context UeCtx;
+GEN_API extern Code UHT_GENERATED_BODY;
+GEN_API extern Code UHT_UCLASS;
+GEN_API extern Code UHT_UPROPERTY;
+GEN_API extern Code UHT_USTRUCT;
 #pragma region Globals
 
 inline
 CodeBody ParseFile( Str Path ) {
-	FileContents content = file_read_contents( UeCtx.Allocator_Temp, true, Path );
+	FileContents content = file_read_contents( get_context()->Allocator_Temp, true, Path );
 	CodeBody     code    = parse_global_body( Str {  (char const*)content.data, content.size });
 	log_fmt("\nParsed: %s\n", Path);
 	return code;
@@ -98,18 +100,18 @@ CodeBody ParseFile( Str Path ) {
 // inline
 // CodeConstructor find_constructor( StrC parent_name, )
 
-void ClangFormatFile( Str Path );
+GEN_API void ClangFormatFile( Str Path );
 
 FORCEINLINE
 Str ToStr( FString String ) { 
 	char const* ansi_str = TCHAR_TO_ANSI(*String);
-	return StrBuilder::make_length(UeCtx.Allocator_Temp, ansi_str, String.Len()).to_str();
+	return StrBuilder::make_length(get_context()->Allocator_Temp, ansi_str, String.Len()).to_str();
 }
 
 FORCEINLINE
 Str ToStr( FName Name ) { 
 	char const* ansi_str = TCHAR_TO_ANSI(* Name.ToString());
-	return StrBuilder::make_length(UeCtx.Allocator_Temp, ansi_str, Name.GetStringLength()).to_str();
+	return StrBuilder::make_length(get_context()->Allocator_Temp, ansi_str, Name.GetStringLength()).to_str();
 }
 
 FORCEINLINE

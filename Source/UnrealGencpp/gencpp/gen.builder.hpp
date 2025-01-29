@@ -33,11 +33,11 @@ GEN_NS_BEGIN
 struct Builder;
 typedef struct Builder Builder;
 
-Builder builder_open        ( char const* path );
-void    builder_pad_lines   ( Builder* builder, s32 num );
-void    builder_print       ( Builder* builder, Code code );
-void    builder_print_fmt_va( Builder* builder, char const* fmt, va_list va );
-void    builder_write       ( Builder* builder );
+GEN_API Builder builder_open        ( char const* path );
+GEN_API void    builder_pad_lines   ( Builder* builder, s32 num );
+GEN_API void    builder_print       ( Builder* builder, Code code );
+GEN_API void    builder_print_fmt_va( Builder* builder, char const* fmt, va_list va );
+GEN_API void    builder_write       ( Builder* builder );
 
 FORCEINLINE void builder_print_fmt   ( Builder* builder, char const* fmt, ... ) {
 	va_list va;

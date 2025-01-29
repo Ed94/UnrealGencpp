@@ -5,10 +5,11 @@
 
 #define LOCTEXT_NAMESPACE "UnrealGencpp"
 
-void UnrealGencppInit()
+UNREALGENCPP_API 
+void UnrealGencppInit(gen::Context& Ctx)
 {
 	using namespace gen;
-	init( & UeCtx );
+	init( & Ctx );
 
 	// Initialize Globals
 	{
@@ -51,6 +52,9 @@ void UnrealGencppInit()
 		(Macro { str_DECLARE_CLASS,                                         MT_Statement,  MF_Functional }),
 		(Macro { str_DECLARE_DELEGATE_RetVal_OneParam,                      MT_Statement,  MF_Functional }),
 		(Macro { str_DECLARE_DELEGATE_RetVal_ThreeParams,                   MT_Statement,  MF_Functional }),
+		(Macro { str_DECLARE_DELEGATE,                                      MT_Statement,  MF_Functional }),
+		(Macro { str_DECLARE_DELEGATE_OneParam,                             MT_Statement,  MF_Functional }),
+		(Macro { str_DECLARE_DELEGATE_TwoParams,                            MT_Statement,  MF_Functional }),
 		(Macro { str_DECLARE_DELEGATE_SixParams,                            MT_Statement,  MF_Functional }),
 		(Macro { str_DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam,           MT_Statement,  MF_Functional }),
 		(Macro { str_DECLARE_DYNAMIC_MULTICAST_SPARSE_DELEGATE_FiveParams,  MT_Statement,  MF_Functional }),
@@ -63,6 +67,7 @@ void UnrealGencppInit()
 		(Macro { str_DECLARE_EVENT_TwoParams,                               MT_Statement,  MF_Functional }),
 		(Macro { str_DECLARE_FUNCTION,                                      MT_Statement,  MF_Functional }),
 		(Macro { str_DECLARE_LOG_CATEGORY_EXTERN,                           MT_Statement,  MF_Functional | MF_Allow_As_Definition }),
+		(Macro { str_DECLARE_MULTICAST_DELEGATE,                            MT_Statement,  MF_Functional }),
 		(Macro { str_DECLARE_MULTICAST_DELEGATE_OneParam,                   MT_Statement,  MF_Functional }),
 		(Macro { str_DECLARE_MULTICAST_DELEGATE_ThreeParams,                MT_Statement,  MF_Functional }),
 		(Macro { str_DECLARE_MULTICAST_DELEGATE_TwoParams,                  MT_Statement,  MF_Functional }),
@@ -90,7 +95,9 @@ void UnrealGencppInit()
 		(Macro { str_UPROPERTY,                                             MT_Statement,  MF_Functional }),
 		(Macro { str_USTRUCT,                                               MT_Statement,  MF_Functional }),
 		(Macro { str_UE_REQUIRES,                                           MT_Expression, MF_Functional }),
-		(Macro { str_UE_DEPRECATED,                                         MT_Statement,  MF_Functional | MF_Allow_As_Attribute }),
+		(Macro { str_UE_DEPRECATED,                                         MT_Statement,  MF_Functional | MF_Allow_As_Attribute })
+	));	
+	register_macros( args(
 		(Macro { str_ACTOR_HAS_LABELS,                                      MT_Expression, MF_Null       }),
 		(Macro { str_HIDE_ACTOR_TRANSFORM_FUNCTIONS,                        MT_Statement,  MF_Functional }),
 		(Macro { str_SCENECOMPONENT_QUAT_TOLERANCE,                         MT_Expression, MF_Null       }),
@@ -100,14 +107,15 @@ void UnrealGencppInit()
 		(Macro { str_GAMEPLAYATTRIBUTE_VALUE_GETTER,                        MT_Statement,  MF_Functional }),
 		(Macro { str_GAMEPLAYATTRIBUTE_VALUE_SETTER,                        MT_Statement,  MF_Functional }),
 		(Macro { str_GAMEPLAYATTRIBUTE_VALUE_INITTER,                       MT_Statement,  MF_Functional }),
-		(Macro { str_LOCTEXT_NAMESPACE,                                     MT_Statement,  MF_Null       })
-	));	
+		(Macro { str_LOCTEXT_NAMESPACE,                                     MT_Statement,  MF_Null       })	
+	));
 }
 
-void UnrealGencppDeinit()
+UNREALGENCPP_API 
+void UnrealGencppDeinit(gen::Context& Ctx)
 {
 	using namespace gen;
-	deinit(& UeCtx);
+	deinit(& Ctx);
 }
 
 #undef LOCTEXT_NAMESPACE

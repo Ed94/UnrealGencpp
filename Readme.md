@@ -20,4 +20,4 @@ register_macros( args(
 
 Where the macro will be allowed as an attribute token during parsing.
 
-For Documentation on usage of gencpp in general see the [repo's docs](https://github.com/Ed94/gencpp/tree/main/docs).
+For documentation on usage of gencpp in general see the [repo's docs](https://github.com/Ed94/gencpp/tree/main/docs).

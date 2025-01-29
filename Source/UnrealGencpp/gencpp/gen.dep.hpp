@@ -182,26 +182,24 @@ GEN_NS_BEGIN
 
 #pragma region Macros
 
-
-#if GEN_COMPILER_MSVC
-#ifdef GEN_DYN_LINK
-
-#ifdef GEN_DYN_EXPORT
-
-#define GEN_API __declspec( dllexport )
-#else
-#define GEN_API __declspec( dllimport )
-#endif
-#else
-#define GEN_API    // Empty for static builds
-#endif
-#else
-#ifdef GEN_DYN_LINK
-
-#define GEN_API __attribute__( ( visibility( "default" ) ) )
-#else
-#define GEN_API    // Empty for static builds
-#endif
+#ifndef GEN_API
+	#if GEN_COMPILER_MSVC
+		#ifdef GEN_DYN_LINK
+			#ifdef GEN_DYN_EXPORT
+				#define GEN_API __declspec( dllexport )
+			#else
+				#define GEN_API __declspec( dllimport )
+			#endif
+		#else
+			#define GEN_API    // Empty for static builds
+		#endif
+	#else
+		#ifdef GEN_DYN_LINK
+			#define GEN_API __attribute__( ( visibility( "default" ) ) )
+		#else
+			#define GEN_API    // Empty for static builds
+		#endif
+	#endif
 #endif
 
 #ifndef global
@@ -216,6 +214,9 @@ GEN_NS_BEGIN
 
 #ifndef bit
 #define bit( Value )                         ( 1 << Value )
+#endif
+
+#ifndef bitfield_is_set
 #define bitfield_is_set( Type, Field, Mask ) ( ( scast( Type, Mask ) & scast( Type, Field ) ) == scast( Type, Mask ) )
 #endif
 
@@ -908,7 +909,7 @@ template<typename Type> mem_ptr_const to_mem_ptr_const( Type ptr ) { return (mem
 	while (0)
 #endif
 
-void assert_handler( char const* condition, char const* file, char const* function, s32 line, char const* msg, ... );
+GEN_API void assert_handler( char const* condition, char const* file, char const* function, s32 line, char const* msg, ... );
 s32  assert_crash( char const* condition );
 void process_exit( u32 code );
 
@@ -952,7 +953,7 @@ void const* pointer_add_const( void const* ptr, ssize bytes );
 ssize pointer_diff( void const* begin, void const* end );
 
 //! Copy non-overlapping memory from source to destination.
-void* mem_copy( void* dest, void const* source, ssize size );
+GEN_API void* mem_copy( void* dest, void const* source, ssize size );
 
 //! Search for a constant value within the size limit at memory location.
 void const* mem_find( void const* data, u8 byte_value, ssize size );
@@ -1875,15 +1876,15 @@ typedef struct FileInfo FileInfo;
 typedef char PrintF_Buffer[GEN_PRINTF_MAXLEN];
 
 // NOTE: A locally persisting buffer is used internally
-char*  c_str_fmt_buf       ( char const* fmt, ... );
-char*  c_str_fmt_buf_va    ( char const* fmt, va_list va );
-ssize  c_str_fmt           ( char* str, ssize n, char const* fmt, ... );
-ssize  c_str_fmt_va        ( char* str, ssize n, char const* fmt, va_list va );
-ssize  c_str_fmt_out_va    ( char const* fmt, va_list va );
-ssize  c_str_fmt_out_err   ( char const* fmt, ... );
-ssize  c_str_fmt_out_err_va( char const* fmt, va_list va );
-ssize  c_str_fmt_file      ( FileInfo* f, char const* fmt, ... );
-ssize  c_str_fmt_file_va   ( FileInfo* f, char const* fmt, va_list va );
+GEN_API char*  c_str_fmt_buf       ( char const* fmt, ... );
+GEN_API char*  c_str_fmt_buf_va    ( char const* fmt, va_list va );
+GEN_API ssize  c_str_fmt           ( char* str, ssize n, char const* fmt, ... );
+GEN_API ssize  c_str_fmt_va        ( char* str, ssize n, char const* fmt, va_list va );
+GEN_API ssize  c_str_fmt_out_va    ( char const* fmt, va_list va );
+GEN_API ssize  c_str_fmt_out_err   ( char const* fmt, ... );
+GEN_API ssize  c_str_fmt_out_err_va( char const* fmt, va_list va );
+GEN_API ssize  c_str_fmt_file      ( FileInfo* f, char const* fmt, ... );
+GEN_API ssize  c_str_fmt_file_va   ( FileInfo* f, char const* fmt, va_list va );
 
 constexpr
 char const* Msg_Invalid_Value = "INVALID VALUE PROVIDED";
@@ -2822,7 +2823,7 @@ FORCEINLINE usize strbuilder_grow_formula(usize value);
 StrBuilder        strbuilder_make_c_str          (AllocatorInfo allocator, char const*  str);
 StrBuilder        strbuilder_make_str            (AllocatorInfo allocator, Str         str);
 StrBuilder        strbuilder_make_reserve        (AllocatorInfo allocator, ssize        capacity);
-StrBuilder        strbuilder_make_length         (AllocatorInfo allocator, char const*  str,   ssize length);
+GEN_API StrBuilder        strbuilder_make_length         (AllocatorInfo allocator, char const*  str,   ssize length);
 StrBuilder        strbuilder_fmt                 (AllocatorInfo allocator, char*        buf,   ssize buf_size,  char const* fmt, ...);
 StrBuilder        strbuilder_fmt_buf             (AllocatorInfo allocator, char const*  fmt, ...);
 StrBuilder        strbuilder_join                (AllocatorInfo allocator, char const** parts, ssize num_parts, char const* glue);
@@ -3638,7 +3639,7 @@ constexpr b32 file_no_zero_terminate = false;
 	* @param  filepath       Path to the file
 	* @return                File contents data
 	*/
-FileContents file_read_contents( AllocatorInfo a, b32 zero_terminate, char const* filepath );
+GEN_API FileContents file_read_contents( AllocatorInfo a, b32 zero_terminate, char const* filepath );
 
 /**
 	* Returns a size of the file

@@ -1,6 +1,7 @@
 #pragma once
 
-void UnrealGencppInit();
-void UnrealGencppDeinit();
+#include "GenCommon.h"
 
-void Execute_Codegen_Example();
+UNREALGENCPP_API void UnrealGencppInit(gen::Context& Ctx);
+UNREALGENCPP_API void UnrealGencppDeinit(gen::Context& Ctx);
+

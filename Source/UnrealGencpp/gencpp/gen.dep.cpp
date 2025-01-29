@@ -109,6 +109,7 @@ GEN_NS_BEGIN
 
 #pragma region Debug
 
+GEN_API
 void assert_handler( char const* condition, char const* file, char const* function, s32 line, char const* msg, ... )
 {
 	_printf_err( "%s - %s:(%d): Assert Failure: ", file, function, line );

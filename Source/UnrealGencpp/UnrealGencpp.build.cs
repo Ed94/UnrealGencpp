@@ -1,3 +1,4 @@
+using System;
 using EpicGames.Core;
 using UnrealBuildTool;
 using ModuleRules               = UnrealBuildTool.ModuleRules;
@@ -29,7 +30,7 @@ public class UnrealGencpp : ModuleRules
         });
     #endregion Engine
     
-		PrivateIncludePaths.AddRange(new string[]
+		PublicIncludePaths.AddRange(new string[]
 		{
 			"UnrealGencpp",
 		});
@@ -79,5 +80,7 @@ public class UnrealGencpp : ModuleRules
 		PublicDefinitions.Add("GEN_EXPOSE_BACKEND=1");
 		PublicDefinitions.Add("GEN_DEFINE_LIBRARY_CODE_CONSTANTS=1");
 		PublicDefinitions.Add("GEN_ENFORCE_STRONG_CODE_TYPES=1");
+		PublicDefinitions.Add("GEN_DYN_LINK=1");
+		PrivateDefinitions.Add("GEN_DYN_EXPORT=1");
 	}
 }
