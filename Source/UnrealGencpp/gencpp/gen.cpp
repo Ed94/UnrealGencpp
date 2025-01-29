@@ -2145,8 +2145,14 @@ void fn_to_strbuilder_fwd(CodeFn self, StrBuilder* result )
 		}
 	}
 
-	if ( self->Specs && specifiers_has(self->Specs, Spec_Pure ) >= 0 )
-		strbuilder_append_str( result, txt(" = 0;") );
+	if (self->Specs)
+	{
+		if ( specifiers_has(self->Specs, Spec_Pure ) >= 0 )
+			strbuilder_append_str( result, txt(" = 0") );
+		
+		if ( specifiers_has(self->Specs, Spec_Delete ) >= 0 )
+			strbuilder_append_str( result, txt(" = delete") );
+	}
 
 	// This is bodged in for now SOLEY for Unreal's PURE_VIRTUAL functional macro (I kept it open ended for other jank)
 	if ( self->SuffixSpecs )

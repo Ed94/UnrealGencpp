@@ -564,6 +564,7 @@ enum Specifier : u32
 	Spec_NoExceptions,
 	Spec_Override,
 	Spec_Pure,
+	Spec_Delete,
 	Spec_Volatile,
 	Spec_NumSpecifiers,
 	Spec_UnderlyingType = 0xffffffffu
@@ -598,6 +599,7 @@ inline Str spec_to_str(Specifier type)
 		{ "noexcept",               sizeof("noexcept") - 1               },
 		{ "override",               sizeof("override") - 1               },
 		{ "= 0",		            sizeof("= 0") - 1                    },
+		{ "= delete",		            sizeof("= delete") - 1                    },
 		{ "volatile",               sizeof("volatile") - 1               },
 	};
 	return lookup[type];
@@ -612,6 +614,7 @@ inline bool spec_is_trailing(Specifier specifier)
 		case Spec_NoExceptions:
 		case Spec_Override:
 		case Spec_Pure:
+		case Spec_Delete:
 		case Spec_Volatile:
 			return true;
 		default:
