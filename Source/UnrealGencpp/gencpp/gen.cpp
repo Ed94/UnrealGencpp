@@ -9094,7 +9094,11 @@ Token parse_identifier( bool* possible_member_function )
 
 	Token name = currtok;
 	_ctx->parser.Scope->Name = name.Text;
-	eat( Tok_Identifier );
+
+	// Typename can be: '::' <name>
+	// If that is the case first  option will be Tok_Access_StaticSymbol below
+	if (check(Tok_Identifier))
+		eat( Tok_Identifier );
 	// <Name>
 
 	parse_template_args( & name );
@@ -9583,6 +9587,24 @@ Code parse_operator_function_or_variable( bool expects_function, CodeAttributes 
 
 	CodeTypename type = parser_parse_type( parser_not_from_template, nullptr );
 	// <Attributes> <Specifiers> <ReturnType/ValueType>
+
+	// Thanks Unreal
+	CodeAttributes post_rt_attributes = parse_attributes();
+	if (post_rt_attributes)
+	{
+		if (attributes)
+		{
+			StrBuilder merged = strbuilder_fmt_buf(_ctx->Allocator_Temp, "%S %S", attributes->Content, post_rt_attributes->Content);
+			attributes->Content = cache_str(strbuilder_to_str(merged));
+		}
+		else
+		{
+			attributes = post_rt_attributes;
+		}
+		// <Attributes> <Specifiers> <ReturnType/ValueType> <Attributes>
+		// CONVERTED TO:
+		// <Attributes> <Specifiers> <ReturnType/ValueType>
+	}
 
 	if ( type == InvalidCode ) {
 		parser_pop(& _ctx->parser);
