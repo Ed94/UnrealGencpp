@@ -5935,7 +5935,6 @@ s32 lex_preprocessor_define( LexContext* ctx )
 }
 
 // TODO(Ed): We need to to attempt to recover from a lex failure?
-FORCEINLINE
 s32 lex_preprocessor_directive( LexContext* ctx )
 {
 	char const* hash = ctx->scanner;
@@ -6151,7 +6150,6 @@ s32 lex_preprocessor_directive( LexContext* ctx )
 	return Lex_Continue; // Skip found token, its all handled here.
 }
 
-FORCEINLINE
 void lex_found_token( LexContext* ctx )
 {
 	if ( ctx->token.Type != Tok_Invalid ) {
@@ -8032,10 +8030,6 @@ CodeBody parse_class_struct_body( TokType which, Token name )
 				member = cast(Code, parse_simple_preprocess( Tok_Preprocess_Macro_Stmt ));
 				break;
 			}
-			case Tok_Preprocess_Macro_Expr: {
-				log_failure("Unbounded macro expression residing in class/struct body\n%S", parser_to_strbuilder(_ctx->parser));
-				return InvalidCode;
-			}
 
 			// case Tok_Preprocess_Macro:
 			// 	// <Macro>
@@ -8061,6 +8055,15 @@ CodeBody parse_class_struct_body( TokType which, Token name )
 				break;
 			}
 
+			case Tok_Preprocess_Macro_Expr:
+			{
+				if ( ! tok_is_attribute(currtok))
+				{
+					log_failure("Unbounded macro expression residing in class/struct body\n%S", parser_to_strbuilder(_ctx->parser));
+					return InvalidCode;
+				}
+			}
+			//! Fallthrough intended
 			case Tok_Attribute_Open:
 			case Tok_Decl_GNU_Attribute:
 			case Tok_Decl_MSVC_Attribute:
@@ -8808,10 +8811,6 @@ CodeBody parse_global_nspace( CodeType which )
 				member = cast(Code, parse_simple_preprocess( Tok_Preprocess_Macro_Stmt ));
 				break;
 			}
-			case Tok_Preprocess_Macro_Expr: {
-				log_failure("Unbounded macro expression residing in class/struct body\n%S", parser_to_strbuilder(_ctx->parser));
-				return InvalidCode;
-			}
 
 			case Tok_Preprocess_Pragma: {
 				member = cast(Code, parse_pragma());
@@ -8844,6 +8843,16 @@ CodeBody parse_global_nspace( CodeType which )
 				// import ...
 				log_failure( "gen::%s: This function is not implemented" );
 				return InvalidCode;
+			}
+			break;
+
+			case Tok_Preprocess_Macro_Expr:
+			{
+				if (tok_is_attribute(currtok))
+				{
+					log_failure("Unbounded macro expression residing in class/struct body\n%S", parser_to_strbuilder(_ctx->parser));
+					return InvalidCode;
+				}
 			}
 			//! Fallthrough intentional
 			case Tok_Attribute_Open:
@@ -9878,10 +9887,8 @@ CodeParams parse_params( bool use_template_capture )
 			// ( <Macro> <ValueType> <Name> <PostNameMacro>
 		}
 
-		// In template captures you can have a typename have direct assignment without a name
-		// typename = typename ...
-		// Which would result in a static value type from a struct expansion (traditionally)
-		if ( ( name.Text.Ptr || use_template_capture ) && bitfield_is_set( u32, currtok.Flags, TF_Assign ) )
+		// C++ allows typename = expression... so anything goes....
+		if ( bitfield_is_set( u32, currtok.Flags, TF_Assign ) )
 		{
 			eat( Tok_Operator );
 			// ( <Macro> <ValueType> <Name>  =
@@ -9989,10 +9996,8 @@ CodeParams parse_params( bool use_template_capture )
 				// ( <Macro> <ValueType> <Name> = <Expression>, <Macro> <ValueType> <PostNameMacro>
 			}
 
-			// In template captures you can have a typename have direct assignment without a name
-			// typename = typename ...
-			// Which would result in a static value type from a struct expansion (traditionally)
-			if ( ( name.Text.Ptr || use_template_capture ) && bitfield_is_set( u32, currtok.Flags, TF_Assign ) )
+			// C++ allows typename = expression... so anything goes....
+			if ( bitfield_is_set( u32, currtok.Flags, TF_Assign ) )
 			{
 				eat( Tok_Operator );
 				// ( <Macro> <ValueType> <Name> = <Expression>, <Macro> <ValueType> <Name> <PostNameMacro> =
