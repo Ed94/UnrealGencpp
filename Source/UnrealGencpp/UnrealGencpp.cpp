@@ -1,7 +1,6 @@
 #include "GenCommon.h"
 
-
-
+#include "Interfaces/IPluginManager.h"
 #include "Misc/Paths.h"
 
 #define LOCTEXT_NAMESPACE "UnrealGencpp"
@@ -13,29 +12,38 @@ void UnrealGencppInit()
 
 	// Initialize Globals
 	{
+		FString EngineDir = FPaths::ConvertRelativePathToFull(FPaths::EngineDir());
+		FPaths::NormalizeDirectoryName(EngineDir);
+		PathEngine = ToStr( EngineDir );
+		
 		FString EnginePluginsDir = FPaths::ConvertRelativePathToFull(FPaths::EnginePluginsDir());
 		FPaths::NormalizeDirectoryName(EnginePluginsDir);
 		PathEnginePlugins = ToStr( EnginePluginsDir );
+
+		TSharedPtr<IPlugin> Plugin = IPluginManager::Get().FindPlugin("UnrealGencpp");
+		ensure(Plugin.IsValid());
+
+		FString PluginBaseDir = FPaths::ConvertRelativePathToFull(Plugin->GetBaseDir());
+		FPaths::NormalizeDirectoryName(PluginBaseDir);
+		PathUnrealGencpp = ToStr(PluginBaseDir);
 		
-#pragma push_macro("UCLASS")
-#pragma push_macro("UPROPERTY")
-#pragma push_macro("USTRUCT")
-#pragma push_macro("GENERATED_BODY")
-#pragma push_macro("GASA_API")
-#undef UCLASS
-#undef UPROPERTY
-#undef USTRUCT
-#undef GENERATED_BODY
-#undef GASA_API
+	#pragma push_macro("UCLASS")
+	#pragma push_macro("UPROPERTY")
+	#pragma push_macro("USTRUCT")
+	#pragma push_macro("GENERATED_BODY")
+	#pragma push_macro("GASA_API")
+	#undef UCLASS
+	#undef UPROPERTY
+	#undef USTRUCT
+	#undef GENERATED_BODY
 		UHT_UCLASS         = code_str(UCLASS());
 		UHT_UPROPERTY      = code_str(UPROPERTY());
 		UHT_USTRUCT        = code_str(USTRUCT());
 		UHT_GENERATED_BODY = code_str(GENERATED_BODY()\n);
-#pragma pop_macro("UCLASS")
-#pragma pop_macro("UPROPERTY")
-#pragma pop_macro("USTRUCT")
-#pragma pop_macro("GENERATED_BODY")
-#pragma pop_macro("GASA_API")
+	#pragma pop_macro("UCLASS")
+	#pragma pop_macro("UPROPERTY")
+	#pragma pop_macro("USTRUCT")
+	#pragma pop_macro("GENERATED_BODY")
 	}
 
 	// Populate Defines

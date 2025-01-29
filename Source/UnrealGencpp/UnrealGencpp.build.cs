@@ -20,6 +20,7 @@ public class UnrealGencpp : ModuleRules
             "Engine",
             "CoreUObject",
 			"EditorStyle",
+			"Projects",
             "PropertyEditor",
             "SlateCore",
             "Slate",
