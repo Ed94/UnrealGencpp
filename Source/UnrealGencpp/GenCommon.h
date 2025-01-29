@@ -77,6 +77,7 @@ constexpr Str str_GAMEPLAYATTRIBUTE_VALUE_SETTER                        = txt("G
 constexpr Str str_GAMEPLAYATTRIBUTE_VALUE_INITTER                       = txt("GAMEPLAYATTRIBUTE_VALUE_INITTER");
 constexpr Str str_LOCTEXT_NAMESPACE                                     = txt("LOCTEXT_NAMESPACE");
 constexpr Str str_PURE_VIRTUAL                                          = txt("PURE_VIRTUAL");
+constexpr Str str_IRISCORE_API                                          = txt("IRISCORE_API");
 
 #pragma region Globals
 GEN_API extern Str PathRoot;

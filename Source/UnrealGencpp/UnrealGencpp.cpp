@@ -119,6 +119,9 @@ void UnrealGencppInit(gen::Context& Ctx)
 		(Macro { str_LOCTEXT_NAMESPACE,                                     MT_Statement,  MF_Null       }),
 		(Macro { str_PURE_VIRTUAL,                                          MT_Expression, MF_Functional | MF_Allow_As_Specifier })
 	));
+	register_macros( args(
+		(Macro { str_IRISCORE_API,                                          MT_Expression, MF_Functional | MF_Allow_As_Attribute })
+	));
 }
 
 UNREALGENCPP_API 
