@@ -15,7 +15,7 @@ public class UnrealGencpp : ModuleRules
             "CoreUObject",
             "Engine",
         });
-        PrivateDependencyModuleNames.AddRange(new string[] {
+        PublicDependencyModuleNames.AddRange(new string[] {
             "Core",
             "Engine",
             "CoreUObject",
@@ -29,6 +29,10 @@ public class UnrealGencpp : ModuleRules
     #endregion Engine
     
 		PrivateIncludePaths.AddRange(new string[]
+		{
+			"UnrealGencpp",
+		});
+		PublicIncludePathModuleNames.AddRange(new string[]
 		{
 			"UnrealGencpp",
 		});
