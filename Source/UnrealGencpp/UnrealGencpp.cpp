@@ -55,6 +55,8 @@ void UnrealGencppInit(gen::Context& Ctx)
 		(Macro { str_DECLARE_DELEGATE,                                      MT_Statement,  MF_Functional }),
 		(Macro { str_DECLARE_DELEGATE_OneParam,                             MT_Statement,  MF_Functional }),
 		(Macro { str_DECLARE_DELEGATE_TwoParams,                            MT_Statement,  MF_Functional }),
+		(Macro { str_DECLARE_DELEGATE_ThreeParams,                          MT_Statement,  MF_Functional }),
+		(Macro { str_DECLARE_DELEGATE_FourParams,                           MT_Statement,  MF_Functional }),
 		(Macro { str_DECLARE_DELEGATE_SixParams,                            MT_Statement,  MF_Functional }),
 		(Macro { str_DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam,           MT_Statement,  MF_Functional }),
 		(Macro { str_DECLARE_DYNAMIC_MULTICAST_SPARSE_DELEGATE_FiveParams,  MT_Statement,  MF_Functional }),
@@ -63,6 +65,9 @@ void UnrealGencppInit(gen::Context& Ctx)
 		(Macro { str_DECLARE_DYNAMIC_MULTICAST_SPARSE_DELEGATE_OneParam,    MT_Statement,  MF_Functional }),
 		(Macro { str_DECLARE_DYNAMIC_MULTICAST_SPARSE_DELEGATE_SevenParams, MT_Statement,  MF_Functional }),
 		(Macro { str_DECLARE_DYNAMIC_MULTICAST_SPARSE_DELEGATE_TwoParams,   MT_Statement,  MF_Functional }),
+		(Macro { str_DECLARE_EVENT,                                         MT_Statement,  MF_Functional }),
+		(Macro { str_DECLARE_EVENT_OneParam,                                MT_Statement,  MF_Functional }),
+		(Macro { str_DECLARE_EVENT_FourParams,                              MT_Statement,  MF_Functional }),
 		(Macro { str_DECLARE_EVENT_ThreeParams,                             MT_Statement,  MF_Functional }),
 		(Macro { str_DECLARE_EVENT_TwoParams,                               MT_Statement,  MF_Functional }),
 		(Macro { str_DECLARE_FUNCTION,                                      MT_Statement,  MF_Functional }),
@@ -74,6 +79,9 @@ void UnrealGencppInit(gen::Context& Ctx)
 		(Macro { str_DECLARE_TS_MULTICAST_DELEGATE_OneParam,                MT_Statement,  MF_Functional }),
 		(Macro { str_DECLARE_TS_MULTICAST_DELEGATE_TwoParams,               MT_Statement,  MF_Functional }),
 		(Macro { str_DECLARE_TS_MULTICAST_DELEGATE_ThreeParams,             MT_Statement,  MF_Functional }),
+		(Macro { str_DECLARE_TS_MULTICAST_DELEGATE_ThreeParams,             MT_Statement,  MF_Functional | MF_Allow_As_Specifier })
+	));	
+	register_macros( args(
 		(Macro { str_DEFINE_ACTORDESC_TYPE,                                 MT_Statement,  MF_Functional }),
 		(Macro { str_DEFINE_DEFAULT_OBJECT_INITIALIZER_CONSTRUCTOR_CALL,    MT_Statement,  MF_Functional }),
 		(Macro { str_ENUM_CLASS_FLAGS,                                      MT_Statement,  MF_Functional }),
@@ -95,9 +103,7 @@ void UnrealGencppInit(gen::Context& Ctx)
 		(Macro { str_UPROPERTY,                                             MT_Statement,  MF_Functional }),
 		(Macro { str_USTRUCT,                                               MT_Statement,  MF_Functional }),
 		(Macro { str_UE_REQUIRES,                                           MT_Expression, MF_Functional }),
-		(Macro { str_UE_DEPRECATED,                                         MT_Statement,  MF_Functional | MF_Allow_As_Attribute })
-	));	
-	register_macros( args(
+		(Macro { str_UE_DEPRECATED,                                         MT_Statement,  MF_Functional | MF_Allow_As_Attribute }),
 		(Macro { str_ACTOR_HAS_LABELS,                                      MT_Expression, MF_Null       }),
 		(Macro { str_HIDE_ACTOR_TRANSFORM_FUNCTIONS,                        MT_Statement,  MF_Functional }),
 		(Macro { str_SCENECOMPONENT_QUAT_TOLERANCE,                         MT_Expression, MF_Null       }),
