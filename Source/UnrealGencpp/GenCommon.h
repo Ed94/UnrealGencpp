@@ -15,6 +15,7 @@ constexpr Str str_DECLARE_CLASS                                         = txt("D
 constexpr Str str_DECLARE_DELEGATE                                      = txt("DECLARE_DELEGATE");
 constexpr Str str_DECLARE_DELEGATE_RetVal_OneParam                      = txt("DECLARE_DELEGATE_RetVal_OneParam");
 constexpr Str str_DECLARE_DELEGATE_RetVal_ThreeParams                   = txt("DECLARE_DELEGATE_RetVal_ThreeParams");
+constexpr Str str_DECLARE_DELEGATE_RetVal_SevenParams                   = txt("DECLARE_DELEGATE_RetVal_SevenParams");
 constexpr Str str_DECLARE_DELEGATE_OneParam                             = txt("DECLARE_DELEGATE_OneParam");
 constexpr Str str_DECLARE_DELEGATE_TwoParams                            = txt("DECLARE_DELEGATE_TwoParams");
 constexpr Str str_DECLARE_DELEGATE_ThreeParams                          = txt("DECLARE_DELEGATE_ThreeParams");

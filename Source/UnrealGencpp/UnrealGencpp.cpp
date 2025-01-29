@@ -52,6 +52,7 @@ void UnrealGencppInit(gen::Context& Ctx)
 		(Macro { str_DECLARE_CLASS,                                         MT_Statement,  MF_Functional }),
 		(Macro { str_DECLARE_DELEGATE_RetVal_OneParam,                      MT_Statement,  MF_Functional }),
 		(Macro { str_DECLARE_DELEGATE_RetVal_ThreeParams,                   MT_Statement,  MF_Functional }),
+		(Macro { str_DECLARE_DELEGATE_RetVal_SevenParams,                   MT_Statement,  MF_Functional }),
 		(Macro { str_DECLARE_DELEGATE,                                      MT_Statement,  MF_Functional }),
 		(Macro { str_DECLARE_DELEGATE_OneParam,                             MT_Statement,  MF_Functional }),
 		(Macro { str_DECLARE_DELEGATE_TwoParams,                            MT_Statement,  MF_Functional }),
@@ -114,7 +115,7 @@ void UnrealGencppInit(gen::Context& Ctx)
 		(Macro { str_GAMEPLAYATTRIBUTE_VALUE_SETTER,                        MT_Statement,  MF_Functional }),
 		(Macro { str_GAMEPLAYATTRIBUTE_VALUE_INITTER,                       MT_Statement,  MF_Functional }),
 		(Macro { str_LOCTEXT_NAMESPACE,                                     MT_Statement,  MF_Null       }),
-		(Macro { str_PURE_VIRTUAL,                                          MT_Statement,  MF_Functional | MF_Allow_As_Specifier })
+		(Macro { str_PURE_VIRTUAL,                                          MT_Expression, MF_Functional | MF_Allow_As_Specifier })
 	));
 }
 
