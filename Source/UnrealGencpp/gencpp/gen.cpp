@@ -7287,7 +7287,7 @@ internal Code               parse_static_assert                ();
 internal void               parse_template_args                ( Token* token );
 internal CodeVar            parse_variable_after_name          ( ModuleFlag mflags, CodeAttributes attributes, CodeSpecifiers specifiers, CodeTypename type, Str name );
 internal CodeVar            parse_variable_declaration_list    ();
-
+s
 internal CodeClass       parser_parse_class           ( bool inplace_def );
 internal CodeConstructor parser_parse_constructor     ( CodeSpecifiers specifiers );
 internal CodeDefine      parser_parse_define          ();
@@ -8496,16 +8496,40 @@ CodeFn parse_function_after_name(
 		}
 		// <Attributes> <Specifiers> <ReturnType> <Name> ( <Paraemters> ) <Specifiers> { <Body> }
 	}
+	// TODO(Ed): Add proper "delete" and "new" awareness
+	// We're dealing with either a "= delete" or operator deletion
+	if (check(Tok_Operator) && currtok.Text.Ptr[0] == '=')
+	{
+		eat(currtok.Type);
+		if ( ! str_are_equal(nexttok.Text, txt("delete")))
+		{
+			log_failure("Expected delete after = in operator forward instead found \"%s\"\n%S", parser_to_strbuilder(_ctx->parser));
+			parser_pop(& _ctx->parser);
+			return InvalidCode;
+		}
+		specifiers_append(specifiers, Spec_Delete);
+		eat(currtok.Type);
+	}
 	else if ( check(Tok_Operator) && currtok.Text.Ptr[0] == '=' )
 	{
 		eat(Tok_Operator);
-		specifiers_append(specifiers, Spec_Pure );
+		if ( str_are_equal(nexttok.Text, txt("delete")))
+		{
+			specifiers_append(specifiers, Spec_Delete);
+			eat(currtok.Type);	
+			// <Attributes> <Specifiers> <ReturnType> <Name> ( <Paraemters> ) <Specifiers> = delete
+		}
+		else
+		{
+			specifiers_append(specifiers, Spec_Pure );
 
-		eat( Tok_Number);
+			eat( Tok_Number);
+			// <Attributes> <Specifiers> <ReturnType> <Name> ( <Paraemters> ) <Specifiers> = 0
+		}
+		
 		Token stmt_end = currtok;
 		eat( Tok_Statement_End );
-		// <Attributes> <Specifiers> <ReturnType> <Name> ( <Paraemters> ) <Specifiers> = 0;
-
+		
 		if ( currtok_noskip.Type == Tok_Comment && currtok_noskip.Line == stmt_end.Line )
 			inline_cmt = parse_comment();
 		// <Attributes> <Specifiers> <ReturnType> <Name> ( <Paraemters> ) <Specifiers>; <InlineCmt>
@@ -9485,6 +9509,21 @@ CodeOperator parse_operator_after_ret_type(
 
 		specifiers_append(specifiers, str_to_specifier( currtok.Text) );
 		eat( currtok.Type );
+	}
+	// TODO(Ed): Add proper "delete" and "new" awareness
+	// We're dealing with either a "= delete" or operator deletion
+	if (check(Tok_Operator) && currtok.Text.Ptr[0] == '=')
+	{
+		eat(currtok.Type);
+		if ( ! str_are_equal(nexttok.Text, txt("delete")))
+		{
+			log_failure("Expected delete after = in operator forward instead found \"%s\"\n%S", parser_to_strbuilder(_ctx->parser));
+			parser_pop(& _ctx->parser);
+			return InvalidCode;
+		}
+		specifiers_append(specifiers, Spec_Delete);
+		eat(currtok.Type);
+		// <ExportFlag> <Attributes> <Specifiers> <ReturnType> <Qualifier::...> operator <Op> ( <Parameters> ) <Specifiers> = delete
 	}
 	// <ExportFlag> <Attributes> <Specifiers> <ReturnType> <Qualifier::...> operator <Op> ( <Parameters> ) <Specifiers>
 
@@ -10523,6 +10562,7 @@ CodeConstructor parser_parse_constructor( CodeSpecifiers specifiers )
 		body = cast(CodeBody, parse_function_body());
 		// <Name> ( <Parameters> ) { <Body> }
 	}
+	// TODO(Ed): Add support for detecting constructor deletion
 	else if ( check( Tok_Operator) && currtok.Text.Ptr[ 0 ] == '=' )
 	{
 		body = cast(CodeBody, parse_assignment_expression());
