@@ -105,6 +105,8 @@ void UnrealGencppInit(gen::Context& Ctx)
 		(Macro { str_USTRUCT,                                               MT_Statement,  MF_Functional }),
 		(Macro { str_UE_REQUIRES,                                           MT_Expression, MF_Functional }),
 		(Macro { str_UE_DEPRECATED,                                         MT_Statement,  MF_Functional | MF_Allow_As_Attribute }),
+		(Macro { str_UE_DEPRECATED_FORGAME,                                 MT_Statement,  MF_Functional | MF_Allow_As_Attribute }),
+		(Macro { str_UE_DEPRECATED_FORENGINE,                               MT_Statement,  MF_Functional | MF_Allow_As_Attribute }),
 		(Macro { str_ACTOR_HAS_LABELS,                                      MT_Expression, MF_Null       }),
 		(Macro { str_HIDE_ACTOR_TRANSFORM_FUNCTIONS,                        MT_Statement,  MF_Functional }),
 		(Macro { str_SCENECOMPONENT_QUAT_TOLERANCE,                         MT_Expression, MF_Null       }),

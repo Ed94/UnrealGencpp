@@ -7799,6 +7799,7 @@ Code parse_class_struct( TokType which, bool inplace_def )
 	CodeSpecifiers specifiers = NullCode;
 	if ( check(Tok_Spec_Final)) {
 		specifiers = def_specifier(Spec_Final);
+		eat(Tok_Spec_Final);
 	}
 
 	local_persist
@@ -7857,10 +7858,10 @@ Code parse_class_struct( TokType which, bool inplace_def )
 	}
 
 	if ( which == Tok_Decl_Class )
-		result = cast(Code, def_class( name.Text, def_assign( body, parent, access, attributes, interfaces, scast(s32, array_num(interfaces)), mflags ) ));
+		result = cast(Code, def_class( name.Text, def_assign( body, parent, access, attributes, interfaces, scast(s32, array_num(interfaces)), specifiers, mflags ) ));
 
 	else
-		result = cast(Code, def_struct( name.Text, def_assign( body, (CodeTypename)parent, access, attributes, interfaces, scast(s32, array_num(interfaces)), mflags ) ));
+		result = cast(Code, def_struct( name.Text, def_assign( body, (CodeTypename)parent, access, attributes, interfaces, scast(s32, array_num(interfaces)), specifiers, mflags ) ));
 
 	if ( inline_cmt )
 		result->InlineCmt = cast(Code, inline_cmt);
@@ -12556,11 +12557,11 @@ CodeUsing parser_parse_using()
 
 	if ( ! is_namespace )
 	{
-		if ( bitfield_is_set( u32, currtok.Flags, TF_Assign ) )
+		attributes = parse_attributes();
+		// <ModuleFlags> using <Name> <Attributes>
+		
+		if ( bitfield_is_set( u32, currtok.Flags, TF_Assign ))
 		{
-			attributes = parse_attributes();
-			// <ModuleFlags> using <Name> <Attributes>
-
 			eat( Tok_Operator );
 			// <ModuleFlags> using <Name> <Attributes> =
 
