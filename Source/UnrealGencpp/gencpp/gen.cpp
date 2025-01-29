@@ -1683,10 +1683,16 @@ void class_to_strbuilder_def( CodeClass self, StrBuilder* result )
 		strbuilder_append_fmt( result, "%SB ", attributes_to_strbuilder(self->Attributes) );
 	}
 
+	if (self->Name)
+		strbuilder_append_str( result, self->Name );
+	
+	if (self->Specs && self->Specs.has(Spec_Final))
+		strbuilder_append_str( result, txt(" final"));
+
 	if ( self->ParentType )
 	{
 		Str access_level = access_spec_to_str( self->ParentAccess );
-		strbuilder_append_fmt( result, "%S : %S %SB", self->Name, access_level, typename_to_strbuilder(self->ParentType) );
+		strbuilder_append_fmt( result, " : %S %SB", self->Name, access_level, typename_to_strbuilder(self->ParentType) );
 
 		CodeTypename interface = cast(CodeTypename, self->ParentType->Next);
 		if ( interface )
@@ -1697,10 +1703,6 @@ void class_to_strbuilder_def( CodeClass self, StrBuilder* result )
 			strbuilder_append_fmt( result, ", public %SB", typename_to_strbuilder(interface) );
 			interface = interface->Next ? cast(CodeTypename, interface->Next) : NullCode;
 		}
-	}
-	else if ( self->Name.Len )
-	{
-		strbuilder_append_str( result, self->Name );
 	}
 
 	if ( self->InlineCmt )
@@ -2598,12 +2600,18 @@ void struct_to_strbuilder_def( CodeStruct self, StrBuilder* result )
 	{
 		strbuilder_append_fmt( result, "%SB ", attributes_to_strbuilder(self->Attributes) );
 	}
+	
+	if ( self->Name.Len )
+		strbuilder_append_str( result, self->Name );
+
+	if (self->Specs && self->Specs.has(Spec_Final))
+		strbuilder_append_str( result, txt(" final"));
 
 	if ( self->ParentType )
 	{
 		Str access_level = access_spec_to_str( self->ParentAccess );
 
-		strbuilder_append_fmt( result, "%S : %S %SB", self->Name, access_level, typename_to_strbuilder(self->ParentType) );
+		strbuilder_append_fmt( result, " : %S %SB", self->Name, access_level, typename_to_strbuilder(self->ParentType) );
 
 		CodeTypename interface = cast(CodeTypename, self->ParentType->Next);
 		if ( interface )
@@ -2614,10 +2622,6 @@ void struct_to_strbuilder_def( CodeStruct self, StrBuilder* result )
 			strbuilder_append_fmt( result, ", %SB", typename_to_strbuilder(interface) );
 			interface = interface->Next ? cast( CodeTypename, interface->Next) : NullCode;
 		}
-	}
-	else if ( self->Name.Len )
-	{
-		strbuilder_append_str( result, self->Name );
 	}
 
 	if ( self->InlineCmt )
@@ -4100,6 +4104,7 @@ CodeClass def_class( Str name, Opts_def_struct p )
 	result->Name         = cache_str( name );
 	result->ModuleFlags  = p.mflags;
 	result->Attributes   = p.attributes;
+	result->Specs        = p.specifers;
 	result->ParentAccess = p.parent_access;
 	result->ParentType   = p.parent;
 	if ( p.body )
@@ -4639,6 +4644,8 @@ CodeStruct def_struct( Str name, Opts_def_struct p )
 	for (s32 idx = 0; idx < p.num_interfaces; idx++ ) {
 		struct_add_interface(result, p.interfaces[idx] );
 	}
+
+	result->Specs = p.specifers;
 	return result;
 }
 
@@ -7789,6 +7796,11 @@ Code parse_class_struct( TokType which, bool inplace_def )
 	}
 	// <ModuleFlags> <class/struct> <Attributes> <Name>
 
+	CodeSpecifiers specifiers = NullCode;
+	if ( check(Tok_Spec_Final)) {
+		specifiers = def_specifier(Spec_Final);
+	}
+
 	local_persist
 	char interface_arr_mem[ kilobytes(4) ] = {0};
 	Array(CodeTypename) interfaces; {
@@ -8499,6 +8511,11 @@ CodeFn parse_function_after_name(
 	else if ( check(Tok_Operator) && currtok.Text.Ptr[0] == '=' )
 	{
 		eat(Tok_Operator);
+		if ( specifiers == nullptr )
+		{
+			specifiers       = (CodeSpecifiers) make_code();
+			specifiers->Type = CT_Specifiers;
+		}
 		if ( str_are_equal(nexttok.Text, txt("delete")))
 		{
 			specifiers_append(specifiers, Spec_Delete);
@@ -8512,7 +8529,6 @@ CodeFn parse_function_after_name(
 			eat( Tok_Number);
 			// <Attributes> <Specifiers> <ReturnType> <Name> ( <Paraemters> ) <Specifiers> = 0
 		}
-		
 		Token stmt_end = currtok;
 		eat( Tok_Statement_End );
 		
@@ -9509,7 +9525,10 @@ CodeOperator parse_operator_after_ret_type(
 			parser_pop(& _ctx->parser);
 			return InvalidCode;
 		}
-		specifiers_append(specifiers, Spec_Delete);
+		if (specifiers == nullptr)
+			specifiers = def_specifier( Spec_Delete );
+		else 
+			specifiers_append(specifiers, Spec_Delete);
 		eat(currtok.Type);
 		// <ExportFlag> <Attributes> <Specifiers> <ReturnType> <Qualifier::...> operator <Op> ( <Parameters> ) <Specifiers> = delete
 	}

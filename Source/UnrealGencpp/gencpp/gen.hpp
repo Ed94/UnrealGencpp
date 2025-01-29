@@ -1486,7 +1486,7 @@ struct AST
 		{
 			Code      InlineCmt;       // Class, Constructor, Destructor, Enum, Friend, Functon, Operator, OpCast, Struct, Typedef, Using, Variable
 			Code      Attributes;      // Class, Enum, Function, Struct, Typedef, Union, Using, Variable // TODO(Ed): Parameters can have attributes
-			Code      Specs;           // Destructor, Function, Operator, Typename, Variable
+			Code      Specs;           // Class, Destructor, Function, Operator, Struct, Typename, Variable
 			union {
 				Code  InitializerList; // Constructor
 				Code  ParentType;      // Class, Struct, ParentType->Next has a possible list of interfaces.
@@ -2828,7 +2828,7 @@ struct AST_Class
 		{
 			CodeComment     InlineCmt; // Only supported by forward declarations
 			CodeAttributes  Attributes;
-			char            _PAD_SPECS_ [ sizeof(AST*) ];
+			CodeSpecifiers  Specs; // Support for final
 			CodeTypename    ParentType;
 			char            _PAD_PARAMS_[ sizeof(AST*) ];
 			CodeBody        Body;
@@ -3698,7 +3698,7 @@ struct AST_Struct
 		{
 			CodeComment    InlineCmt;
 			CodeAttributes Attributes;
-			char           _PAD_SPECS_ [ sizeof(AST*) ];
+			CodeSpecifiers Specs; // Support for final
 			CodeTypename   ParentType;
 			char           _PAD_PARAMS_[ sizeof(AST*) ];
 			CodeBody       Body;
@@ -4052,6 +4052,7 @@ struct Opts_def_struct {
 	CodeAttributes attributes;
 	CodeTypename*  interfaces;
 	s32            num_interfaces;
+	CodeSpecifiers specifers; // Only used for final specifier for now.
 	ModuleFlag     mflags;
 };
 GEN_API CodeClass def_class( Str name, Opts_def_struct opts GEN_PARAM_DEFAULT );
