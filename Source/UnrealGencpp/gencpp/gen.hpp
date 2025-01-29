@@ -655,7 +655,7 @@ FORCEINLINE bool is_trailing(Specifier specifier)
 	Entry(Tok_Attribute_API_Export, "GEN_API_Export_Code") Entry(Tok_Attribute_API_Import, "GEN_API_Import_Code")       \
 	    Entry(Tok_Attribute_COREUOBJECT_API, "COREUOBJECT_API") Entry(Tok_Attribute_ENGINE_API, "ENGINE_API")           \
 	        Entry(Tok_Attribute_GAMEPLAYABILITIES_API, "GAMEPLAYABILITIES_API") Entry(Tok_Attribute_UMG_API, "UMG_API") \
-	            Entry(Tok_Attribute_UE_DEPRECATED, "UE_DEPRECATED") Entry(Tok_Attribute_UNREALGENCPP_API, "UNREALGENCPP_API")
+	            Entry(Tok_Attribute_UNREALGENCPP_API, "UNREALGENCPP_API")
 
 enum TokType : u32
 {
@@ -764,7 +764,6 @@ enum TokType : u32
 	Tok_Attribute_ENGINE_API,
 	Tok_Attribute_GAMEPLAYABILITIES_API,
 	Tok_Attribute_UMG_API,
-	Tok_Attribute_UE_DEPRECATED,
 	Tok_Attribute_UNREALGENCPP_API,
 	Tok_NumTokens
 };
@@ -877,7 +876,6 @@ inline Str toktype_to_str(TokType type)
 		{ "ENGINE_API",             sizeof("ENGINE_API") - 1             },
 		{ "GAMEPLAYABILITIES_API",  sizeof("GAMEPLAYABILITIES_API") - 1  },
 		{ "UMG_API",                sizeof("UMG_API") - 1                },
-		{ "UE_DEPRECATED",          sizeof("UE_DEPRECATED") - 1          },
 		{ "UNREALGENCPP_API",       sizeof("UNREALGENCPP_API") - 1       },
 	};
 	return lookup[type];
