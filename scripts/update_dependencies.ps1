@@ -31,6 +31,6 @@ Push-Location $path_gencpp_scripts
 	$build = join-path $path_repo_scripts 'build.ci.ps1'
 	& $build debug bootstrap unreal
 
-	Copy-Item -Path $path_repo_unreal_gen\* -Destination $path_UnrealGencpp -Force
+	Copy-Item -Path $path_repo_unreal_gen\* -Destination $path_gencpp -Force
 
 Pop-Location
