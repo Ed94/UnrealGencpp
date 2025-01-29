@@ -182,25 +182,30 @@ GEN_NS_BEGIN
 
 #pragma region Macros
 
+
 #ifndef GEN_API
-	#if GEN_COMPILER_MSVC
-		#ifdef GEN_DYN_LINK
-			#ifdef GEN_DYN_EXPORT
-				#define GEN_API __declspec( dllexport )
-			#else
-				#define GEN_API __declspec( dllimport )
-			#endif
-		#else
-			#define GEN_API    // Empty for static builds
-		#endif
-	#else
-		#ifdef GEN_DYN_LINK
-			#define GEN_API __attribute__( ( visibility( "default" ) ) )
-		#else
-			#define GEN_API    // Empty for static builds
-		#endif
-	#endif
+#if GEN_COMPILER_MSVC
+#ifdef GEN_DYN_LINK
+
+#ifdef GEN_DYN_EXPORT
+
+#define GEN_API __declspec(dllexport)
+#else
+#define GEN_API __declspec(dllimport)
 #endif
+#else
+#define GEN_API    // Empty for static builds
+#endif
+#else
+#ifdef GEN_DYN_LINK
+
+#define GEN_API __attribute__((visibility("default")))
+#else
+#define GEN_API    // Empty for static builds
+#endif
+#endif
+#endif
+// GEN_API
 
 #ifndef global
 #define global    // Global variables
@@ -213,11 +218,11 @@ GEN_NS_BEGIN
 #endif
 
 #ifndef bit
-#define bit( Value )                         ( 1 << Value )
+#define bit(Value) (1 << Value)
 #endif
 
 #ifndef bitfield_is_set
-#define bitfield_is_set( Type, Field, Mask ) ( ( scast( Type, Mask ) & scast( Type, Field ) ) == scast( Type, Mask ) )
+#define bitfield_is_set(Type, Field, Mask) ((scast(Type, Mask) & scast(Type, Field)) == scast(Type, Mask))
 #endif
 
 // Mainly intended for forcing the base library to utilize only C-valid constructs or type coercion
@@ -227,73 +232,73 @@ GEN_NS_BEGIN
 
 #if GEN_COMPILER_CPP
 #ifndef cast
-#define cast( type, value ) ( tmpl_cast<type>( value ) )
+#define cast(type, value) (tmpl_cast<type>(value))
 #endif
 #else
 #ifndef cast
-#define cast( type, value ) ( (type)( value ) )
+#define cast(type, value) ((type)(value))
 #endif
 #endif
 
 #if GEN_COMPILER_CPP
 #ifndef ccast
-#define ccast( type, value ) ( const_cast<type>( ( value ) ) )
+#define ccast(type, value) (const_cast<type>((value)))
 #endif
 #ifndef pcast
-#define pcast( type, value ) ( *reinterpret_cast<type*>( &( value ) ) )
+#define pcast(type, value) (*reinterpret_cast<type*>(&(value)))
 #endif
 #ifndef rcast
-#define rcast( type, value ) reinterpret_cast<type>( value )
+#define rcast(type, value) reinterpret_cast<type>(value)
 #endif
 #ifndef scast
-#define scast( type, value ) static_cast<type>( value )
+#define scast(type, value) static_cast<type>(value)
 #endif
 #else
 #ifndef ccast
-#define ccast( type, value ) ( (type)( value ) )
+#define ccast(type, value) ((type)(value))
 #endif
 #ifndef pcast
-#define pcast( type, value ) ( *(type*)( &value ) )
+#define pcast(type, value) (*(type*)(&value))
 #endif
 #ifndef rcast
-#define rcast( type, value ) ( (type)( value ) )
+#define rcast(type, value) ((type)(value))
 #endif
 #ifndef scast
-#define scast( type, value ) ( (type)( value ) )
+#define scast(type, value) ((type)(value))
 #endif
 #endif
 
 #ifndef stringize
-#define stringize_va( ... ) #__VA_ARGS__
-#define stringize( ... )    stringize_va( __VA_ARGS__ )
+#define stringize_va(...) #__VA_ARGS__
+#define stringize(...)    stringize_va(__VA_ARGS__)
 #endif
 
-#define src_line_str stringize( __LINE__ )
+#define src_line_str stringize(__LINE__)
 
 #ifndef do_once
 #define do_once()                                           \
 	local_persist int __do_once_counter_##src_line_str = 0; \
-	for ( ; __do_once_counter_##src_line_str != 1; __do_once_counter_##src_line_str = 1 )
-#define do_once_defer( expression )                         \
+	for (; __do_once_counter_##src_line_str != 1; __do_once_counter_##src_line_str = 1)
+#define do_once_defer(expression)                           \
 	local_persist int __do_once_counter_##src_line_str = 0; \
-	for ( ; __do_once_counter_##src_line_str != 1; __do_once_counter_##src_line_str = 1, ( expression ) )
+	for (; __do_once_counter_##src_line_str != 1; __do_once_counter_##src_line_str = 1, (expression))
 #define do_once_start                    \
 	do                                   \
 	{                                    \
 		local_persist bool done = false; \
-		if ( done )                      \
+		if (done)                        \
 			break;                       \
 		done = true;
 
 #define do_once_end \
 	}               \
-	while ( 0 )     \
+	while (0)       \
 		;
 #endif
 
 #ifndef labeled_scope_start
 #define labeled_scope_start \
-	if ( false )            \
+	if (false)              \
 	{
 #define labeled_scope_end }
 #endif
@@ -302,7 +307,7 @@ GEN_NS_BEGIN
 #ifdef COMPILER_CLANG
 
 #define compiler_decorated_func_name __PRETTY_NAME__
-#elif defined( COMPILER_MSVC )
+#elif defined(COMPILER_MSVC)
 
 #define compiler_decorated_func_name __FUNCDNAME__
 #endif
@@ -421,153 +426,153 @@ GEN_NS_BEGIN
 	N
 
 // ## deletes preceding comma if _VA_ARGS__ is empty (GCC, Clang)
-#define num_args( ... ) \
-	num_args_impl(      \
-	    _,              \
-	    ##__VA_ARGS__,  \
-	    100,            \
-	    99,             \
-	    98,             \
-	    97,             \
-	    96,             \
-	    95,             \
-	    94,             \
-	    93,             \
-	    92,             \
-	    91,             \
-	    90,             \
-	    89,             \
-	    88,             \
-	    87,             \
-	    86,             \
-	    85,             \
-	    84,             \
-	    83,             \
-	    82,             \
-	    81,             \
-	    80,             \
-	    79,             \
-	    78,             \
-	    77,             \
-	    76,             \
-	    75,             \
-	    74,             \
-	    73,             \
-	    72,             \
-	    71,             \
-	    70,             \
-	    69,             \
-	    68,             \
-	    67,             \
-	    66,             \
-	    65,             \
-	    64,             \
-	    63,             \
-	    62,             \
-	    61,             \
-	    60,             \
-	    59,             \
-	    58,             \
-	    57,             \
-	    56,             \
-	    55,             \
-	    54,             \
-	    53,             \
-	    52,             \
-	    51,             \
-	    50,             \
-	    49,             \
-	    48,             \
-	    47,             \
-	    46,             \
-	    45,             \
-	    44,             \
-	    43,             \
-	    42,             \
-	    41,             \
-	    40,             \
-	    39,             \
-	    38,             \
-	    37,             \
-	    36,             \
-	    35,             \
-	    34,             \
-	    33,             \
-	    32,             \
-	    31,             \
-	    30,             \
-	    29,             \
-	    28,             \
-	    27,             \
-	    26,             \
-	    25,             \
-	    24,             \
-	    23,             \
-	    22,             \
-	    21,             \
-	    20,             \
-	    19,             \
-	    18,             \
-	    17,             \
-	    16,             \
-	    15,             \
-	    14,             \
-	    13,             \
-	    12,             \
-	    11,             \
-	    10,             \
-	    9,              \
-	    8,              \
-	    7,              \
-	    6,              \
-	    5,              \
-	    4,              \
-	    3,              \
-	    2,              \
-	    1,              \
-	    0               \
+#define num_args(...)  \
+	num_args_impl(     \
+	    _,             \
+	    ##__VA_ARGS__, \
+	    100,           \
+	    99,            \
+	    98,            \
+	    97,            \
+	    96,            \
+	    95,            \
+	    94,            \
+	    93,            \
+	    92,            \
+	    91,            \
+	    90,            \
+	    89,            \
+	    88,            \
+	    87,            \
+	    86,            \
+	    85,            \
+	    84,            \
+	    83,            \
+	    82,            \
+	    81,            \
+	    80,            \
+	    79,            \
+	    78,            \
+	    77,            \
+	    76,            \
+	    75,            \
+	    74,            \
+	    73,            \
+	    72,            \
+	    71,            \
+	    70,            \
+	    69,            \
+	    68,            \
+	    67,            \
+	    66,            \
+	    65,            \
+	    64,            \
+	    63,            \
+	    62,            \
+	    61,            \
+	    60,            \
+	    59,            \
+	    58,            \
+	    57,            \
+	    56,            \
+	    55,            \
+	    54,            \
+	    53,            \
+	    52,            \
+	    51,            \
+	    50,            \
+	    49,            \
+	    48,            \
+	    47,            \
+	    46,            \
+	    45,            \
+	    44,            \
+	    43,            \
+	    42,            \
+	    41,            \
+	    40,            \
+	    39,            \
+	    38,            \
+	    37,            \
+	    36,            \
+	    35,            \
+	    34,            \
+	    33,            \
+	    32,            \
+	    31,            \
+	    30,            \
+	    29,            \
+	    28,            \
+	    27,            \
+	    26,            \
+	    25,            \
+	    24,            \
+	    23,            \
+	    22,            \
+	    21,            \
+	    20,            \
+	    19,            \
+	    18,            \
+	    17,            \
+	    16,            \
+	    15,            \
+	    14,            \
+	    13,            \
+	    12,            \
+	    11,            \
+	    10,            \
+	    9,             \
+	    8,             \
+	    7,             \
+	    6,             \
+	    5,             \
+	    4,             \
+	    3,             \
+	    2,             \
+	    1,             \
+	    0              \
 	)
 #endif
 
 #ifndef clamp
-#define clamp( x, lower, upper ) min( max( ( x ), ( lower ) ), ( upper ) )
+#define clamp(x, lower, upper) min(max((x), (lower)), (upper))
 #endif
 #ifndef count_of
-#define count_of( x ) ( ( size_of( x ) / size_of( 0 [x] ) ) / ( (ssize)( ! ( size_of( x ) % size_of( 0 [x] ) ) ) ) )
+#define count_of(x) ((size_of(x) / size_of(0 [x])) / ((ssize)(! (size_of(x) % size_of(0 [x])))))
 #endif
 #ifndef is_between
-#define is_between( x, lower, upper ) ( ( ( lower ) <= ( x ) ) && ( ( x ) <= ( upper ) ) )
+#define is_between(x, lower, upper) (((lower) <= (x)) && ((x) <= (upper)))
 #endif
 #ifndef size_of
-#define size_of( x ) ( ssize )( sizeof( x ) )
+#define size_of(x) (ssize)(sizeof(x))
 #endif
 
 #ifndef max
-#define max( a, b ) ( ( a > b ) ? ( a ) : ( b ) )
+#define max(a, b) ((a > b) ? (a) : (b))
 #endif
 #ifndef min
-#define min( a, b ) ( ( a < b ) ? ( a ) : ( b ) )
+#define min(a, b) ((a < b) ? (a) : (b))
 #endif
 
 #if GEN_COMPILER_MSVC || GEN_COMPILER_TINYC
-#define offset_of( Type, element ) ( ( GEN_NS( ssize ) ) & ( ( (Type*)0 )->element ) )
+#define offset_of(Type, element) ((GEN_NS(ssize)) & (((Type*)0)->element))
 #else
-#define offset_of( Type, element ) __builtin_offsetof( Type, element )
+#define offset_of(Type, element) __builtin_offsetof(Type, element)
 #endif
 
 #ifndef FORCEINLINE
 #if GEN_COMPILER_MSVC
 #define FORCEINLINE __forceinline
-#define neverinline __declspec( noinline )
+#define neverinline __declspec(noinline)
 #elif GEN_COMPILER_GCC
 
-#define FORCEINLINE inline __attribute__( ( __always_inline__ ) )
-#define neverinline __attribute__( ( __noinline__ ) )
+#define FORCEINLINE inline __attribute__((__always_inline__))
+#define neverinline __attribute__((__noinline__))
 #elif GEN_COMPILER_CLANG
 
-#if __has_attribute( __always_inline__ )
-#define FORCEINLINE inline __attribute__( ( __always_inline__ ) )
-#define neverinline __attribute__( ( __noinline__ ) )
+#if __has_attribute(__always_inline__)
+#define FORCEINLINE inline __attribute__((__always_inline__))
+#define neverinline __attribute__((__noinline__))
 #else
 #define FORCEINLINE
 
@@ -584,14 +589,14 @@ GEN_NS_BEGIN
 
 #ifndef neverinline
 #if GEN_COMPILER_MSVC
-#define neverinline __declspec( noinline )
+#define neverinline __declspec(noinline)
 #elif GEN_COMPILER_GCC
 
-#define neverinline __attribute__( ( __noinline__ ) )
+#define neverinline __attribute__((__noinline__))
 #elif GEN_COMPILER_CLANG
 
-#if __has_attribute( __always_inline__ )
-#define neverinline __attribute__( ( __noinline__ ) )
+#if __has_attribute(__always_inline__)
+#define neverinline __attribute__((__noinline__))
 #else
 #define neverinline
 
@@ -606,9 +611,9 @@ GEN_NS_BEGIN
 #ifndef static_assert
 #undef static_assert
 #if GEN_COMPILER_C && __STDC_VERSION__ >= 201112L
-#define static_assert( condition, message ) _Static_assert( condition, message )
+#define static_assert(condition, message) _Static_assert(condition, message)
 #else
-#define static_assert( condition, message ) typedef char static_assertion_##__LINE__[( condition ) ? 1 : -1]
+#define static_assert(condition, message) typedef char static_assertion_##__LINE__[(condition) ? 1 : -1]
 #endif
 #endif
 #endif
@@ -620,7 +625,7 @@ GEN_NS_BEGIN
 #define thread_local _Thread_local
 #elif GEN_COMPILER_MSVC
 
-#define thread_local __declspec( thread )
+#define thread_local __declspec(thread)
 #elif GEN_COMPILER_CLANG
 
 #define thread_local __thread
@@ -628,13 +633,13 @@ GEN_NS_BEGIN
 #error "No thread local support"
 #endif
 
-#if ! defined( typeof ) && ( ! GEN_COMPILER_C || __STDC_VERSION__ < 202311L )
+#if ! defined(typeof) && (! GEN_COMPILER_C || __STDC_VERSION__ < 202311L)
 #if ! GEN_COMPILER_C
 #define typeof decltype
-#elif defined( _MSC_VER )
+#elif defined(_MSC_VER)
 
 #define typeof __typeof__
-#elif defined( __GNUC__ ) || defined( __clang__ )
+#elif defined(__GNUC__) || defined(__clang__)
 
 #define typeof __typeof__
 #else
@@ -658,13 +663,13 @@ GEN_NS_BEGIN
 
 #if GEN_COMPILER_C
 #if __STDC_VERSION__ >= 202311L
-#define enum_underlying( type ) : type
+#define enum_underlying(type) : type
 #else
-#define enum_underlying( type )
+#define enum_underlying(type)
 
 #endif
 #else
-#define enum_underlying( type ) : type
+#define enum_underlying(type) : type
 #endif
 
 #if GEN_COMPILER_C
@@ -673,11 +678,11 @@ GEN_NS_BEGIN
 #endif
 
 #ifndef GEN_REMOVE_PTR
-#define GEN_REMOVE_PTR( type ) typeof( *( (type)NULL ) )
+#define GEN_REMOVE_PTR(type) typeof(*((type)NULL))
 #endif
 #endif
 
-#if ! defined( GEN_PARAM_DEFAULT ) && GEN_COMPILER_CPP
+#if ! defined(GEN_PARAM_DEFAULT) && GEN_COMPILER_CPP
 #define GEN_PARAM_DEFAULT = {}
 #else
 #define GEN_PARAM_DEFAULT
@@ -685,21 +690,21 @@ GEN_NS_BEGIN
 #endif
 
 #if GEN_COMPILER_CPP
-#define struct_init( type, value ) \
-	{                              \
-		value                      \
+#define struct_init(type, value) \
+	{                            \
+		value                    \
 	}
 #else
-#define struct_init( type, value ) \
-	{                              \
-		value                      \
+#define struct_init(type, value) \
+	{                            \
+		value                    \
 	}
 #endif
 
 #if 0
 #ifndef GEN_OPTIMIZE_MAPPINGS_BEGIN
-#define GEN_OPTIMIZE_MAPPINGS_BEGIN _pragma( optimize( "gt", on ) )
-#define GEN_OPITMIZE_MAPPINGS_END   _pragma( optimize( "", on ) )
+#define GEN_OPTIMIZE_MAPPINGS_BEGIN _pragma(optimize("gt", on))
+#define GEN_OPITMIZE_MAPPINGS_END   _pragma(optimize("", on))
 #endif
 #else
 #define GEN_OPTIMIZE_MAPPINGS_BEGIN
@@ -910,8 +915,8 @@ template<typename Type> mem_ptr_const to_mem_ptr_const( Type ptr ) { return (mem
 #endif
 
 GEN_API void assert_handler( char const* condition, char const* file, char const* function, s32 line, char const* msg, ... );
-s32  assert_crash( char const* condition );
-void process_exit( u32 code );
+GEN_API s32  assert_crash( char const* condition );
+GEN_API void process_exit( u32 code );
 
 #pragma endregion Debug
 
@@ -956,7 +961,7 @@ ssize pointer_diff( void const* begin, void const* end );
 GEN_API void* mem_copy( void* dest, void const* source, ssize size );
 
 //! Search for a constant value within the size limit at memory location.
-void const* mem_find( void const* data, u8 byte_value, ssize size );
+GEN_API void const* mem_find( void const* data, u8 byte_value, ssize size );
 
 //! Copy memory from source to destination.
 void* mem_move( void* dest, void const* source, ssize size );
@@ -1031,17 +1036,17 @@ void* resize_align( AllocatorInfo a, void* ptr, ssize old_size, ssize new_size, 
 /* define GEN_HEAP_ANALYSIS to enable this feature */
 /* call zpl_heap_stats_init at the beginning of the entry point */
 /* you can call zpl_heap_stats_check near the end of the execution to validate any possible leaks */
-void  heap_stats_init( void );
-ssize heap_stats_used_memory( void );
-ssize heap_stats_alloc_count( void );
-void  heap_stats_check( void );
+GEN_API void  heap_stats_init( void );
+GEN_API ssize heap_stats_used_memory( void );
+GEN_API ssize heap_stats_alloc_count( void );
+GEN_API void  heap_stats_check( void );
 
 //! Allocate/Resize memory using default options.
 
 //! Use this if you don't need a "fancy" resize allocation
 void* default_resize_align( AllocatorInfo a, void* ptr, ssize old_size, ssize new_size, ssize alignment );
 
-void* heap_allocator_proc( void* allocator_data, AllocType type, ssize size, ssize alignment, void* old_memory, ssize old_size, u64 flags );
+GEN_API void* heap_allocator_proc( void* allocator_data, AllocType type, ssize size, ssize alignment, void* old_memory, ssize old_size, u64 flags );
 
 //! The heap allocator backed by operating system's memory manager.
 constexpr AllocatorInfo heap( void ) { AllocatorInfo allocator = { heap_allocator_proc, nullptr }; return allocator; }
@@ -1059,25 +1064,25 @@ struct VirtualMemory
 };
 
 //! Initialize virtual memory from existing data.
-VirtualMemory vm_from_memory( void* data, ssize size );
+GEN_API VirtualMemory vm_from_memory( void* data, ssize size );
 
 //! Allocate virtual memory at address with size.
 
 //! @param addr The starting address of the region to reserve. If NULL, it lets operating system to decide where to allocate it.
 //! @param size The size to serve.
-VirtualMemory vm_alloc( void* addr, ssize size );
+GEN_API VirtualMemory vm_alloc( void* addr, ssize size );
 
 //! Release the virtual memory.
-b32 vm_free( VirtualMemory vm );
+GEN_API b32 vm_free( VirtualMemory vm );
 
 //! Trim virtual memory.
-VirtualMemory vm_trim( VirtualMemory vm, ssize lead_size, ssize size );
+GEN_API VirtualMemory vm_trim( VirtualMemory vm, ssize lead_size, ssize size );
 
 //! Purge virtual memory.
-b32 vm_purge( VirtualMemory vm );
+GEN_API b32 vm_purge( VirtualMemory vm );
 
 //! Retrieve VM's page size and alignment.
-ssize virtual_memory_page_size( ssize* alignment_out );
+GEN_API ssize virtual_memory_page_size( ssize* alignment_out );
 
 #pragma region Arena
 struct Arena;
@@ -1085,7 +1090,7 @@ struct Arena;
 AllocatorInfo arena_allocator_info( Arena* arena );
 
 // Remove static keyword and rename allocator_proc
-void* arena_allocator_proc(void* allocator_data, AllocType type, ssize size, ssize alignment, void* old_memory, ssize old_size, u64 flags);
+GEN_API void* arena_allocator_proc(void* allocator_data, AllocType type, ssize size, ssize alignment, void* old_memory, ssize old_size, u64 flags);
 
 // Add these declarations after the Arena struct
 Arena arena_init_from_allocator(AllocatorInfo backing, ssize size);
@@ -1294,13 +1299,13 @@ using FixedArena_4MB   = FixedArena< megabytes( 4 ) >;
 #pragma region Pool
 struct Pool;
 
-void* pool_allocator_proc(void* allocator_data, AllocType type, ssize size, ssize alignment, void* old_memory, ssize old_size, u64 flags);
+GEN_API void* pool_allocator_proc(void* allocator_data, AllocType type, ssize size, ssize alignment, void* old_memory, ssize old_size, u64 flags);
 
-Pool          pool_init(AllocatorInfo backing, ssize num_blocks, ssize block_size);
-Pool          pool_init_align(AllocatorInfo backing, ssize num_blocks, ssize block_size, ssize block_align);
-AllocatorInfo pool_allocator_info(Pool* pool);
-void          pool_clear(Pool* pool);
-void          pool_free(Pool* pool);
+        Pool          pool_init(AllocatorInfo backing, ssize num_blocks, ssize block_size);
+        Pool          pool_init_align(AllocatorInfo backing, ssize num_blocks, ssize block_size, ssize block_align);
+        AllocatorInfo pool_allocator_info(Pool* pool);
+GEN_API void          pool_clear(Pool* pool);
+        void          pool_free(Pool* pool);
 
 #if GEN_COMPILER_CPP && ! GEN_C_LIKE_CPP
 FORCEINLINE AllocatorInfo allocator_info(Pool& pool) { return pool_allocator_info(& pool); }
@@ -1613,10 +1618,10 @@ char const* c_str_trim( char const* str, b32 catch_newline );
 void c_str_to_lower( char* str );
 void c_str_to_upper( char* str );
 
-s64  c_str_to_i64( const char* str, char** end_ptr, s32 base );
-void i64_to_str( s64 value, char* string, s32 base );
-void u64_to_str( u64 value, char* string, s32 base );
-f64  c_str_to_f64( const char* str, char** end_ptr );
+GEN_API s64  c_str_to_i64( const char* str, char** end_ptr, s32 base );
+GEN_API void i64_to_str( s64 value, char* string, s32 base );
+GEN_API void u64_to_str( u64 value, char* string, s32 base );
+GEN_API f64  c_str_to_f64( const char* str, char** end_ptr );
 
 inline
 const char* char_first_occurence( const char* s, char c )
@@ -2210,6 +2215,7 @@ ArrayHeader* array_get_header(Array<Type> array) {
 	using NonConstType = TRemoveConst<Type>;
     return rcast(ArrayHeader*, const_cast<NonConstType*>(Data)) - 1;
 }
+
 template<class Type> FORCEINLINE
 bool array_grow(Array<Type>* array, usize min_capacity)
 {
@@ -2696,8 +2702,8 @@ b32 hashtable_full(HashTable<Type> table) {
 
 #pragma region Hashing
 
-u32 crc32( void const* data, ssize len );
-u64 crc64( void const* data, ssize len );
+GEN_API u32 crc32( void const* data, ssize len );
+GEN_API u64 crc64( void const* data, ssize len );
 
 #pragma endregion Hashing
 
@@ -2820,10 +2826,11 @@ struct StrBuilder;
 
 FORCEINLINE usize strbuilder_grow_formula(usize value);
 
+GEN_API StrBuilder        strbuilder_make_reserve        (AllocatorInfo allocator, ssize        capacity);
+GEN_API StrBuilder        strbuilder_make_length         (AllocatorInfo allocator, char const*  str,   ssize length);
+
 StrBuilder        strbuilder_make_c_str          (AllocatorInfo allocator, char const*  str);
 StrBuilder        strbuilder_make_str            (AllocatorInfo allocator, Str         str);
-StrBuilder        strbuilder_make_reserve        (AllocatorInfo allocator, ssize        capacity);
-GEN_API StrBuilder        strbuilder_make_length         (AllocatorInfo allocator, char const*  str,   ssize length);
 StrBuilder        strbuilder_fmt                 (AllocatorInfo allocator, char*        buf,   ssize buf_size,  char const* fmt, ...);
 StrBuilder        strbuilder_fmt_buf             (AllocatorInfo allocator, char const*  fmt, ...);
 StrBuilder        strbuilder_join                (AllocatorInfo allocator, char const** parts, ssize num_parts, char const* glue);
@@ -3560,20 +3567,20 @@ enum FileStandardType
 	* @param  std Check zpl_file_standard_type
 	* @return     File handle to standard I/O
 	*/
-FileInfo* file_get_standard( FileStandardType std );
+GEN_API FileInfo* file_get_standard( FileStandardType std );
 
 /**
 	* Closes the file
 	* @param  file
 	*/
-FileError file_close( FileInfo* file );
+GEN_API FileError file_close( FileInfo* file );
 
 /**
 	* Returns the currently opened file's name
 	* @param  file
 	*/
 inline
-	char const* file_name( FileInfo* file )
+char const* file_name( FileInfo* file )
 {
 	return file->filename ? file->filename : "";
 }
@@ -3583,7 +3590,7 @@ inline
 	* @param  file
 	* @param  filename
 	*/
-FileError file_open( FileInfo* file, char const* filename );
+GEN_API FileError file_open( FileInfo* file, char const* filename );
 
 /**
 	* Opens a file using a specified mode
@@ -3591,7 +3598,7 @@ FileError file_open( FileInfo* file, char const* filename );
 	* @param  mode     Access mode to use
 	* @param  filename
 	*/
-FileError file_open_mode( FileInfo* file, FileMode mode, char const* filename );
+GEN_API FileError file_open_mode( FileInfo* file, FileMode mode, char const* filename );
 
 /**
 	* Reads from a file
@@ -3646,7 +3653,7 @@ GEN_API FileContents file_read_contents( AllocatorInfo a, b32 zero_terminate, ch
 	* @param  file
 	* @return      File size
 	*/
-s64 file_size( FileInfo* file );
+GEN_API s64 file_size( FileInfo* file );
 
 /**
 	* Seeks the file cursor from the beginning of file to a specific position
@@ -3713,7 +3720,7 @@ enum FileStreamFlags : u32
 	* @param file
 	* @param allocator
 	*/
-b8 file_stream_new( FileInfo* file, AllocatorInfo allocator );
+GEN_API b8 file_stream_new( FileInfo* file, AllocatorInfo allocator );
 
 /**
 	* Opens a memory stream over an existing buffer
@@ -3723,14 +3730,14 @@ b8 file_stream_new( FileInfo* file, AllocatorInfo allocator );
 	* @param  size     Buffer's size
 	* @param  flags
 	*/
-b8 file_stream_open( FileInfo* file, AllocatorInfo allocator, u8* buffer, ssize size, FileStreamFlags flags );
+GEN_API b8 file_stream_open( FileInfo* file, AllocatorInfo allocator, u8* buffer, ssize size, FileStreamFlags flags );
 
 /**
 	* Retrieves the stream's underlying buffer and buffer size.
 	* @param file memory stream
 	* @param size (Optional) buffer size
 	*/
-u8* file_stream_buf( FileInfo* file, ssize* size );
+GEN_API u8* file_stream_buf( FileInfo* file, ssize* size );
 
 extern FileOperations const memory_file_operations;
 
@@ -3828,13 +3835,13 @@ b32 file_write_at_check( FileInfo* f, void const* buffer, ssize size, s64 offset
 
 #ifdef GEN_BENCHMARK
 //! Return CPU timestamp.
-u64 read_cpu_time_stamp_counter( void );
+GEN_API u64 read_cpu_time_stamp_counter( void );
 
 //! Return relative time (in seconds) since the application start.
-f64 time_rel( void );
+GEN_API f64 time_rel( void );
 
 //! Return relative time since the application start.
-u64 time_rel_ms( void );
+GEN_API u64 time_rel_ms( void );
 #endif
 
 #pragma endregion Timing
@@ -3958,7 +3965,7 @@ struct ADT_Node
 	* @param is_array
 	* @return error code
 	*/
-u8 adt_make_branch( ADT_Node* node, AllocatorInfo backing, char const* name, b32 is_array );
+GEN_API u8 adt_make_branch( ADT_Node* node, AllocatorInfo backing, char const* name, b32 is_array );
 
 /**
 	* @brief Destroy an ADT branch and its descendants
@@ -3966,7 +3973,7 @@ u8 adt_make_branch( ADT_Node* node, AllocatorInfo backing, char const* name, b32
 	* @param node
 	* @return error code
 	*/
-u8 adt_destroy_branch( ADT_Node* node );
+GEN_API u8 adt_destroy_branch( ADT_Node* node );
 
 /**
 	* @brief Initialise an ADT leaf
@@ -3976,7 +3983,7 @@ u8 adt_destroy_branch( ADT_Node* node );
 	* @param type Node's type (use zpl_adt_make_branch for container nodes)
 	* @return error code
 	*/
-u8 adt_make_leaf( ADT_Node* node, char const* name, ADT_Type type );
+GEN_API u8 adt_make_leaf( ADT_Node* node, char const* name, ADT_Type type );
 
 
 /**
@@ -3996,7 +4003,7 @@ u8 adt_make_leaf( ADT_Node* node, char const* name, ADT_Type type );
 	*
 	* @see code/apps/examples/json_get.c
 	*/
-ADT_Node* adt_query( ADT_Node* node, char const* uri );
+GEN_API ADT_Node* adt_query( ADT_Node* node, char const* uri );
 
 /**
 	* @brief Find a field node within an object by the given name.
@@ -4006,7 +4013,7 @@ ADT_Node* adt_query( ADT_Node* node, char const* uri );
 	* @param deep_search Perform search recursively
 	* @return zpl_adt_node * node
 	*/
-ADT_Node* adt_find( ADT_Node* node, char const* name, b32 deep_search );
+GEN_API ADT_Node* adt_find( ADT_Node* node, char const* name, b32 deep_search );
 
 /**
 	* @brief Allocate an unitialised node within a container at a specified index.
@@ -4015,7 +4022,7 @@ ADT_Node* adt_find( ADT_Node* node, char const* name, b32 deep_search );
 	* @param index
 	* @return zpl_adt_node * node
 	*/
-ADT_Node* adt_alloc_at( ADT_Node* parent, ssize index );
+GEN_API ADT_Node* adt_alloc_at( ADT_Node* parent, ssize index );
 
 /**
 	* @brief Allocate an unitialised node within a container.
@@ -4023,7 +4030,7 @@ ADT_Node* adt_alloc_at( ADT_Node* parent, ssize index );
 	* @param parent
 	* @return zpl_adt_node * node
 	*/
-ADT_Node* adt_alloc( ADT_Node* parent );
+GEN_API ADT_Node* adt_alloc( ADT_Node* parent );
 
 /**
 	* @brief Move an existing node to a new container at a specified index.
@@ -4033,7 +4040,7 @@ ADT_Node* adt_alloc( ADT_Node* parent );
 	* @param index
 	* @return zpl_adt_node * node
 	*/
-ADT_Node* adt_move_node_at( ADT_Node* node, ADT_Node* new_parent, ssize index );
+GEN_API ADT_Node* adt_move_node_at( ADT_Node* node, ADT_Node* new_parent, ssize index );
 
 /**
 	* @brief Move an existing node to a new container.
@@ -4042,7 +4049,7 @@ ADT_Node* adt_move_node_at( ADT_Node* node, ADT_Node* new_parent, ssize index );
 	* @param new_parent
 	* @return zpl_adt_node * node
 	*/
-ADT_Node* adt_move_node( ADT_Node* node, ADT_Node* new_parent );
+GEN_API ADT_Node* adt_move_node( ADT_Node* node, ADT_Node* new_parent );
 
 /**
 	* @brief Swap two nodes.
@@ -4051,7 +4058,7 @@ ADT_Node* adt_move_node( ADT_Node* node, ADT_Node* new_parent );
 	* @param other_node
 	* @return
 	*/
-void adt_swap_nodes( ADT_Node* node, ADT_Node* other_node );
+GEN_API void adt_swap_nodes( ADT_Node* node, ADT_Node* other_node );
 
 /**
 	* @brief Remove node from container.
@@ -4059,7 +4066,7 @@ void adt_swap_nodes( ADT_Node* node, ADT_Node* other_node );
 	* @param node
 	* @return
 	*/
-void adt_remove_node( ADT_Node* node );
+GEN_API void adt_remove_node( ADT_Node* node );
 
 /**
 	* @brief Initialise a node as an object
@@ -4069,7 +4076,7 @@ void adt_remove_node( ADT_Node* node );
 	* @param backing
 	* @return
 	*/
-b8 adt_set_obj( ADT_Node* obj, char const* name, AllocatorInfo backing );
+GEN_API b8 adt_set_obj( ADT_Node* obj, char const* name, AllocatorInfo backing );
 
 /**
 	* @brief Initialise a node as an array
@@ -4079,7 +4086,7 @@ b8 adt_set_obj( ADT_Node* obj, char const* name, AllocatorInfo backing );
 	* @param backing
 	* @return
 	*/
-b8 adt_set_arr( ADT_Node* obj, char const* name, AllocatorInfo backing );
+GEN_API b8 adt_set_arr( ADT_Node* obj, char const* name, AllocatorInfo backing );
 
 /**
 	* @brief Initialise a node as a string
@@ -4089,7 +4096,7 @@ b8 adt_set_arr( ADT_Node* obj, char const* name, AllocatorInfo backing );
 	* @param value
 	* @return
 	*/
-b8 adt_set_str( ADT_Node* obj, char const* name, char const* value );
+GEN_API b8 adt_set_str( ADT_Node* obj, char const* name, char const* value );
 
 /**
 	* @brief Initialise a node as a float
@@ -4099,7 +4106,7 @@ b8 adt_set_str( ADT_Node* obj, char const* name, char const* value );
 	* @param value
 	* @return
 	*/
-b8 adt_set_flt( ADT_Node* obj, char const* name, f64 value );
+GEN_API b8 adt_set_flt( ADT_Node* obj, char const* name, f64 value );
 
 /**
 	* @brief Initialise a node as a signed integer
@@ -4109,7 +4116,7 @@ b8 adt_set_flt( ADT_Node* obj, char const* name, f64 value );
 	* @param value
 	* @return
 	*/
-b8 adt_set_int( ADT_Node* obj, char const* name, s64 value );
+GEN_API b8 adt_set_int( ADT_Node* obj, char const* name, s64 value );
 
 /**
 	* @brief Append a new node to a container as an object
@@ -4118,7 +4125,7 @@ b8 adt_set_int( ADT_Node* obj, char const* name, s64 value );
 	* @param name
 	* @return*
 	*/
-ADT_Node* adt_append_obj( ADT_Node* parent, char const* name );
+GEN_API ADT_Node* adt_append_obj( ADT_Node* parent, char const* name );
 
 /**
 	* @brief Append a new node to a container as an array
@@ -4127,7 +4134,7 @@ ADT_Node* adt_append_obj( ADT_Node* parent, char const* name );
 	* @param name
 	* @return*
 	*/
-ADT_Node* adt_append_arr( ADT_Node* parent, char const* name );
+GEN_API ADT_Node* adt_append_arr( ADT_Node* parent, char const* name );
 
 /**
 	* @brief Append a new node to a container as a string
@@ -4137,7 +4144,7 @@ ADT_Node* adt_append_arr( ADT_Node* parent, char const* name );
 	* @param value
 	* @return*
 	*/
-ADT_Node* adt_append_str( ADT_Node* parent, char const* name, char const* value );
+GEN_API ADT_Node* adt_append_str( ADT_Node* parent, char const* name, char const* value );
 
 /**
 	* @brief Append a new node to a container as a float
@@ -4147,7 +4154,7 @@ ADT_Node* adt_append_str( ADT_Node* parent, char const* name, char const* value 
 	* @param value
 	* @return*
 	*/
-ADT_Node* adt_append_flt( ADT_Node* parent, char const* name, f64 value );
+GEN_API ADT_Node* adt_append_flt( ADT_Node* parent, char const* name, f64 value );
 
 /**
 	* @brief Append a new node to a container as a signed integer
@@ -4157,7 +4164,7 @@ ADT_Node* adt_append_flt( ADT_Node* parent, char const* name, f64 value );
 	* @param value
 	* @return*
 	*/
-ADT_Node* adt_append_int( ADT_Node* parent, char const* name, s64 value );
+GEN_API ADT_Node* adt_append_int( ADT_Node* parent, char const* name, s64 value );
 
 /* parser helpers */
 
@@ -4168,7 +4175,7 @@ ADT_Node* adt_append_int( ADT_Node* parent, char const* name, s64 value );
 	* @param base
 	* @return*
 	*/
-char* adt_parse_number( ADT_Node* node, char* base );
+GEN_API char* adt_parse_number( ADT_Node* node, char* base );
 
 /**
 	* @brief Parses a text and stores the result into an unitialised node.
@@ -4178,7 +4185,7 @@ char* adt_parse_number( ADT_Node* node, char* base );
 	* @param base
 	* @return*
 	*/
-char* adt_parse_number_strict( ADT_Node* node, char* base_str );
+GEN_API char* adt_parse_number_strict( ADT_Node* node, char* base_str );
 
 /**
 	* @brief Parses and converts an existing string node into a number.
@@ -4186,7 +4193,7 @@ char* adt_parse_number_strict( ADT_Node* node, char* base_str );
 	* @param node
 	* @return
 	*/
-ADT_Error adt_c_str_to_number( ADT_Node* node );
+GEN_API ADT_Error adt_c_str_to_number( ADT_Node* node );
 
 /**
 	* @brief Parses and converts an existing string node into a number.
@@ -4195,7 +4202,7 @@ ADT_Error adt_c_str_to_number( ADT_Node* node );
 	* @param node
 	* @return
 	*/
-ADT_Error adt_c_str_to_number_strict( ADT_Node* node );
+GEN_API ADT_Error adt_c_str_to_number_strict( ADT_Node* node );
 
 /**
 	* @brief Prints a number into a file stream.
@@ -4207,7 +4214,7 @@ ADT_Error adt_c_str_to_number_strict( ADT_Node* node );
 	* @param node
 	* @return
 	*/
-ADT_Error adt_print_number( FileInfo* file, ADT_Node* node );
+GEN_API ADT_Error adt_print_number( FileInfo* file, ADT_Node* node );
 
 /**
 	* @brief Prints a string into a file stream.
@@ -4221,7 +4228,7 @@ ADT_Error adt_print_number( FileInfo* file, ADT_Node* node );
 	* @param escape_symbol
 	* @return
 	*/
-ADT_Error adt_print_string( FileInfo* file, ADT_Node* node, char const* escaped_chars, char const* escape_symbol );
+GEN_API ADT_Error adt_print_string( FileInfo* file, ADT_Node* node, char const* escaped_chars, char const* escape_symbol );
 
 #pragma endregion ADT
 
@@ -4237,14 +4244,14 @@ enum CSV_Error : u32
 
 typedef ADT_Node CSV_Object;
 
-u8   csv_parse( CSV_Object* root, char* text, AllocatorInfo allocator, b32 has_header );
-u8   csv_parse_delimiter( CSV_Object* root, char* text, AllocatorInfo allocator, b32 has_header, char delim );
-void csv_free( CSV_Object* obj );
+        u8   csv_parse( CSV_Object* root, char* text, AllocatorInfo allocator, b32 has_header );
+GEN_API u8   csv_parse_delimiter( CSV_Object* root, char* text, AllocatorInfo allocator, b32 has_header, char delim );
+        void csv_free( CSV_Object* obj );
 
-void   csv_write( FileInfo* file, CSV_Object* obj );
-StrBuilder csv_write_string( AllocatorInfo a, CSV_Object* obj );
-void   csv_write_delimiter( FileInfo* file, CSV_Object* obj, char delim );
-StrBuilder csv_write_strbuilder_delimiter( AllocatorInfo a, CSV_Object* obj, char delim );
+        void       csv_write( FileInfo* file, CSV_Object* obj );
+        StrBuilder csv_write_string( AllocatorInfo a, CSV_Object* obj );
+GEN_API void       csv_write_delimiter( FileInfo* file, CSV_Object* obj, char delim );
+GEN_API StrBuilder csv_write_strbuilder_delimiter( AllocatorInfo a, CSV_Object* obj, char delim );
 
 /* inline */
 

@@ -109,7 +109,6 @@ GEN_NS_BEGIN
 
 #pragma region Debug
 
-GEN_API
 void assert_handler( char const* condition, char const* file, char const* function, s32 line, char const* msg, ... )
 {
 	_printf_err( "%s - %s:(%d): Assert Failure: ", file, function, line );
@@ -1129,7 +1128,7 @@ struct _heap_alloc_info
 
 void* heap_allocator_proc( void* allocator_data, AllocType type, ssize size, ssize alignment, void* old_memory, ssize old_size, u64 flags )
 {
-	void* ptr = NULL;
+	void* ptr = nullptr;
 	// unused( allocator_data );
 	// unused( old_size );
 	if ( ! alignment )

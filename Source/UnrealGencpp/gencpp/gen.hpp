@@ -276,152 +276,152 @@ enum CodeType : u32
 	CT_UnderlyingType = GEN_U32_MAX
 };
 
-inline Str codetype_to_str( CodeType type )
+inline Str codetype_to_str(CodeType type)
 {
 	local_persist Str lookup[] = {
-		{ "Invalid",             sizeof( "Invalid" ) - 1             },
-		{ "Untyped",             sizeof( "Untyped" ) - 1             },
-		{ "NewLine",             sizeof( "NewLine" ) - 1             },
-		{ "Comment",             sizeof( "Comment" ) - 1             },
-		{ "Access_Private",      sizeof( "Access_Private" ) - 1      },
-		{ "Access_Protected",    sizeof( "Access_Protected" ) - 1    },
-		{ "Access_Public",       sizeof( "Access_Public" ) - 1       },
-		{ "PlatformAttributes",  sizeof( "PlatformAttributes" ) - 1  },
-		{ "Class",               sizeof( "Class" ) - 1               },
-		{ "Class_Fwd",           sizeof( "Class_Fwd" ) - 1           },
-		{ "Class_Body",          sizeof( "Class_Body" ) - 1          },
-		{ "Constructor",         sizeof( "Constructor" ) - 1         },
-		{ "Constructor_Fwd",     sizeof( "Constructor_Fwd" ) - 1     },
-		{ "Destructor",          sizeof( "Destructor" ) - 1          },
-		{ "Destructor_Fwd",      sizeof( "Destructor_Fwd" ) - 1      },
-		{ "Enum",                sizeof( "Enum" ) - 1                },
-		{ "Enum_Fwd",            sizeof( "Enum_Fwd" ) - 1            },
-		{ "Enum_Body",           sizeof( "Enum_Body" ) - 1           },
-		{ "Enum_Class",          sizeof( "Enum_Class" ) - 1          },
-		{ "Enum_Class_Fwd",      sizeof( "Enum_Class_Fwd" ) - 1      },
-		{ "Execution",           sizeof( "Execution" ) - 1           },
-		{ "Export_Body",         sizeof( "Export_Body" ) - 1         },
-		{ "Extern_Linkage",      sizeof( "Extern_Linkage" ) - 1      },
-		{ "Extern_Linkage_Body", sizeof( "Extern_Linkage_Body" ) - 1 },
-		{ "Friend",              sizeof( "Friend" ) - 1              },
-		{ "Function",            sizeof( "Function" ) - 1            },
-		{ "Function_Fwd",        sizeof( "Function_Fwd" ) - 1        },
-		{ "Function_Body",       sizeof( "Function_Body" ) - 1       },
-		{ "Global_Body",         sizeof( "Global_Body" ) - 1         },
-		{ "Module",              sizeof( "Module" ) - 1              },
-		{ "Namespace",           sizeof( "Namespace" ) - 1           },
-		{ "Namespace_Body",      sizeof( "Namespace_Body" ) - 1      },
-		{ "Operator",            sizeof( "Operator" ) - 1            },
-		{ "Operator_Fwd",        sizeof( "Operator_Fwd" ) - 1        },
-		{ "Operator_Member",     sizeof( "Operator_Member" ) - 1     },
-		{ "Operator_Member_Fwd", sizeof( "Operator_Member_Fwd" ) - 1 },
-		{ "Operator_Cast",       sizeof( "Operator_Cast" ) - 1       },
-		{ "Operator_Cast_Fwd",   sizeof( "Operator_Cast_Fwd" ) - 1   },
-		{ "Parameters",          sizeof( "Parameters" ) - 1          },
-		{ "Parameters_Define",   sizeof( "Parameters_Define" ) - 1   },
-		{ "Preprocess_Define",   sizeof( "Preprocess_Define" ) - 1   },
-		{ "Preprocess_Include",  sizeof( "Preprocess_Include" ) - 1  },
-		{ "Preprocess_If",       sizeof( "Preprocess_If" ) - 1       },
-		{ "Preprocess_IfDef",    sizeof( "Preprocess_IfDef" ) - 1    },
-		{ "Preprocess_IfNotDef", sizeof( "Preprocess_IfNotDef" ) - 1 },
-		{ "Preprocess_ElIf",     sizeof( "Preprocess_ElIf" ) - 1     },
-		{ "Preprocess_Else",     sizeof( "Preprocess_Else" ) - 1     },
-		{ "Preprocess_EndIf",    sizeof( "Preprocess_EndIf" ) - 1    },
-		{ "Preprocess_Pragma",   sizeof( "Preprocess_Pragma" ) - 1   },
-		{ "Specifiers",          sizeof( "Specifiers" ) - 1          },
-		{ "Struct",              sizeof( "Struct" ) - 1              },
-		{ "Struct_Fwd",          sizeof( "Struct_Fwd" ) - 1          },
-		{ "Struct_Body",         sizeof( "Struct_Body" ) - 1         },
-		{ "Template",            sizeof( "Template" ) - 1            },
-		{ "Typedef",             sizeof( "Typedef" ) - 1             },
-		{ "Typename",            sizeof( "Typename" ) - 1            },
-		{ "Union",               sizeof( "Union" ) - 1               },
-		{ "Union_Fwd",           sizeof( "Union_Fwd" ) - 1           },
-		{ "Union_Body",          sizeof( "Union_Body" ) - 1          },
-		{ "Using",               sizeof( "Using" ) - 1               },
-		{ "Using_Namespace",     sizeof( "Using_Namespace" ) - 1     },
-		{ "Variable",            sizeof( "Variable" ) - 1            },
+		{ "Invalid",             sizeof("Invalid") - 1             },
+		{ "Untyped",             sizeof("Untyped") - 1             },
+		{ "NewLine",             sizeof("NewLine") - 1             },
+		{ "Comment",             sizeof("Comment") - 1             },
+		{ "Access_Private",      sizeof("Access_Private") - 1      },
+		{ "Access_Protected",    sizeof("Access_Protected") - 1    },
+		{ "Access_Public",       sizeof("Access_Public") - 1       },
+		{ "PlatformAttributes",  sizeof("PlatformAttributes") - 1  },
+		{ "Class",               sizeof("Class") - 1               },
+		{ "Class_Fwd",           sizeof("Class_Fwd") - 1           },
+		{ "Class_Body",          sizeof("Class_Body") - 1          },
+		{ "Constructor",         sizeof("Constructor") - 1         },
+		{ "Constructor_Fwd",     sizeof("Constructor_Fwd") - 1     },
+		{ "Destructor",          sizeof("Destructor") - 1          },
+		{ "Destructor_Fwd",      sizeof("Destructor_Fwd") - 1      },
+		{ "Enum",                sizeof("Enum") - 1                },
+		{ "Enum_Fwd",            sizeof("Enum_Fwd") - 1            },
+		{ "Enum_Body",           sizeof("Enum_Body") - 1           },
+		{ "Enum_Class",          sizeof("Enum_Class") - 1          },
+		{ "Enum_Class_Fwd",      sizeof("Enum_Class_Fwd") - 1      },
+		{ "Execution",           sizeof("Execution") - 1           },
+		{ "Export_Body",         sizeof("Export_Body") - 1         },
+		{ "Extern_Linkage",      sizeof("Extern_Linkage") - 1      },
+		{ "Extern_Linkage_Body", sizeof("Extern_Linkage_Body") - 1 },
+		{ "Friend",              sizeof("Friend") - 1              },
+		{ "Function",            sizeof("Function") - 1            },
+		{ "Function_Fwd",        sizeof("Function_Fwd") - 1        },
+		{ "Function_Body",       sizeof("Function_Body") - 1       },
+		{ "Global_Body",         sizeof("Global_Body") - 1         },
+		{ "Module",              sizeof("Module") - 1              },
+		{ "Namespace",           sizeof("Namespace") - 1           },
+		{ "Namespace_Body",      sizeof("Namespace_Body") - 1      },
+		{ "Operator",            sizeof("Operator") - 1            },
+		{ "Operator_Fwd",        sizeof("Operator_Fwd") - 1        },
+		{ "Operator_Member",     sizeof("Operator_Member") - 1     },
+		{ "Operator_Member_Fwd", sizeof("Operator_Member_Fwd") - 1 },
+		{ "Operator_Cast",       sizeof("Operator_Cast") - 1       },
+		{ "Operator_Cast_Fwd",   sizeof("Operator_Cast_Fwd") - 1   },
+		{ "Parameters",          sizeof("Parameters") - 1          },
+		{ "Parameters_Define",   sizeof("Parameters_Define") - 1   },
+		{ "Preprocess_Define",   sizeof("Preprocess_Define") - 1   },
+		{ "Preprocess_Include",  sizeof("Preprocess_Include") - 1  },
+		{ "Preprocess_If",       sizeof("Preprocess_If") - 1       },
+		{ "Preprocess_IfDef",    sizeof("Preprocess_IfDef") - 1    },
+		{ "Preprocess_IfNotDef", sizeof("Preprocess_IfNotDef") - 1 },
+		{ "Preprocess_ElIf",     sizeof("Preprocess_ElIf") - 1     },
+		{ "Preprocess_Else",     sizeof("Preprocess_Else") - 1     },
+		{ "Preprocess_EndIf",    sizeof("Preprocess_EndIf") - 1    },
+		{ "Preprocess_Pragma",   sizeof("Preprocess_Pragma") - 1   },
+		{ "Specifiers",          sizeof("Specifiers") - 1          },
+		{ "Struct",              sizeof("Struct") - 1              },
+		{ "Struct_Fwd",          sizeof("Struct_Fwd") - 1          },
+		{ "Struct_Body",         sizeof("Struct_Body") - 1         },
+		{ "Template",            sizeof("Template") - 1            },
+		{ "Typedef",             sizeof("Typedef") - 1             },
+		{ "Typename",            sizeof("Typename") - 1            },
+		{ "Union",               sizeof("Union") - 1               },
+		{ "Union_Fwd",           sizeof("Union_Fwd") - 1           },
+		{ "Union_Body",          sizeof("Union_Body") - 1          },
+		{ "Using",               sizeof("Using") - 1               },
+		{ "Using_Namespace",     sizeof("Using_Namespace") - 1     },
+		{ "Variable",            sizeof("Variable") - 1            },
 	};
 	return lookup[type];
 }
 
-inline Str codetype_to_keyword_str( CodeType type )
+inline Str codetype_to_keyword_str(CodeType type)
 {
 	local_persist Str lookup[] = {
-		{ "__NA__",          sizeof( "__NA__" ) - 1          },
-		{ "__NA__",          sizeof( "__NA__" ) - 1          },
-		{ "__NA__",          sizeof( "__NA__" ) - 1          },
-		{ "//",              sizeof( "//" ) - 1              },
-		{ "private",         sizeof( "private" ) - 1         },
-		{ "protected",       sizeof( "protected" ) - 1       },
-		{ "public",          sizeof( "public" ) - 1          },
-		{ "__NA__",          sizeof( "__NA__" ) - 1          },
-		{ "class",           sizeof( "class" ) - 1           },
-		{ "clsss",           sizeof( "clsss" ) - 1           },
-		{ "__NA__",          sizeof( "__NA__" ) - 1          },
-		{ "__NA__",          sizeof( "__NA__" ) - 1          },
-		{ "__NA__",          sizeof( "__NA__" ) - 1          },
-		{ "__NA__",          sizeof( "__NA__" ) - 1          },
-		{ "__NA__",          sizeof( "__NA__" ) - 1          },
-		{ "enum",            sizeof( "enum" ) - 1            },
-		{ "enum",            sizeof( "enum" ) - 1            },
-		{ "__NA__",          sizeof( "__NA__" ) - 1          },
-		{ "enum class",      sizeof( "enum class" ) - 1      },
-		{ "enum class",      sizeof( "enum class" ) - 1      },
-		{ "__NA__",          sizeof( "__NA__" ) - 1          },
-		{ "__NA__",          sizeof( "__NA__" ) - 1          },
-		{ "extern",          sizeof( "extern" ) - 1          },
-		{ "extern",          sizeof( "extern" ) - 1          },
-		{ "friend",          sizeof( "friend" ) - 1          },
-		{ "__NA__",          sizeof( "__NA__" ) - 1          },
-		{ "__NA__",          sizeof( "__NA__" ) - 1          },
-		{ "__NA__",          sizeof( "__NA__" ) - 1          },
-		{ "__NA__",          sizeof( "__NA__" ) - 1          },
-		{ "module",          sizeof( "module" ) - 1          },
-		{ "namespace",       sizeof( "namespace" ) - 1       },
-		{ "__NA__",          sizeof( "__NA__" ) - 1          },
-		{ "operator",        sizeof( "operator" ) - 1        },
-		{ "operator",        sizeof( "operator" ) - 1        },
-		{ "operator",        sizeof( "operator" ) - 1        },
-		{ "operator",        sizeof( "operator" ) - 1        },
-		{ "operator",        sizeof( "operator" ) - 1        },
-		{ "operator",        sizeof( "operator" ) - 1        },
-		{ "__NA__",          sizeof( "__NA__" ) - 1          },
-		{ "__NA__",          sizeof( "__NA__" ) - 1          },
-		{ "define",          sizeof( "define" ) - 1          },
-		{ "include",         sizeof( "include" ) - 1         },
-		{ "if",              sizeof( "if" ) - 1              },
-		{ "ifdef",           sizeof( "ifdef" ) - 1           },
-		{ "ifndef",          sizeof( "ifndef" ) - 1          },
-		{ "elif",            sizeof( "elif" ) - 1            },
-		{ "else",            sizeof( "else" ) - 1            },
-		{ "endif",           sizeof( "endif" ) - 1           },
-		{ "pragma",          sizeof( "pragma" ) - 1          },
-		{ "__NA__",          sizeof( "__NA__" ) - 1          },
-		{ "struct",          sizeof( "struct" ) - 1          },
-		{ "struct",          sizeof( "struct" ) - 1          },
-		{ "__NA__",          sizeof( "__NA__" ) - 1          },
-		{ "template",        sizeof( "template" ) - 1        },
-		{ "typedef",         sizeof( "typedef" ) - 1         },
-		{ "__NA__",          sizeof( "__NA__" ) - 1          },
-		{ "union",           sizeof( "union" ) - 1           },
-		{ "union",           sizeof( "union" ) - 1           },
-		{ "__NA__",          sizeof( "__NA__" ) - 1          },
-		{ "using",           sizeof( "using" ) - 1           },
-		{ "using namespace", sizeof( "using namespace" ) - 1 },
-		{ "__NA__",          sizeof( "__NA__" ) - 1          },
+		{ "__NA__",          sizeof("__NA__") - 1          },
+		{ "__NA__",          sizeof("__NA__") - 1          },
+		{ "__NA__",          sizeof("__NA__") - 1          },
+		{ "//",              sizeof("//") - 1              },
+		{ "private",         sizeof("private") - 1         },
+		{ "protected",       sizeof("protected") - 1       },
+		{ "public",          sizeof("public") - 1          },
+		{ "__NA__",          sizeof("__NA__") - 1          },
+		{ "class",           sizeof("class") - 1           },
+		{ "clsss",           sizeof("clsss") - 1           },
+		{ "__NA__",          sizeof("__NA__") - 1          },
+		{ "__NA__",          sizeof("__NA__") - 1          },
+		{ "__NA__",          sizeof("__NA__") - 1          },
+		{ "__NA__",          sizeof("__NA__") - 1          },
+		{ "__NA__",          sizeof("__NA__") - 1          },
+		{ "enum",            sizeof("enum") - 1            },
+		{ "enum",            sizeof("enum") - 1            },
+		{ "__NA__",          sizeof("__NA__") - 1          },
+		{ "enum class",      sizeof("enum class") - 1      },
+		{ "enum class",      sizeof("enum class") - 1      },
+		{ "__NA__",          sizeof("__NA__") - 1          },
+		{ "__NA__",          sizeof("__NA__") - 1          },
+		{ "extern",          sizeof("extern") - 1          },
+		{ "extern",          sizeof("extern") - 1          },
+		{ "friend",          sizeof("friend") - 1          },
+		{ "__NA__",          sizeof("__NA__") - 1          },
+		{ "__NA__",          sizeof("__NA__") - 1          },
+		{ "__NA__",          sizeof("__NA__") - 1          },
+		{ "__NA__",          sizeof("__NA__") - 1          },
+		{ "module",          sizeof("module") - 1          },
+		{ "namespace",       sizeof("namespace") - 1       },
+		{ "__NA__",          sizeof("__NA__") - 1          },
+		{ "operator",        sizeof("operator") - 1        },
+		{ "operator",        sizeof("operator") - 1        },
+		{ "operator",        sizeof("operator") - 1        },
+		{ "operator",        sizeof("operator") - 1        },
+		{ "operator",        sizeof("operator") - 1        },
+		{ "operator",        sizeof("operator") - 1        },
+		{ "__NA__",          sizeof("__NA__") - 1          },
+		{ "__NA__",          sizeof("__NA__") - 1          },
+		{ "define",          sizeof("define") - 1          },
+		{ "include",         sizeof("include") - 1         },
+		{ "if",              sizeof("if") - 1              },
+		{ "ifdef",           sizeof("ifdef") - 1           },
+		{ "ifndef",          sizeof("ifndef") - 1          },
+		{ "elif",            sizeof("elif") - 1            },
+		{ "else",            sizeof("else") - 1            },
+		{ "endif",           sizeof("endif") - 1           },
+		{ "pragma",          sizeof("pragma") - 1          },
+		{ "__NA__",          sizeof("__NA__") - 1          },
+		{ "struct",          sizeof("struct") - 1          },
+		{ "struct",          sizeof("struct") - 1          },
+		{ "__NA__",          sizeof("__NA__") - 1          },
+		{ "template",        sizeof("template") - 1        },
+		{ "typedef",         sizeof("typedef") - 1         },
+		{ "__NA__",          sizeof("__NA__") - 1          },
+		{ "union",           sizeof("union") - 1           },
+		{ "union",           sizeof("union") - 1           },
+		{ "__NA__",          sizeof("__NA__") - 1          },
+		{ "using",           sizeof("using") - 1           },
+		{ "using namespace", sizeof("using namespace") - 1 },
+		{ "__NA__",          sizeof("__NA__") - 1          },
 	};
 	return lookup[type];
 }
 
-FORCEINLINE Str to_str( CodeType type )
+FORCEINLINE Str to_str(CodeType type)
 {
-	return codetype_to_str( type );
+	return codetype_to_str(type);
 }
 
-FORCEINLINE Str to_keyword_str( CodeType type )
+FORCEINLINE Str to_keyword_str(CodeType type)
 {
-	return codetype_to_keyword_str( type );
+	return codetype_to_keyword_str(type);
 }
 
 enum Operator : u32
@@ -477,63 +477,63 @@ enum Operator : u32
 	Op_UnderlyingType = 0xffffffffu
 };
 
-inline Str operator_to_str( Operator op )
+inline Str operator_to_str(Operator op)
 {
 	local_persist Str lookup[] = {
-		{ "INVALID",  sizeof( "INVALID" ) - 1  },
-		{ "=",        sizeof( "=" ) - 1        },
-		{ "+=",       sizeof( "+=" ) - 1       },
-		{ "-=",       sizeof( "-=" ) - 1       },
-		{ "*=",       sizeof( "*=" ) - 1       },
-		{ "/=",       sizeof( "/=" ) - 1       },
-		{ "%=",       sizeof( "%=" ) - 1       },
-		{ "&=",       sizeof( "&=" ) - 1       },
-		{ "|=",       sizeof( "|=" ) - 1       },
-		{ "^=",       sizeof( "^=" ) - 1       },
-		{ "<<=",      sizeof( "<<=" ) - 1      },
-		{ ">>=",      sizeof( ">>=" ) - 1      },
-		{ "++",       sizeof( "++" ) - 1       },
-		{ "--",       sizeof( "--" ) - 1       },
-		{ "+",        sizeof( "+" ) - 1        },
-		{ "-",        sizeof( "-" ) - 1        },
-		{ "!",        sizeof( "!" ) - 1        },
-		{ "+",        sizeof( "+" ) - 1        },
-		{ "-",        sizeof( "-" ) - 1        },
-		{ "*",        sizeof( "*" ) - 1        },
-		{ "/",        sizeof( "/" ) - 1        },
-		{ "%",        sizeof( "%" ) - 1        },
-		{ "~",        sizeof( "~" ) - 1        },
-		{ "&",        sizeof( "&" ) - 1        },
-		{ "|",        sizeof( "|" ) - 1        },
-		{ "^",        sizeof( "^" ) - 1        },
-		{ "<<",       sizeof( "<<" ) - 1       },
-		{ ">>",       sizeof( ">>" ) - 1       },
-		{ "&&",       sizeof( "&&" ) - 1       },
-		{ "||",       sizeof( "||" ) - 1       },
-		{ "==",       sizeof( "==" ) - 1       },
-		{ "!=",       sizeof( "!=" ) - 1       },
-		{ "<",        sizeof( "<" ) - 1        },
-		{ ">",        sizeof( ">" ) - 1        },
-		{ "<=",       sizeof( "<=" ) - 1       },
-		{ ">=",       sizeof( ">=" ) - 1       },
-		{ "[]",       sizeof( "[]" ) - 1       },
-		{ "*",        sizeof( "*" ) - 1        },
-		{ "&",        sizeof( "&" ) - 1        },
-		{ "->",       sizeof( "->" ) - 1       },
-		{ "->*",      sizeof( "->*" ) - 1      },
-		{ "()",       sizeof( "()" ) - 1       },
-		{ ",",        sizeof( "," ) - 1        },
-		{ "new",      sizeof( "new" ) - 1      },
-		{ "new[]",    sizeof( "new[]" ) - 1    },
-		{ "delete",   sizeof( "delete" ) - 1   },
-		{ "delete[]", sizeof( "delete[]" ) - 1 },
+		{ "INVALID",  sizeof("INVALID") - 1  },
+		{ "=",        sizeof("=") - 1        },
+		{ "+=",       sizeof("+=") - 1       },
+		{ "-=",       sizeof("-=") - 1       },
+		{ "*=",       sizeof("*=") - 1       },
+		{ "/=",       sizeof("/=") - 1       },
+		{ "%=",       sizeof("%=") - 1       },
+		{ "&=",       sizeof("&=") - 1       },
+		{ "|=",       sizeof("|=") - 1       },
+		{ "^=",       sizeof("^=") - 1       },
+		{ "<<=",      sizeof("<<=") - 1      },
+		{ ">>=",      sizeof(">>=") - 1      },
+		{ "++",       sizeof("++") - 1       },
+		{ "--",       sizeof("--") - 1       },
+		{ "+",        sizeof("+") - 1        },
+		{ "-",        sizeof("-") - 1        },
+		{ "!",        sizeof("!") - 1        },
+		{ "+",        sizeof("+") - 1        },
+		{ "-",        sizeof("-") - 1        },
+		{ "*",        sizeof("*") - 1        },
+		{ "/",        sizeof("/") - 1        },
+		{ "%",        sizeof("%") - 1        },
+		{ "~",        sizeof("~") - 1        },
+		{ "&",        sizeof("&") - 1        },
+		{ "|",        sizeof("|") - 1        },
+		{ "^",        sizeof("^") - 1        },
+		{ "<<",       sizeof("<<") - 1       },
+		{ ">>",       sizeof(">>") - 1       },
+		{ "&&",       sizeof("&&") - 1       },
+		{ "||",       sizeof("||") - 1       },
+		{ "==",       sizeof("==") - 1       },
+		{ "!=",       sizeof("!=") - 1       },
+		{ "<",        sizeof("<") - 1        },
+		{ ">",        sizeof(">") - 1        },
+		{ "<=",       sizeof("<=") - 1       },
+		{ ">=",       sizeof(">=") - 1       },
+		{ "[]",       sizeof("[]") - 1       },
+		{ "*",        sizeof("*") - 1        },
+		{ "&",        sizeof("&") - 1        },
+		{ "->",       sizeof("->") - 1       },
+		{ "->*",      sizeof("->*") - 1      },
+		{ "()",       sizeof("()") - 1       },
+		{ ",",        sizeof(",") - 1        },
+		{ "new",      sizeof("new") - 1      },
+		{ "new[]",    sizeof("new[]") - 1    },
+		{ "delete",   sizeof("delete") - 1   },
+		{ "delete[]", sizeof("delete[]") - 1 },
 	};
 	return lookup[op];
 }
 
-FORCEINLINE Str to_str( Operator op )
+FORCEINLINE Str to_str(Operator op)
 {
-	return operator_to_str( op );
+	return operator_to_str(op);
 }
 
 enum Specifier : u32
@@ -569,93 +569,93 @@ enum Specifier : u32
 	Spec_UnderlyingType = 0xffffffffu
 };
 
-inline Str spec_to_str( Specifier type )
+inline Str spec_to_str(Specifier type)
 {
 	local_persist Str lookup[] = {
-		{ "INVALID",                sizeof( "INVALID" ) - 1                },
-		{ "consteval",              sizeof( "consteval" ) - 1              },
-		{ "constexpr",              sizeof( "constexpr" ) - 1              },
-		{ "constinit",              sizeof( "constinit" ) - 1              },
-		{ "explicit",               sizeof( "explicit" ) - 1               },
-		{ "extern",                 sizeof( "extern" ) - 1                 },
-		{ "FORCEINLINE",            sizeof( "FORCEINLINE" ) - 1            },
-		{ "FORCEINLINE_DEBUGGABLE", sizeof( "FORCEINLINE_DEBUGGABLE" ) - 1 },
-		{ "global",                 sizeof( "global" ) - 1                 },
-		{ "inline",                 sizeof( "inline" ) - 1                 },
-		{ "internal",               sizeof( "internal" ) - 1               },
-		{ "local_persist",          sizeof( "local_persist" ) - 1          },
-		{ "mutable",                sizeof( "mutable" ) - 1                },
-		{ "neverinline",            sizeof( "neverinline" ) - 1            },
-		{ "*",		              sizeof( "*" ) - 1                      },
-		{ "&",		              sizeof( "&" ) - 1                      },
-		{ "register",               sizeof( "register" ) - 1               },
-		{ "&&",		             sizeof( "&&" ) - 1                     },
-		{ "static",                 sizeof( "static" ) - 1                 },
-		{ "thread_local",           sizeof( "thread_local" ) - 1           },
-		{ "virtual",                sizeof( "virtual" ) - 1                },
-		{ "const",                  sizeof( "const" ) - 1                  },
-		{ "final",                  sizeof( "final" ) - 1                  },
-		{ "noexcept",               sizeof( "noexcept" ) - 1               },
-		{ "override",               sizeof( "override" ) - 1               },
-		{ "= 0",		            sizeof( "= 0" ) - 1                    },
-		{ "volatile",               sizeof( "volatile" ) - 1               },
+		{ "INVALID",                sizeof("INVALID") - 1                },
+		{ "consteval",              sizeof("consteval") - 1              },
+		{ "constexpr",              sizeof("constexpr") - 1              },
+		{ "constinit",              sizeof("constinit") - 1              },
+		{ "explicit",               sizeof("explicit") - 1               },
+		{ "extern",                 sizeof("extern") - 1                 },
+		{ "FORCEINLINE",            sizeof("FORCEINLINE") - 1            },
+		{ "FORCEINLINE_DEBUGGABLE", sizeof("FORCEINLINE_DEBUGGABLE") - 1 },
+		{ "global",                 sizeof("global") - 1                 },
+		{ "inline",                 sizeof("inline") - 1                 },
+		{ "internal",               sizeof("internal") - 1               },
+		{ "local_persist",          sizeof("local_persist") - 1          },
+		{ "mutable",                sizeof("mutable") - 1                },
+		{ "neverinline",            sizeof("neverinline") - 1            },
+		{ "*",		              sizeof("*") - 1                      },
+		{ "&",		              sizeof("&") - 1                      },
+		{ "register",               sizeof("register") - 1               },
+		{ "&&",		             sizeof("&&") - 1                     },
+		{ "static",                 sizeof("static") - 1                 },
+		{ "thread_local",           sizeof("thread_local") - 1           },
+		{ "virtual",                sizeof("virtual") - 1                },
+		{ "const",                  sizeof("const") - 1                  },
+		{ "final",                  sizeof("final") - 1                  },
+		{ "noexcept",               sizeof("noexcept") - 1               },
+		{ "override",               sizeof("override") - 1               },
+		{ "= 0",		            sizeof("= 0") - 1                    },
+		{ "volatile",               sizeof("volatile") - 1               },
 	};
 	return lookup[type];
 }
 
-inline bool spec_is_trailing( Specifier specifier )
+inline bool spec_is_trailing(Specifier specifier)
 {
-	switch ( specifier )
+	switch (specifier)
 	{
-		case Spec_Const :
-		case Spec_Final :
-		case Spec_NoExceptions :
-		case Spec_Override :
-		case Spec_Pure :
-		case Spec_Volatile :
+		case Spec_Const:
+		case Spec_Final:
+		case Spec_NoExceptions:
+		case Spec_Override:
+		case Spec_Pure:
+		case Spec_Volatile:
 			return true;
-		default :
+		default:
 			return false;
 	}
 }
 
-inline Specifier str_to_specifier( Str str )
+inline Specifier str_to_specifier(Str str)
 {
 	local_persist u32 keymap[Spec_NumSpecifiers];
-	do_once_start for ( u32 index = 0; index < Spec_NumSpecifiers; index++ )
+	do_once_start for (u32 index = 0; index < Spec_NumSpecifiers; index++)
 	{
-		Str enum_str  = spec_to_str( (Specifier)index );
-		keymap[index] = crc32( enum_str.Ptr, enum_str.Len );
+		Str enum_str  = spec_to_str((Specifier)index);
+		keymap[index] = crc32(enum_str.Ptr, enum_str.Len);
 	}
-	do_once_end u32 hash = crc32( str.Ptr, str.Len );
-	for ( u32 index = 0; index < Spec_NumSpecifiers; index++ )
+	do_once_end u32 hash = crc32(str.Ptr, str.Len);
+	for (u32 index = 0; index < Spec_NumSpecifiers; index++)
 	{
-		if ( keymap[index] == hash )
+		if (keymap[index] == hash)
 			return (Specifier)index;
 	}
 	return Spec_Invalid;
 }
 
-FORCEINLINE Str to_str( Specifier spec )
+FORCEINLINE Str to_str(Specifier spec)
 {
-	return spec_to_str( spec );
+	return spec_to_str(spec);
 }
 
-FORCEINLINE Specifier to_type( Str str )
+FORCEINLINE Specifier to_type(Str str)
 {
-	return str_to_specifier( str );
+	return str_to_specifier(str);
 }
 
-FORCEINLINE bool is_trailing( Specifier specifier )
+FORCEINLINE bool is_trailing(Specifier specifier)
 {
-	return spec_is_trailing( specifier );
+	return spec_is_trailing(specifier);
 }
 
-#define GEN_DEFINE_ATTRIBUTE_TOKENS                                                                                         \
-	Entry( Tok_Attribute_API_Export, "GEN_API_Export_Code" ) Entry( Tok_Attribute_API_Import, "GEN_API_Import_Code" )       \
-	    Entry( Tok_Attribute_COREUOBJECT_API, "COREUOBJECT_API" ) Entry( Tok_Attribute_ENGINE_API, "ENGINE_API" )           \
-	        Entry( Tok_Attribute_GAMEPLAYABILITIES_API, "GAMEPLAYABILITIES_API" ) Entry( Tok_Attribute_UMG_API, "UMG_API" ) \
-	            Entry( Tok_Attribute_UE_DEPRECATED, "UE_DEPRECATED" ) Entry( Tok_Attribute_GENCPP_API, "GENCPP_API" )
+#define GEN_DEFINE_ATTRIBUTE_TOKENS                                                                                     \
+	Entry(Tok_Attribute_API_Export, "GEN_API_Export_Code") Entry(Tok_Attribute_API_Import, "GEN_API_Import_Code")       \
+	    Entry(Tok_Attribute_COREUOBJECT_API, "COREUOBJECT_API") Entry(Tok_Attribute_ENGINE_API, "ENGINE_API")           \
+	        Entry(Tok_Attribute_GAMEPLAYABILITIES_API, "GAMEPLAYABILITIES_API") Entry(Tok_Attribute_UMG_API, "UMG_API") \
+	            Entry(Tok_Attribute_UE_DEPRECATED, "UE_DEPRECATED") Entry(Tok_Attribute_UNREALGENCPP_API, "UNREALGENCPP_API")
 
 enum TokType : u32
 {
@@ -765,136 +765,136 @@ enum TokType : u32
 	Tok_Attribute_GAMEPLAYABILITIES_API,
 	Tok_Attribute_UMG_API,
 	Tok_Attribute_UE_DEPRECATED,
-	Tok_Attribute_GENCPP_API,
+	Tok_Attribute_UNREALGENCPP_API,
 	Tok_NumTokens
 };
 
-inline Str toktype_to_str( TokType type )
+inline Str toktype_to_str(TokType type)
 {
 	local_persist Str lookup[] = {
-		{ "__invalid__",            sizeof( "__invalid__" ) - 1            },
-		{ "private",                sizeof( "private" ) - 1                },
-		{ "protected",              sizeof( "protected" ) - 1              },
-		{ "public",                 sizeof( "public" ) - 1                 },
-		{ ".",		              sizeof( "." ) - 1                      },
-		{ "::",		             sizeof( "::" ) - 1                     },
-		{ "&",		              sizeof( "&" ) - 1                      },
-		{ "&&",		             sizeof( "&&" ) - 1                     },
-		{ ":",		              sizeof( ":" ) - 1                      },
-		{ "[[",		             sizeof( "[[" ) - 1                     },
-		{ "]]",		             sizeof( "]]" ) - 1                     },
-		{ "{",		              sizeof( "{" ) - 1                      },
-		{ "}",		              sizeof( "}" ) - 1                      },
-		{ "[",		              sizeof( "[" ) - 1                      },
-		{ "]",		              sizeof( "]" ) - 1                      },
-		{ "(",		              sizeof( "(" ) - 1                      },
-		{ ")",		              sizeof( ")" ) - 1                      },
-		{ "__comment__",            sizeof( "__comment__" ) - 1            },
-		{ "__comment_end__",        sizeof( "__comment_end__" ) - 1        },
-		{ "__comment_start__",      sizeof( "__comment_start__" ) - 1      },
-		{ "__character__",          sizeof( "__character__" ) - 1          },
-		{ ",",		              sizeof( "," ) - 1                      },
-		{ "class",                  sizeof( "class" ) - 1                  },
-		{ "__attribute__",          sizeof( "__attribute__" ) - 1          },
-		{ "__declspec",             sizeof( "__declspec" ) - 1             },
-		{ "enum",		           sizeof( "enum" ) - 1                   },
-		{ "extern",                 sizeof( "extern" ) - 1                 },
-		{ "friend",                 sizeof( "friend" ) - 1                 },
-		{ "module",                 sizeof( "module" ) - 1                 },
-		{ "namespace",              sizeof( "namespace" ) - 1              },
-		{ "operator",               sizeof( "operator" ) - 1               },
-		{ "struct",                 sizeof( "struct" ) - 1                 },
-		{ "template",               sizeof( "template" ) - 1               },
-		{ "typedef",                sizeof( "typedef" ) - 1                },
-		{ "using",                  sizeof( "using" ) - 1                  },
-		{ "union",                  sizeof( "union" ) - 1                  },
-		{ "__identifier__",         sizeof( "__identifier__" ) - 1         },
-		{ "import",                 sizeof( "import" ) - 1                 },
-		{ "export",                 sizeof( "export" ) - 1                 },
-		{ "__new_line__",           sizeof( "__new_line__" ) - 1           },
-		{ "__number__",             sizeof( "__number__" ) - 1             },
-		{ "__operator__",           sizeof( "__operator__" ) - 1           },
-		{ "#",		              sizeof( "#" ) - 1                      },
-		{ "define",                 sizeof( "define" ) - 1                 },
-		{ "__define_param__",       sizeof( "__define_param__" ) - 1       },
-		{ "if",		             sizeof( "if" ) - 1                     },
-		{ "ifdef",                  sizeof( "ifdef" ) - 1                  },
-		{ "ifndef",                 sizeof( "ifndef" ) - 1                 },
-		{ "elif",		           sizeof( "elif" ) - 1                   },
-		{ "else",		           sizeof( "else" ) - 1                   },
-		{ "endif",                  sizeof( "endif" ) - 1                  },
-		{ "include",                sizeof( "include" ) - 1                },
-		{ "pragma",                 sizeof( "pragma" ) - 1                 },
-		{ "__macro_content__",      sizeof( "__macro_content__" ) - 1      },
-		{ "__macro_expression__",   sizeof( "__macro_expression__" ) - 1   },
-		{ "__macro_statment__",     sizeof( "__macro_statment__" ) - 1     },
-		{ "__macro_typename__",     sizeof( "__macro_typename__" ) - 1     },
-		{ "__unsupported__",        sizeof( "__unsupported__" ) - 1        },
-		{ "alignas",                sizeof( "alignas" ) - 1                },
-		{ "const",                  sizeof( "const" ) - 1                  },
-		{ "consteval",              sizeof( "consteval" ) - 1              },
-		{ "constexpr",              sizeof( "constexpr" ) - 1              },
-		{ "constinit",              sizeof( "constinit" ) - 1              },
-		{ "explicit",               sizeof( "explicit" ) - 1               },
-		{ "extern",                 sizeof( "extern" ) - 1                 },
-		{ "final",                  sizeof( "final" ) - 1                  },
-		{ "FORCEINLINE",            sizeof( "FORCEINLINE" ) - 1            },
-		{ "FORCEINLINE_DEBUGGABLE", sizeof( "FORCEINLINE_DEBUGGABLE" ) - 1 },
-		{ "global",                 sizeof( "global" ) - 1                 },
-		{ "inline",                 sizeof( "inline" ) - 1                 },
-		{ "internal",               sizeof( "internal" ) - 1               },
-		{ "local_persist",          sizeof( "local_persist" ) - 1          },
-		{ "mutable",                sizeof( "mutable" ) - 1                },
-		{ "neverinline",            sizeof( "neverinline" ) - 1            },
-		{ "override",               sizeof( "override" ) - 1               },
-		{ "static",                 sizeof( "static" ) - 1                 },
-		{ "thread_local",           sizeof( "thread_local" ) - 1           },
-		{ "volatile",               sizeof( "volatile" ) - 1               },
-		{ "virtual",                sizeof( "virtual" ) - 1                },
-		{ "*",		              sizeof( "*" ) - 1                      },
-		{ ";",		              sizeof( ";" ) - 1                      },
-		{ "static_assert",          sizeof( "static_assert" ) - 1          },
-		{ "__string__",             sizeof( "__string__" ) - 1             },
-		{ "typename",               sizeof( "typename" ) - 1               },
-		{ "unsigned",               sizeof( "unsigned" ) - 1               },
-		{ "signed",                 sizeof( "signed" ) - 1                 },
-		{ "short",                  sizeof( "short" ) - 1                  },
-		{ "long",		           sizeof( "long" ) - 1                   },
-		{ "bool",		           sizeof( "bool" ) - 1                   },
-		{ "char",		           sizeof( "char" ) - 1                   },
-		{ "int",		            sizeof( "int" ) - 1                    },
-		{ "double",                 sizeof( "double" ) - 1                 },
-		{ "__int8",                 sizeof( "__int8" ) - 1                 },
-		{ "__int16",                sizeof( "__int16" ) - 1                },
-		{ "__int32",                sizeof( "__int32" ) - 1                },
-		{ "__int64",                sizeof( "__int64" ) - 1                },
-		{ "_W64",		           sizeof( "_W64" ) - 1                   },
-		{ "...",		            sizeof( "..." ) - 1                    },
-		{ "__attrib_start__",       sizeof( "__attrib_start__" ) - 1       },
-		{ "GEN_API_Export_Code",    sizeof( "GEN_API_Export_Code" ) - 1    },
-		{ "GEN_API_Import_Code",    sizeof( "GEN_API_Import_Code" ) - 1    },
-		{ "COREUOBJECT_API",        sizeof( "COREUOBJECT_API" ) - 1        },
-		{ "ENGINE_API",             sizeof( "ENGINE_API" ) - 1             },
-		{ "GAMEPLAYABILITIES_API",  sizeof( "GAMEPLAYABILITIES_API" ) - 1  },
-		{ "UMG_API",                sizeof( "UMG_API" ) - 1                },
-		{ "UE_DEPRECATED",          sizeof( "UE_DEPRECATED" ) - 1          },
-		{ "GENCPP_API",             sizeof( "GENCPP_API" ) - 1             },
+		{ "__invalid__",            sizeof("__invalid__") - 1            },
+		{ "private",                sizeof("private") - 1                },
+		{ "protected",              sizeof("protected") - 1              },
+		{ "public",                 sizeof("public") - 1                 },
+		{ ".",		              sizeof(".") - 1                      },
+		{ "::",		             sizeof("::") - 1                     },
+		{ "&",		              sizeof("&") - 1                      },
+		{ "&&",		             sizeof("&&") - 1                     },
+		{ ":",		              sizeof(":") - 1                      },
+		{ "[[",		             sizeof("[[") - 1                     },
+		{ "]]",		             sizeof("]]") - 1                     },
+		{ "{",		              sizeof("{") - 1                      },
+		{ "}",		              sizeof("}") - 1                      },
+		{ "[",		              sizeof("[") - 1                      },
+		{ "]",		              sizeof("]") - 1                      },
+		{ "(",		              sizeof("(") - 1                      },
+		{ ")",		              sizeof(")") - 1                      },
+		{ "__comment__",            sizeof("__comment__") - 1            },
+		{ "__comment_end__",        sizeof("__comment_end__") - 1        },
+		{ "__comment_start__",      sizeof("__comment_start__") - 1      },
+		{ "__character__",          sizeof("__character__") - 1          },
+		{ ",",		              sizeof(",") - 1                      },
+		{ "class",                  sizeof("class") - 1                  },
+		{ "__attribute__",          sizeof("__attribute__") - 1          },
+		{ "__declspec",             sizeof("__declspec") - 1             },
+		{ "enum",		           sizeof("enum") - 1                   },
+		{ "extern",                 sizeof("extern") - 1                 },
+		{ "friend",                 sizeof("friend") - 1                 },
+		{ "module",                 sizeof("module") - 1                 },
+		{ "namespace",              sizeof("namespace") - 1              },
+		{ "operator",               sizeof("operator") - 1               },
+		{ "struct",                 sizeof("struct") - 1                 },
+		{ "template",               sizeof("template") - 1               },
+		{ "typedef",                sizeof("typedef") - 1                },
+		{ "using",                  sizeof("using") - 1                  },
+		{ "union",                  sizeof("union") - 1                  },
+		{ "__identifier__",         sizeof("__identifier__") - 1         },
+		{ "import",                 sizeof("import") - 1                 },
+		{ "export",                 sizeof("export") - 1                 },
+		{ "__new_line__",           sizeof("__new_line__") - 1           },
+		{ "__number__",             sizeof("__number__") - 1             },
+		{ "__operator__",           sizeof("__operator__") - 1           },
+		{ "#",		              sizeof("#") - 1                      },
+		{ "define",                 sizeof("define") - 1                 },
+		{ "__define_param__",       sizeof("__define_param__") - 1       },
+		{ "if",		             sizeof("if") - 1                     },
+		{ "ifdef",                  sizeof("ifdef") - 1                  },
+		{ "ifndef",                 sizeof("ifndef") - 1                 },
+		{ "elif",		           sizeof("elif") - 1                   },
+		{ "else",		           sizeof("else") - 1                   },
+		{ "endif",                  sizeof("endif") - 1                  },
+		{ "include",                sizeof("include") - 1                },
+		{ "pragma",                 sizeof("pragma") - 1                 },
+		{ "__macro_content__",      sizeof("__macro_content__") - 1      },
+		{ "__macro_expression__",   sizeof("__macro_expression__") - 1   },
+		{ "__macro_statment__",     sizeof("__macro_statment__") - 1     },
+		{ "__macro_typename__",     sizeof("__macro_typename__") - 1     },
+		{ "__unsupported__",        sizeof("__unsupported__") - 1        },
+		{ "alignas",                sizeof("alignas") - 1                },
+		{ "const",                  sizeof("const") - 1                  },
+		{ "consteval",              sizeof("consteval") - 1              },
+		{ "constexpr",              sizeof("constexpr") - 1              },
+		{ "constinit",              sizeof("constinit") - 1              },
+		{ "explicit",               sizeof("explicit") - 1               },
+		{ "extern",                 sizeof("extern") - 1                 },
+		{ "final",                  sizeof("final") - 1                  },
+		{ "FORCEINLINE",            sizeof("FORCEINLINE") - 1            },
+		{ "FORCEINLINE_DEBUGGABLE", sizeof("FORCEINLINE_DEBUGGABLE") - 1 },
+		{ "global",                 sizeof("global") - 1                 },
+		{ "inline",                 sizeof("inline") - 1                 },
+		{ "internal",               sizeof("internal") - 1               },
+		{ "local_persist",          sizeof("local_persist") - 1          },
+		{ "mutable",                sizeof("mutable") - 1                },
+		{ "neverinline",            sizeof("neverinline") - 1            },
+		{ "override",               sizeof("override") - 1               },
+		{ "static",                 sizeof("static") - 1                 },
+		{ "thread_local",           sizeof("thread_local") - 1           },
+		{ "volatile",               sizeof("volatile") - 1               },
+		{ "virtual",                sizeof("virtual") - 1                },
+		{ "*",		              sizeof("*") - 1                      },
+		{ ";",		              sizeof(";") - 1                      },
+		{ "static_assert",          sizeof("static_assert") - 1          },
+		{ "__string__",             sizeof("__string__") - 1             },
+		{ "typename",               sizeof("typename") - 1               },
+		{ "unsigned",               sizeof("unsigned") - 1               },
+		{ "signed",                 sizeof("signed") - 1                 },
+		{ "short",                  sizeof("short") - 1                  },
+		{ "long",		           sizeof("long") - 1                   },
+		{ "bool",		           sizeof("bool") - 1                   },
+		{ "char",		           sizeof("char") - 1                   },
+		{ "int",		            sizeof("int") - 1                    },
+		{ "double",                 sizeof("double") - 1                 },
+		{ "__int8",                 sizeof("__int8") - 1                 },
+		{ "__int16",                sizeof("__int16") - 1                },
+		{ "__int32",                sizeof("__int32") - 1                },
+		{ "__int64",                sizeof("__int64") - 1                },
+		{ "_W64",		           sizeof("_W64") - 1                   },
+		{ "...",		            sizeof("...") - 1                    },
+		{ "__attrib_start__",       sizeof("__attrib_start__") - 1       },
+		{ "GEN_API_Export_Code",    sizeof("GEN_API_Export_Code") - 1    },
+		{ "GEN_API_Import_Code",    sizeof("GEN_API_Import_Code") - 1    },
+		{ "COREUOBJECT_API",        sizeof("COREUOBJECT_API") - 1        },
+		{ "ENGINE_API",             sizeof("ENGINE_API") - 1             },
+		{ "GAMEPLAYABILITIES_API",  sizeof("GAMEPLAYABILITIES_API") - 1  },
+		{ "UMG_API",                sizeof("UMG_API") - 1                },
+		{ "UE_DEPRECATED",          sizeof("UE_DEPRECATED") - 1          },
+		{ "UNREALGENCPP_API",       sizeof("UNREALGENCPP_API") - 1       },
 	};
 	return lookup[type];
 }
 
-inline TokType str_to_toktype( Str str )
+inline TokType str_to_toktype(Str str)
 {
 	local_persist u32 keymap[Tok_NumTokens];
-	do_once_start for ( u32 index = 0; index < Tok_NumTokens; index++ )
+	do_once_start for (u32 index = 0; index < Tok_NumTokens; index++)
 	{
-		Str enum_str  = toktype_to_str( (TokType)index );
-		keymap[index] = crc32( enum_str.Ptr, enum_str.Len );
+		Str enum_str  = toktype_to_str((TokType)index);
+		keymap[index] = crc32(enum_str.Ptr, enum_str.Len);
 	}
-	do_once_end u32 hash = crc32( str.Ptr, str.Len );
-	for ( u32 index = 0; index < Tok_NumTokens; index++ )
+	do_once_end u32 hash = crc32(str.Ptr, str.Len);
+	for (u32 index = 0; index < Tok_NumTokens; index++)
 	{
-		if ( keymap[index] == hash )
+		if (keymap[index] == hash)
 			return (TokType)index;
 	}
 	return Tok_Invalid;
@@ -1078,6 +1078,8 @@ enum EMacroFlags : u16
 	// It will consume the macro and treat it as resolving the definition. (Yes this is for Unreal Engine)
 	// (MUST BE OF MT_Statement TYPE)
 	MF_Allow_As_Definition = bit(4),
+
+	MF_Allow_As_Specifier = bit(5), // Created for Unreal's PURE_VIRTUAL
 
 	MF_Null           = 0,
 	MF_UnderlyingType = GEN_U16_MAX,
@@ -1505,7 +1507,7 @@ struct AST
 			};
 			union {
 				Code  NextVar;          // Variable; Possible way to handle comma separated variables declarations. ( , NextVar->Specs NextVar->Name NextVar->ArrExpr = NextVar->Value )
-				Code  SuffixSpecs;      // Only used with typenames, to store the function suffix if typename is function signature. ( May not be needed )
+				Code  SuffixSpecs;      // Typename, Function (Thanks Unreal)
 				Code  PostNameMacro;    // Only used with parameters for specifically UE_REQUIRES (Thanks Unreal)
 			};
 		};
@@ -3300,7 +3302,7 @@ struct AST_Fn
 			CodeTypename    ReturnType;
 			CodeParams      Params;
 			CodeBody        Body;
-			char            _PAD_PROPERTIES_ [ sizeof(AST*) ];
+			Code            SuffixSpecs;  // Thanks Unreal
 		};
 	};
 	StrCached  Name;
@@ -4795,14 +4797,14 @@ Str token_fmt_impl( ssize num, ... )
 
 #pragma region generated code inline implementation
 
-inline Code& Code::operator=( Code other )
+inline Code& Code::operator=(Code other)
 {
-	if ( other.ast != nullptr && other->Parent != nullptr )
+	if (other.ast != nullptr && other->Parent != nullptr)
 	{
-		ast         = rcast( decltype( ast ), code_duplicate( other ).ast );
+		ast         = rcast(decltype(ast), code_duplicate(other).ast);
 		ast->Parent = { nullptr };
 	}
-	ast = rcast( decltype( ast ), other.ast );
+	ast = rcast(decltype(ast), other.ast);
 	return *this;
 }
 
@@ -4811,14 +4813,14 @@ inline Code::operator bool()
 	return ast != nullptr;
 }
 
-inline CodeBody& CodeBody::operator=( Code other )
+inline CodeBody& CodeBody::operator=(Code other)
 {
-	if ( other.ast != nullptr && other->Parent != nullptr )
+	if (other.ast != nullptr && other->Parent != nullptr)
 	{
-		ast         = rcast( decltype( ast ), code_duplicate( other ).ast );
+		ast         = rcast(decltype(ast), code_duplicate(other).ast);
 		ast->Parent = { nullptr };
 	}
-	ast = rcast( decltype( ast ), other.ast );
+	ast = rcast(decltype(ast), other.ast);
 	return *this;
 }
 
@@ -4827,14 +4829,14 @@ inline CodeBody::operator bool()
 	return ast != nullptr;
 }
 
-inline CodeAttributes& CodeAttributes::operator=( Code other )
+inline CodeAttributes& CodeAttributes::operator=(Code other)
 {
-	if ( other.ast != nullptr && other->Parent != nullptr )
+	if (other.ast != nullptr && other->Parent != nullptr)
 	{
-		ast         = rcast( decltype( ast ), code_duplicate( other ).ast );
+		ast         = rcast(decltype(ast), code_duplicate(other).ast);
 		ast->Parent = { nullptr };
 	}
-	ast = rcast( decltype( ast ), other.ast );
+	ast = rcast(decltype(ast), other.ast);
 	return *this;
 }
 
@@ -4845,27 +4847,27 @@ inline CodeAttributes::operator bool()
 
 inline CodeAttributes::operator Code()
 {
-	return *rcast( Code*, this );
+	return *rcast(Code*, this);
 }
 
 inline AST_Attributes* CodeAttributes::operator->()
 {
-	if ( ast == nullptr )
+	if (ast == nullptr)
 	{
-		log_failure( "Attempt to dereference a nullptr!\n" );
+		log_failure("Attempt to dereference a nullptr!\n");
 		return nullptr;
 	}
 	return ast;
 }
 
-inline CodeComment& CodeComment::operator=( Code other )
+inline CodeComment& CodeComment::operator=(Code other)
 {
-	if ( other.ast != nullptr && other->Parent != nullptr )
+	if (other.ast != nullptr && other->Parent != nullptr)
 	{
-		ast         = rcast( decltype( ast ), code_duplicate( other ).ast );
+		ast         = rcast(decltype(ast), code_duplicate(other).ast);
 		ast->Parent = { nullptr };
 	}
-	ast = rcast( decltype( ast ), other.ast );
+	ast = rcast(decltype(ast), other.ast);
 	return *this;
 }
 
@@ -4876,27 +4878,27 @@ inline CodeComment::operator bool()
 
 inline CodeComment::operator Code()
 {
-	return *rcast( Code*, this );
+	return *rcast(Code*, this);
 }
 
 inline AST_Comment* CodeComment::operator->()
 {
-	if ( ast == nullptr )
+	if (ast == nullptr)
 	{
-		log_failure( "Attempt to dereference a nullptr!\n" );
+		log_failure("Attempt to dereference a nullptr!\n");
 		return nullptr;
 	}
 	return ast;
 }
 
-inline CodeConstructor& CodeConstructor::operator=( Code other )
+inline CodeConstructor& CodeConstructor::operator=(Code other)
 {
-	if ( other.ast != nullptr && other->Parent != nullptr )
+	if (other.ast != nullptr && other->Parent != nullptr)
 	{
-		ast         = rcast( decltype( ast ), code_duplicate( other ).ast );
+		ast         = rcast(decltype(ast), code_duplicate(other).ast);
 		ast->Parent = { nullptr };
 	}
-	ast = rcast( decltype( ast ), other.ast );
+	ast = rcast(decltype(ast), other.ast);
 	return *this;
 }
 
@@ -4907,27 +4909,27 @@ inline CodeConstructor::operator bool()
 
 inline CodeConstructor::operator Code()
 {
-	return *rcast( Code*, this );
+	return *rcast(Code*, this);
 }
 
 inline AST_Constructor* CodeConstructor::operator->()
 {
-	if ( ast == nullptr )
+	if (ast == nullptr)
 	{
-		log_failure( "Attempt to dereference a nullptr!\n" );
+		log_failure("Attempt to dereference a nullptr!\n");
 		return nullptr;
 	}
 	return ast;
 }
 
-inline CodeClass& CodeClass::operator=( Code other )
+inline CodeClass& CodeClass::operator=(Code other)
 {
-	if ( other.ast != nullptr && other->Parent != nullptr )
+	if (other.ast != nullptr && other->Parent != nullptr)
 	{
-		ast         = rcast( decltype( ast ), code_duplicate( other ).ast );
+		ast         = rcast(decltype(ast), code_duplicate(other).ast);
 		ast->Parent = { nullptr };
 	}
-	ast = rcast( decltype( ast ), other.ast );
+	ast = rcast(decltype(ast), other.ast);
 	return *this;
 }
 
@@ -4936,14 +4938,14 @@ inline CodeClass::operator bool()
 	return ast != nullptr;
 }
 
-inline CodeDefine& CodeDefine::operator=( Code other )
+inline CodeDefine& CodeDefine::operator=(Code other)
 {
-	if ( other.ast != nullptr && other->Parent != nullptr )
+	if (other.ast != nullptr && other->Parent != nullptr)
 	{
-		ast         = rcast( decltype( ast ), code_duplicate( other ).ast );
+		ast         = rcast(decltype(ast), code_duplicate(other).ast);
 		ast->Parent = { nullptr };
 	}
-	ast = rcast( decltype( ast ), other.ast );
+	ast = rcast(decltype(ast), other.ast);
 	return *this;
 }
 
@@ -4954,27 +4956,27 @@ inline CodeDefine::operator bool()
 
 inline CodeDefine::operator Code()
 {
-	return *rcast( Code*, this );
+	return *rcast(Code*, this);
 }
 
 inline AST_Define* CodeDefine::operator->()
 {
-	if ( ast == nullptr )
+	if (ast == nullptr)
 	{
-		log_failure( "Attempt to dereference a nullptr!\n" );
+		log_failure("Attempt to dereference a nullptr!\n");
 		return nullptr;
 	}
 	return ast;
 }
 
-inline CodeDefineParams& CodeDefineParams::operator=( Code other )
+inline CodeDefineParams& CodeDefineParams::operator=(Code other)
 {
-	if ( other.ast != nullptr && other->Parent != nullptr )
+	if (other.ast != nullptr && other->Parent != nullptr)
 	{
-		ast         = rcast( decltype( ast ), code_duplicate( other ).ast );
+		ast         = rcast(decltype(ast), code_duplicate(other).ast);
 		ast->Parent = { nullptr };
 	}
-	ast = rcast( decltype( ast ), other.ast );
+	ast = rcast(decltype(ast), other.ast);
 	return *this;
 }
 
@@ -4983,14 +4985,14 @@ inline CodeDefineParams::operator bool()
 	return ast != nullptr;
 }
 
-inline CodeDestructor& CodeDestructor::operator=( Code other )
+inline CodeDestructor& CodeDestructor::operator=(Code other)
 {
-	if ( other.ast != nullptr && other->Parent != nullptr )
+	if (other.ast != nullptr && other->Parent != nullptr)
 	{
-		ast         = rcast( decltype( ast ), code_duplicate( other ).ast );
+		ast         = rcast(decltype(ast), code_duplicate(other).ast);
 		ast->Parent = { nullptr };
 	}
-	ast = rcast( decltype( ast ), other.ast );
+	ast = rcast(decltype(ast), other.ast);
 	return *this;
 }
 
@@ -5001,27 +5003,27 @@ inline CodeDestructor::operator bool()
 
 inline CodeDestructor::operator Code()
 {
-	return *rcast( Code*, this );
+	return *rcast(Code*, this);
 }
 
 inline AST_Destructor* CodeDestructor::operator->()
 {
-	if ( ast == nullptr )
+	if (ast == nullptr)
 	{
-		log_failure( "Attempt to dereference a nullptr!\n" );
+		log_failure("Attempt to dereference a nullptr!\n");
 		return nullptr;
 	}
 	return ast;
 }
 
-inline CodeEnum& CodeEnum::operator=( Code other )
+inline CodeEnum& CodeEnum::operator=(Code other)
 {
-	if ( other.ast != nullptr && other->Parent != nullptr )
+	if (other.ast != nullptr && other->Parent != nullptr)
 	{
-		ast         = rcast( decltype( ast ), code_duplicate( other ).ast );
+		ast         = rcast(decltype(ast), code_duplicate(other).ast);
 		ast->Parent = { nullptr };
 	}
-	ast = rcast( decltype( ast ), other.ast );
+	ast = rcast(decltype(ast), other.ast);
 	return *this;
 }
 
@@ -5032,27 +5034,27 @@ inline CodeEnum::operator bool()
 
 inline CodeEnum::operator Code()
 {
-	return *rcast( Code*, this );
+	return *rcast(Code*, this);
 }
 
 inline AST_Enum* CodeEnum::operator->()
 {
-	if ( ast == nullptr )
+	if (ast == nullptr)
 	{
-		log_failure( "Attempt to dereference a nullptr!\n" );
+		log_failure("Attempt to dereference a nullptr!\n");
 		return nullptr;
 	}
 	return ast;
 }
 
-inline CodeExec& CodeExec::operator=( Code other )
+inline CodeExec& CodeExec::operator=(Code other)
 {
-	if ( other.ast != nullptr && other->Parent != nullptr )
+	if (other.ast != nullptr && other->Parent != nullptr)
 	{
-		ast         = rcast( decltype( ast ), code_duplicate( other ).ast );
+		ast         = rcast(decltype(ast), code_duplicate(other).ast);
 		ast->Parent = { nullptr };
 	}
-	ast = rcast( decltype( ast ), other.ast );
+	ast = rcast(decltype(ast), other.ast);
 	return *this;
 }
 
@@ -5063,27 +5065,27 @@ inline CodeExec::operator bool()
 
 inline CodeExec::operator Code()
 {
-	return *rcast( Code*, this );
+	return *rcast(Code*, this);
 }
 
 inline AST_Exec* CodeExec::operator->()
 {
-	if ( ast == nullptr )
+	if (ast == nullptr)
 	{
-		log_failure( "Attempt to dereference a nullptr!\n" );
+		log_failure("Attempt to dereference a nullptr!\n");
 		return nullptr;
 	}
 	return ast;
 }
 
-inline CodeExtern& CodeExtern::operator=( Code other )
+inline CodeExtern& CodeExtern::operator=(Code other)
 {
-	if ( other.ast != nullptr && other->Parent != nullptr )
+	if (other.ast != nullptr && other->Parent != nullptr)
 	{
-		ast         = rcast( decltype( ast ), code_duplicate( other ).ast );
+		ast         = rcast(decltype(ast), code_duplicate(other).ast);
 		ast->Parent = { nullptr };
 	}
-	ast = rcast( decltype( ast ), other.ast );
+	ast = rcast(decltype(ast), other.ast);
 	return *this;
 }
 
@@ -5094,27 +5096,27 @@ inline CodeExtern::operator bool()
 
 inline CodeExtern::operator Code()
 {
-	return *rcast( Code*, this );
+	return *rcast(Code*, this);
 }
 
 inline AST_Extern* CodeExtern::operator->()
 {
-	if ( ast == nullptr )
+	if (ast == nullptr)
 	{
-		log_failure( "Attempt to dereference a nullptr!\n" );
+		log_failure("Attempt to dereference a nullptr!\n");
 		return nullptr;
 	}
 	return ast;
 }
 
-inline CodeFriend& CodeFriend::operator=( Code other )
+inline CodeFriend& CodeFriend::operator=(Code other)
 {
-	if ( other.ast != nullptr && other->Parent != nullptr )
+	if (other.ast != nullptr && other->Parent != nullptr)
 	{
-		ast         = rcast( decltype( ast ), code_duplicate( other ).ast );
+		ast         = rcast(decltype(ast), code_duplicate(other).ast);
 		ast->Parent = { nullptr };
 	}
-	ast = rcast( decltype( ast ), other.ast );
+	ast = rcast(decltype(ast), other.ast);
 	return *this;
 }
 
@@ -5125,27 +5127,27 @@ inline CodeFriend::operator bool()
 
 inline CodeFriend::operator Code()
 {
-	return *rcast( Code*, this );
+	return *rcast(Code*, this);
 }
 
 inline AST_Friend* CodeFriend::operator->()
 {
-	if ( ast == nullptr )
+	if (ast == nullptr)
 	{
-		log_failure( "Attempt to dereference a nullptr!\n" );
+		log_failure("Attempt to dereference a nullptr!\n");
 		return nullptr;
 	}
 	return ast;
 }
 
-inline CodeFn& CodeFn::operator=( Code other )
+inline CodeFn& CodeFn::operator=(Code other)
 {
-	if ( other.ast != nullptr && other->Parent != nullptr )
+	if (other.ast != nullptr && other->Parent != nullptr)
 	{
-		ast         = rcast( decltype( ast ), code_duplicate( other ).ast );
+		ast         = rcast(decltype(ast), code_duplicate(other).ast);
 		ast->Parent = { nullptr };
 	}
-	ast = rcast( decltype( ast ), other.ast );
+	ast = rcast(decltype(ast), other.ast);
 	return *this;
 }
 
@@ -5156,27 +5158,27 @@ inline CodeFn::operator bool()
 
 inline CodeFn::operator Code()
 {
-	return *rcast( Code*, this );
+	return *rcast(Code*, this);
 }
 
 inline AST_Fn* CodeFn::operator->()
 {
-	if ( ast == nullptr )
+	if (ast == nullptr)
 	{
-		log_failure( "Attempt to dereference a nullptr!\n" );
+		log_failure("Attempt to dereference a nullptr!\n");
 		return nullptr;
 	}
 	return ast;
 }
 
-inline CodeInclude& CodeInclude::operator=( Code other )
+inline CodeInclude& CodeInclude::operator=(Code other)
 {
-	if ( other.ast != nullptr && other->Parent != nullptr )
+	if (other.ast != nullptr && other->Parent != nullptr)
 	{
-		ast         = rcast( decltype( ast ), code_duplicate( other ).ast );
+		ast         = rcast(decltype(ast), code_duplicate(other).ast);
 		ast->Parent = { nullptr };
 	}
-	ast = rcast( decltype( ast ), other.ast );
+	ast = rcast(decltype(ast), other.ast);
 	return *this;
 }
 
@@ -5187,27 +5189,27 @@ inline CodeInclude::operator bool()
 
 inline CodeInclude::operator Code()
 {
-	return *rcast( Code*, this );
+	return *rcast(Code*, this);
 }
 
 inline AST_Include* CodeInclude::operator->()
 {
-	if ( ast == nullptr )
+	if (ast == nullptr)
 	{
-		log_failure( "Attempt to dereference a nullptr!\n" );
+		log_failure("Attempt to dereference a nullptr!\n");
 		return nullptr;
 	}
 	return ast;
 }
 
-inline CodeModule& CodeModule::operator=( Code other )
+inline CodeModule& CodeModule::operator=(Code other)
 {
-	if ( other.ast != nullptr && other->Parent != nullptr )
+	if (other.ast != nullptr && other->Parent != nullptr)
 	{
-		ast         = rcast( decltype( ast ), code_duplicate( other ).ast );
+		ast         = rcast(decltype(ast), code_duplicate(other).ast);
 		ast->Parent = { nullptr };
 	}
-	ast = rcast( decltype( ast ), other.ast );
+	ast = rcast(decltype(ast), other.ast);
 	return *this;
 }
 
@@ -5218,27 +5220,27 @@ inline CodeModule::operator bool()
 
 inline CodeModule::operator Code()
 {
-	return *rcast( Code*, this );
+	return *rcast(Code*, this);
 }
 
 inline AST_Module* CodeModule::operator->()
 {
-	if ( ast == nullptr )
+	if (ast == nullptr)
 	{
-		log_failure( "Attempt to dereference a nullptr!\n" );
+		log_failure("Attempt to dereference a nullptr!\n");
 		return nullptr;
 	}
 	return ast;
 }
 
-inline CodeNS& CodeNS::operator=( Code other )
+inline CodeNS& CodeNS::operator=(Code other)
 {
-	if ( other.ast != nullptr && other->Parent != nullptr )
+	if (other.ast != nullptr && other->Parent != nullptr)
 	{
-		ast         = rcast( decltype( ast ), code_duplicate( other ).ast );
+		ast         = rcast(decltype(ast), code_duplicate(other).ast);
 		ast->Parent = { nullptr };
 	}
-	ast = rcast( decltype( ast ), other.ast );
+	ast = rcast(decltype(ast), other.ast);
 	return *this;
 }
 
@@ -5249,27 +5251,27 @@ inline CodeNS::operator bool()
 
 inline CodeNS::operator Code()
 {
-	return *rcast( Code*, this );
+	return *rcast(Code*, this);
 }
 
 inline AST_NS* CodeNS::operator->()
 {
-	if ( ast == nullptr )
+	if (ast == nullptr)
 	{
-		log_failure( "Attempt to dereference a nullptr!\n" );
+		log_failure("Attempt to dereference a nullptr!\n");
 		return nullptr;
 	}
 	return ast;
 }
 
-inline CodeOperator& CodeOperator::operator=( Code other )
+inline CodeOperator& CodeOperator::operator=(Code other)
 {
-	if ( other.ast != nullptr && other->Parent != nullptr )
+	if (other.ast != nullptr && other->Parent != nullptr)
 	{
-		ast         = rcast( decltype( ast ), code_duplicate( other ).ast );
+		ast         = rcast(decltype(ast), code_duplicate(other).ast);
 		ast->Parent = { nullptr };
 	}
-	ast = rcast( decltype( ast ), other.ast );
+	ast = rcast(decltype(ast), other.ast);
 	return *this;
 }
 
@@ -5280,27 +5282,27 @@ inline CodeOperator::operator bool()
 
 inline CodeOperator::operator Code()
 {
-	return *rcast( Code*, this );
+	return *rcast(Code*, this);
 }
 
 inline AST_Operator* CodeOperator::operator->()
 {
-	if ( ast == nullptr )
+	if (ast == nullptr)
 	{
-		log_failure( "Attempt to dereference a nullptr!\n" );
+		log_failure("Attempt to dereference a nullptr!\n");
 		return nullptr;
 	}
 	return ast;
 }
 
-inline CodeOpCast& CodeOpCast::operator=( Code other )
+inline CodeOpCast& CodeOpCast::operator=(Code other)
 {
-	if ( other.ast != nullptr && other->Parent != nullptr )
+	if (other.ast != nullptr && other->Parent != nullptr)
 	{
-		ast         = rcast( decltype( ast ), code_duplicate( other ).ast );
+		ast         = rcast(decltype(ast), code_duplicate(other).ast);
 		ast->Parent = { nullptr };
 	}
-	ast = rcast( decltype( ast ), other.ast );
+	ast = rcast(decltype(ast), other.ast);
 	return *this;
 }
 
@@ -5311,27 +5313,27 @@ inline CodeOpCast::operator bool()
 
 inline CodeOpCast::operator Code()
 {
-	return *rcast( Code*, this );
+	return *rcast(Code*, this);
 }
 
 inline AST_OpCast* CodeOpCast::operator->()
 {
-	if ( ast == nullptr )
+	if (ast == nullptr)
 	{
-		log_failure( "Attempt to dereference a nullptr!\n" );
+		log_failure("Attempt to dereference a nullptr!\n");
 		return nullptr;
 	}
 	return ast;
 }
 
-inline CodeParams& CodeParams::operator=( Code other )
+inline CodeParams& CodeParams::operator=(Code other)
 {
-	if ( other.ast != nullptr && other->Parent != nullptr )
+	if (other.ast != nullptr && other->Parent != nullptr)
 	{
-		ast         = rcast( decltype( ast ), code_duplicate( other ).ast );
+		ast         = rcast(decltype(ast), code_duplicate(other).ast);
 		ast->Parent = { nullptr };
 	}
-	ast = rcast( decltype( ast ), other.ast );
+	ast = rcast(decltype(ast), other.ast);
 	return *this;
 }
 
@@ -5340,14 +5342,14 @@ inline CodeParams::operator bool()
 	return ast != nullptr;
 }
 
-inline CodePragma& CodePragma::operator=( Code other )
+inline CodePragma& CodePragma::operator=(Code other)
 {
-	if ( other.ast != nullptr && other->Parent != nullptr )
+	if (other.ast != nullptr && other->Parent != nullptr)
 	{
-		ast         = rcast( decltype( ast ), code_duplicate( other ).ast );
+		ast         = rcast(decltype(ast), code_duplicate(other).ast);
 		ast->Parent = { nullptr };
 	}
-	ast = rcast( decltype( ast ), other.ast );
+	ast = rcast(decltype(ast), other.ast);
 	return *this;
 }
 
@@ -5358,27 +5360,27 @@ inline CodePragma::operator bool()
 
 inline CodePragma::operator Code()
 {
-	return *rcast( Code*, this );
+	return *rcast(Code*, this);
 }
 
 inline AST_Pragma* CodePragma::operator->()
 {
-	if ( ast == nullptr )
+	if (ast == nullptr)
 	{
-		log_failure( "Attempt to dereference a nullptr!\n" );
+		log_failure("Attempt to dereference a nullptr!\n");
 		return nullptr;
 	}
 	return ast;
 }
 
-inline CodePreprocessCond& CodePreprocessCond::operator=( Code other )
+inline CodePreprocessCond& CodePreprocessCond::operator=(Code other)
 {
-	if ( other.ast != nullptr && other->Parent != nullptr )
+	if (other.ast != nullptr && other->Parent != nullptr)
 	{
-		ast         = rcast( decltype( ast ), code_duplicate( other ).ast );
+		ast         = rcast(decltype(ast), code_duplicate(other).ast);
 		ast->Parent = { nullptr };
 	}
-	ast = rcast( decltype( ast ), other.ast );
+	ast = rcast(decltype(ast), other.ast);
 	return *this;
 }
 
@@ -5389,27 +5391,27 @@ inline CodePreprocessCond::operator bool()
 
 inline CodePreprocessCond::operator Code()
 {
-	return *rcast( Code*, this );
+	return *rcast(Code*, this);
 }
 
 inline AST_PreprocessCond* CodePreprocessCond::operator->()
 {
-	if ( ast == nullptr )
+	if (ast == nullptr)
 	{
-		log_failure( "Attempt to dereference a nullptr!\n" );
+		log_failure("Attempt to dereference a nullptr!\n");
 		return nullptr;
 	}
 	return ast;
 }
 
-inline CodeSpecifiers& CodeSpecifiers::operator=( Code other )
+inline CodeSpecifiers& CodeSpecifiers::operator=(Code other)
 {
-	if ( other.ast != nullptr && other->Parent != nullptr )
+	if (other.ast != nullptr && other->Parent != nullptr)
 	{
-		ast         = rcast( decltype( ast ), code_duplicate( other ).ast );
+		ast         = rcast(decltype(ast), code_duplicate(other).ast);
 		ast->Parent = { nullptr };
 	}
-	ast = rcast( decltype( ast ), other.ast );
+	ast = rcast(decltype(ast), other.ast);
 	return *this;
 }
 
@@ -5418,14 +5420,14 @@ inline CodeSpecifiers::operator bool()
 	return ast != nullptr;
 }
 
-inline CodeStruct& CodeStruct::operator=( Code other )
+inline CodeStruct& CodeStruct::operator=(Code other)
 {
-	if ( other.ast != nullptr && other->Parent != nullptr )
+	if (other.ast != nullptr && other->Parent != nullptr)
 	{
-		ast         = rcast( decltype( ast ), code_duplicate( other ).ast );
+		ast         = rcast(decltype(ast), code_duplicate(other).ast);
 		ast->Parent = { nullptr };
 	}
-	ast = rcast( decltype( ast ), other.ast );
+	ast = rcast(decltype(ast), other.ast);
 	return *this;
 }
 
@@ -5434,14 +5436,14 @@ inline CodeStruct::operator bool()
 	return ast != nullptr;
 }
 
-inline CodeTemplate& CodeTemplate::operator=( Code other )
+inline CodeTemplate& CodeTemplate::operator=(Code other)
 {
-	if ( other.ast != nullptr && other->Parent != nullptr )
+	if (other.ast != nullptr && other->Parent != nullptr)
 	{
-		ast         = rcast( decltype( ast ), code_duplicate( other ).ast );
+		ast         = rcast(decltype(ast), code_duplicate(other).ast);
 		ast->Parent = { nullptr };
 	}
-	ast = rcast( decltype( ast ), other.ast );
+	ast = rcast(decltype(ast), other.ast);
 	return *this;
 }
 
@@ -5452,27 +5454,27 @@ inline CodeTemplate::operator bool()
 
 inline CodeTemplate::operator Code()
 {
-	return *rcast( Code*, this );
+	return *rcast(Code*, this);
 }
 
 inline AST_Template* CodeTemplate::operator->()
 {
-	if ( ast == nullptr )
+	if (ast == nullptr)
 	{
-		log_failure( "Attempt to dereference a nullptr!\n" );
+		log_failure("Attempt to dereference a nullptr!\n");
 		return nullptr;
 	}
 	return ast;
 }
 
-inline CodeTypename& CodeTypename::operator=( Code other )
+inline CodeTypename& CodeTypename::operator=(Code other)
 {
-	if ( other.ast != nullptr && other->Parent != nullptr )
+	if (other.ast != nullptr && other->Parent != nullptr)
 	{
-		ast         = rcast( decltype( ast ), code_duplicate( other ).ast );
+		ast         = rcast(decltype(ast), code_duplicate(other).ast);
 		ast->Parent = { nullptr };
 	}
-	ast = rcast( decltype( ast ), other.ast );
+	ast = rcast(decltype(ast), other.ast);
 	return *this;
 }
 
@@ -5483,27 +5485,27 @@ inline CodeTypename::operator bool()
 
 inline CodeTypename::operator Code()
 {
-	return *rcast( Code*, this );
+	return *rcast(Code*, this);
 }
 
 inline AST_Typename* CodeTypename::operator->()
 {
-	if ( ast == nullptr )
+	if (ast == nullptr)
 	{
-		log_failure( "Attempt to dereference a nullptr!\n" );
+		log_failure("Attempt to dereference a nullptr!\n");
 		return nullptr;
 	}
 	return ast;
 }
 
-inline CodeTypedef& CodeTypedef::operator=( Code other )
+inline CodeTypedef& CodeTypedef::operator=(Code other)
 {
-	if ( other.ast != nullptr && other->Parent != nullptr )
+	if (other.ast != nullptr && other->Parent != nullptr)
 	{
-		ast         = rcast( decltype( ast ), code_duplicate( other ).ast );
+		ast         = rcast(decltype(ast), code_duplicate(other).ast);
 		ast->Parent = { nullptr };
 	}
-	ast = rcast( decltype( ast ), other.ast );
+	ast = rcast(decltype(ast), other.ast);
 	return *this;
 }
 
@@ -5514,27 +5516,27 @@ inline CodeTypedef::operator bool()
 
 inline CodeTypedef::operator Code()
 {
-	return *rcast( Code*, this );
+	return *rcast(Code*, this);
 }
 
 inline AST_Typedef* CodeTypedef::operator->()
 {
-	if ( ast == nullptr )
+	if (ast == nullptr)
 	{
-		log_failure( "Attempt to dereference a nullptr!\n" );
+		log_failure("Attempt to dereference a nullptr!\n");
 		return nullptr;
 	}
 	return ast;
 }
 
-inline CodeUnion& CodeUnion::operator=( Code other )
+inline CodeUnion& CodeUnion::operator=(Code other)
 {
-	if ( other.ast != nullptr && other->Parent != nullptr )
+	if (other.ast != nullptr && other->Parent != nullptr)
 	{
-		ast         = rcast( decltype( ast ), code_duplicate( other ).ast );
+		ast         = rcast(decltype(ast), code_duplicate(other).ast);
 		ast->Parent = { nullptr };
 	}
-	ast = rcast( decltype( ast ), other.ast );
+	ast = rcast(decltype(ast), other.ast);
 	return *this;
 }
 
@@ -5545,27 +5547,27 @@ inline CodeUnion::operator bool()
 
 inline CodeUnion::operator Code()
 {
-	return *rcast( Code*, this );
+	return *rcast(Code*, this);
 }
 
 inline AST_Union* CodeUnion::operator->()
 {
-	if ( ast == nullptr )
+	if (ast == nullptr)
 	{
-		log_failure( "Attempt to dereference a nullptr!\n" );
+		log_failure("Attempt to dereference a nullptr!\n");
 		return nullptr;
 	}
 	return ast;
 }
 
-inline CodeUsing& CodeUsing::operator=( Code other )
+inline CodeUsing& CodeUsing::operator=(Code other)
 {
-	if ( other.ast != nullptr && other->Parent != nullptr )
+	if (other.ast != nullptr && other->Parent != nullptr)
 	{
-		ast         = rcast( decltype( ast ), code_duplicate( other ).ast );
+		ast         = rcast(decltype(ast), code_duplicate(other).ast);
 		ast->Parent = { nullptr };
 	}
-	ast = rcast( decltype( ast ), other.ast );
+	ast = rcast(decltype(ast), other.ast);
 	return *this;
 }
 
@@ -5576,27 +5578,27 @@ inline CodeUsing::operator bool()
 
 inline CodeUsing::operator Code()
 {
-	return *rcast( Code*, this );
+	return *rcast(Code*, this);
 }
 
 inline AST_Using* CodeUsing::operator->()
 {
-	if ( ast == nullptr )
+	if (ast == nullptr)
 	{
-		log_failure( "Attempt to dereference a nullptr!\n" );
+		log_failure("Attempt to dereference a nullptr!\n");
 		return nullptr;
 	}
 	return ast;
 }
 
-inline CodeVar& CodeVar::operator=( Code other )
+inline CodeVar& CodeVar::operator=(Code other)
 {
-	if ( other.ast != nullptr && other->Parent != nullptr )
+	if (other.ast != nullptr && other->Parent != nullptr)
 	{
-		ast         = rcast( decltype( ast ), code_duplicate( other ).ast );
+		ast         = rcast(decltype(ast), code_duplicate(other).ast);
 		ast->Parent = { nullptr };
 	}
-	ast = rcast( decltype( ast ), other.ast );
+	ast = rcast(decltype(ast), other.ast);
 	return *this;
 }
 
@@ -5607,14 +5609,14 @@ inline CodeVar::operator bool()
 
 inline CodeVar::operator Code()
 {
-	return *rcast( Code*, this );
+	return *rcast(Code*, this);
 }
 
 inline AST_Var* CodeVar::operator->()
 {
-	if ( ast == nullptr )
+	if (ast == nullptr)
 	{
-		log_failure( "Attempt to dereference a nullptr!\n" );
+		log_failure("Attempt to dereference a nullptr!\n");
 		return nullptr;
 	}
 	return ast;

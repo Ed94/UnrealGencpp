@@ -53,7 +53,7 @@ struct CSV_Columns2 {
 	Array(ADT_Node) Col_2;
 };
 
-GEN_API CSV_Column parse_csv_one_column(AllocatorInfo allocator, char const* path);
+GEN_API CSV_Column   parse_csv_one_column (AllocatorInfo allocator, char const* path);
 GEN_API CSV_Columns2 parse_csv_two_columns(AllocatorInfo allocator, char const* path);
 
 #pragma endregion Scanner

@@ -2086,6 +2086,10 @@ void fn_to_strbuilder_def(CodeFn self, StrBuilder* result )
 		}
 	}
 
+	// This is bodged in for now SOLEY for Unreal's PURE_VIRTUAL functional macro
+	if ( self->SuffixSpecs )
+		strbuilder_append_fmt( result, " %SB", code_to_strbuilder(self->SuffixSpecs) );
+
 	strbuilder_append_fmt( result, "\n{\n%SB\n}\n", body_to_strbuilder(self->Body) );
 }
 
@@ -2143,7 +2147,12 @@ void fn_to_strbuilder_fwd(CodeFn self, StrBuilder* result )
 
 	if ( self->Specs && specifiers_has(self->Specs, Spec_Pure ) >= 0 )
 		strbuilder_append_str( result, txt(" = 0;") );
-	else if (self->Body)
+
+	// This is bodged in for now SOLEY for Unreal's PURE_VIRTUAL functional macro (I kept it open ended for other jank)
+	if ( self->SuffixSpecs )
+		strbuilder_append_fmt( result, " %SB", code_to_strbuilder(self->SuffixSpecs) );
+
+	if (self->Body)
 		strbuilder_append_fmt( result, " = %SB;", body_to_strbuilder(self->Body) );
 
 	if ( self->InlineCmt )
@@ -6199,6 +6208,9 @@ void lex_found_token( LexContext* ctx )
 		if ( bitfield_is_set(MacroFlags, macro->Flags, MF_Allow_As_Attribute) ) {
 			ctx->token.Flags |= TF_Attribute;
 		}
+		if ( bitfield_is_set(MacroFlags, macro->Flags, MF_Allow_As_Specifier ) ) {
+			ctx->token.Flags |= TF_Specifier;
+		}
 	}
 	else
 	{
@@ -8457,6 +8469,18 @@ CodeFn parse_function_after_name(
 	}
 	// <Attributes> <Specifiers> <ReturnType> <Name> ( <Paraemters> ) <Specifiers>
 
+	Code suffix_specs = NullCode;
+
+	// For Unreal's PURE_VIRTUAL Support
+	if ( left )
+	{
+		Macro* macro = lookup_macro( currtok.Text );
+		if (macro && tok_is_specifier(currtok))
+		{
+			suffix_specs = parse_simple_preprocess(Tok_Preprocess_Macro_Expr);
+		}
+	}
+
 	CodeBody    body       = NullCode;
 	CodeComment inline_cmt = NullCode;
 	if ( check( Tok_BraceCurly_Open ) )
@@ -8532,6 +8556,9 @@ CodeFn parse_function_after_name(
 
 	if ( specifiers )
 		result->Specs = specifiers;
+
+	if ( suffix_specs )
+		result->SuffixSpecs = suffix_specs;
 
 	result->ReturnType = ret_type;
 

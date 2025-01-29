@@ -113,7 +113,8 @@ void UnrealGencppInit(gen::Context& Ctx)
 		(Macro { str_GAMEPLAYATTRIBUTE_VALUE_GETTER,                        MT_Statement,  MF_Functional }),
 		(Macro { str_GAMEPLAYATTRIBUTE_VALUE_SETTER,                        MT_Statement,  MF_Functional }),
 		(Macro { str_GAMEPLAYATTRIBUTE_VALUE_INITTER,                       MT_Statement,  MF_Functional }),
-		(Macro { str_LOCTEXT_NAMESPACE,                                     MT_Statement,  MF_Null       })	
+		(Macro { str_LOCTEXT_NAMESPACE,                                     MT_Statement,  MF_Null       }),
+		(Macro { str_PURE_VIRTUAL,                                          MT_Statement,  MF_Functional | MF_Allow_As_Specifier })
 	));
 }
 
