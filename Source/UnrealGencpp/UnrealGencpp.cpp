@@ -51,6 +51,7 @@ void UnrealGencppInit(gen::Context& Ctx)
 	register_macros( args(
 		(Macro { str_UDELEGATE,                                             MT_Statement,  MF_Functional }),
 		(Macro { str_DECLARE_CLASS,                                         MT_Statement,  MF_Functional }),
+		(Macro { str_DECLARE_CYCLE_STAT_EXTERN,                             MT_Statement,  MF_Functional }),
 		(Macro { str_DECLARE_DELEGATE_RetVal_OneParam,                      MT_Statement,  MF_Functional }),
 		(Macro { str_DECLARE_DELEGATE_RetVal_ThreeParams,                   MT_Statement,  MF_Functional }),
 		(Macro { str_DECLARE_DELEGATE_RetVal_SevenParams,                   MT_Statement,  MF_Functional }),
@@ -78,6 +79,7 @@ void UnrealGencppInit(gen::Context& Ctx)
 		(Macro { str_DECLARE_MULTICAST_DELEGATE_OneParam,                   MT_Statement,  MF_Functional }),
 		(Macro { str_DECLARE_MULTICAST_DELEGATE_ThreeParams,                MT_Statement,  MF_Functional }),
 		(Macro { str_DECLARE_MULTICAST_DELEGATE_TwoParams,                  MT_Statement,  MF_Functional }),
+		(Macro { str_DECLARE_STATS_GROUP,                                   MT_Statement,  MF_Functional }),
 		(Macro { str_DECLARE_TS_MULTICAST_DELEGATE_OneParam,                MT_Statement,  MF_Functional }),
 		(Macro { str_DECLARE_TS_MULTICAST_DELEGATE_TwoParams,               MT_Statement,  MF_Functional }),
 		(Macro { str_DECLARE_TS_MULTICAST_DELEGATE_ThreeParams,             MT_Statement,  MF_Functional }),
@@ -121,9 +123,11 @@ void UnrealGencppInit(gen::Context& Ctx)
 		(Macro { str_PURE_VIRTUAL,                                          MT_Expression, MF_Functional | MF_Allow_As_Specifier })
 	));
 	register_macros( args(
+		(Macro { str_AIMODULE_API,                                          MT_Expression, MF_Allow_As_Attribute }),
 		(Macro { str_IRISCORE_API,                                          MT_Expression, MF_Allow_As_Attribute }),
 		(Macro { str_UE_INTERNAL,                                           MT_Expression, MF_Allow_As_Attribute }),
-		(Macro { str_UNREALED_API,                                          MT_Expression, MF_Allow_As_Attribute })
+		(Macro { str_UNREALED_API,                                          MT_Expression, MF_Allow_As_Attribute }),
+		(Macro { str_LYRAGAME_API,                                          MT_Expression, MF_Allow_As_Attribute })
 	));
 }
 

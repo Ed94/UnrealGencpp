@@ -13,6 +13,7 @@ GEN_NS_BEGIN
 
 constexpr Str str_UDELEGATE                                             = txt("UDELEGATE");
 constexpr Str str_DECLARE_CLASS                                         = txt("DECLARE_CLASS");
+constexpr Str str_DECLARE_CYCLE_STAT_EXTERN                             = txt("DECLARE_CYCLE_STAT_EXTERN");
 constexpr Str str_DECLARE_DELEGATE                                      = txt("DECLARE_DELEGATE");
 constexpr Str str_DECLARE_DELEGATE_RetVal_OneParam                      = txt("DECLARE_DELEGATE_RetVal_OneParam");
 constexpr Str str_DECLARE_DELEGATE_RetVal_ThreeParams                   = txt("DECLARE_DELEGATE_RetVal_ThreeParams");
@@ -40,6 +41,7 @@ constexpr Str str_DECLARE_MULTICAST_DELEGATE                            = txt("D
 constexpr Str str_DECLARE_MULTICAST_DELEGATE_OneParam                   = txt("DECLARE_MULTICAST_DELEGATE_OneParam");
 constexpr Str str_DECLARE_MULTICAST_DELEGATE_ThreeParams                = txt("DECLARE_MULTICAST_DELEGATE_ThreeParams");
 constexpr Str str_DECLARE_MULTICAST_DELEGATE_TwoParams                  = txt("DECLARE_MULTICAST_DELEGATE_TwoParams");
+constexpr Str str_DECLARE_STATS_GROUP                                   = txt("DECLARE_STATS_GROUP");
 constexpr Str str_DECLARE_TS_MULTICAST_DELEGATE_OneParam                = txt("DECLARE_TS_MULTICAST_DELEGATE_OneParam");
 constexpr Str str_DECLARE_TS_MULTICAST_DELEGATE_TwoParams               = txt("DECLARE_TS_MULTICAST_DELEGATE_TwoParams");
 constexpr Str str_DECLARE_TS_MULTICAST_DELEGATE_ThreeParams             = txt("DECLARE_TS_MULTICAST_DELEGATE_ThreeParams");
@@ -78,8 +80,10 @@ constexpr Str str_GAMEPLAYATTRIBUTE_VALUE_SETTER                        = txt("G
 constexpr Str str_GAMEPLAYATTRIBUTE_VALUE_INITTER                       = txt("GAMEPLAYATTRIBUTE_VALUE_INITTER");
 constexpr Str str_LOCTEXT_NAMESPACE                                     = txt("LOCTEXT_NAMESPACE");
 constexpr Str str_PURE_VIRTUAL                                          = txt("PURE_VIRTUAL");
+constexpr Str str_AIMODULE_API                                          = txt("AIMODULE_API");
 constexpr Str str_IRISCORE_API                                          = txt("IRISCORE_API");
 constexpr Str str_UNREALED_API                                          = txt("UNREALED_API");
+constexpr Str str_LYRAGAME_API                                          = txt("LYRAGAME_API");
 constexpr Str str_UE_INTERNAL                                           = txt("UE_INTERNAL");
 
 #pragma region Globals
