@@ -85,6 +85,8 @@ constexpr Str str_IRISCORE_API                                          = txt("I
 constexpr Str str_UNREALED_API                                          = txt("UNREALED_API");
 constexpr Str str_LYRAGAME_API                                          = txt("LYRAGAME_API");
 constexpr Str str_UE_INTERNAL                                           = txt("UE_INTERNAL");
+constexpr Str str_OUT                                                   = txt("OUT");
+constexpr Str str_IN                                                    = txt("IN");
 
 #pragma region Globals
 GEN_API extern Str PathRoot;
