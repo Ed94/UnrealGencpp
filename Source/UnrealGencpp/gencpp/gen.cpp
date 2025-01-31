@@ -8231,11 +8231,9 @@ Code parse_complicated_definition( TokType which )
 {
 	push_scope();
 
-	b32 is_inplace = false;
-	b32 is_fn_def  = false;
-
 	TokArray tokens = _ctx->parser.Tokens;
 
+	// Look ahead to find valid end of definition along with whether it's a definition or had parenthesis.
 	s32 idx         = tokens.Idx;
 	s32 level       = 0;
 	b32 had_def     = false;
@@ -8243,20 +8241,15 @@ Code parse_complicated_definition( TokType which )
 	for ( ; idx < array_num(tokens.Arr); idx++ )
 	{
 		if ( tokens.Arr[ idx ].Type == Tok_BraceCurly_Open )
-		{
 			level++;
-		}
 
-		if ( tokens.Arr[ idx ].Type == Tok_BraceCurly_Close )
-		{
+		if ( tokens.Arr[ idx ].Type == Tok_BraceCurly_Close ) {
 			level--;
 			had_def = level == 0;
 		}
 
 		if (level == 0 && tokens.Arr[idx].Type == Tok_Paren_Open )
-		{
 			had_paren = true;
-		}
 		
 		b32 found_fn_def = had_def && had_paren;
 
@@ -8264,7 +8257,8 @@ Code parse_complicated_definition( TokType which )
 			break;
 	}
 
-	is_fn_def = had_def && had_paren;
+	b32 is_inplace = false;
+	b32 is_fn_def  = had_def && had_paren;
 	if (is_fn_def)
 	{
 		// Function definition with <which> on return type
@@ -8274,11 +8268,16 @@ Code parse_complicated_definition( TokType which )
 		return result;
 	}
 
-	if ( ( idx - 2 ) == tokens.Idx )
+	b32
+	is_forward_declaration  = ( idx - 2 ) == tokens.Idx;
+	is_forward_declaration |= ( idx - 3 ) == tokens.Idx && tokens.Arr[(idx - 2)].Type == Tok_Decl_Class; // enum class
+	if ( is_forward_declaration )
 	{
 		// It's a forward declaration only
 		Code result = parse_forward_or_definition( which, is_inplace );
 		// <class, enum, struct, or union> <Name>;
+		// or
+		// <enum> <class> <Name>;
 		parser_pop(& _ctx->parser);
 		return result;
 	}
@@ -8319,7 +8318,7 @@ Code parse_complicated_definition( TokType which )
 
 		if ( tok.Type == Tok_BraceCurly_Close )
 		{
-			// Its an inplace definition
+			// Its an inplacs definition
 			// <which> <type_identifier ?> { ... } <identifier>;
 			ok_to_parse = true;
 			is_inplace  = true;
