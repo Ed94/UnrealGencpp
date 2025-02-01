@@ -128,6 +128,7 @@ void UnrealGencppInit(gen::Context& Ctx)
 		(Macro { str_UE_INTERNAL,                                           MT_Expression, MF_Allow_As_Attribute }),
 		(Macro { str_UNREALED_API,                                          MT_Expression, MF_Allow_As_Attribute }),
 		(Macro { str_LYRAGAME_API,                                          MT_Expression, MF_Allow_As_Attribute }),
+		(Macro { str_COMMONUI_API ,                                         MT_Expression, MF_Allow_As_Attribute }),
 		(Macro { str_OUT,                                                   MT_Expression }),
 		(Macro { str_IN,                                                    MT_Expression })
 	));
