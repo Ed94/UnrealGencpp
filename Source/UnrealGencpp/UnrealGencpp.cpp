@@ -102,6 +102,7 @@ void UnrealGencppInit(gen::Context& Ctx)
 		(Macro { str_UCLASS,                                                MT_Statement,  MF_Functional }),
 		(Macro { str_UENUM,                                                 MT_Statement,  MF_Functional }),
 		(Macro { str_UFUNCTION,                                             MT_Statement,  MF_Functional }),
+		(Macro { str_UINTERFACE,                                            MT_Statement,  MF_Functional }),
 		(Macro { str_UMETA,                                                 MT_Expression, MF_Functional }),
 		(Macro { str_UPARAM,                                                MT_Expression, MF_Functional }),
 		(Macro { str_UPROPERTY,                                             MT_Statement,  MF_Functional }),
@@ -125,10 +126,12 @@ void UnrealGencppInit(gen::Context& Ctx)
 	register_macros( args(
 		(Macro { str_AIMODULE_API,                                          MT_Expression, MF_Allow_As_Attribute }),
 		(Macro { str_IRISCORE_API,                                          MT_Expression, MF_Allow_As_Attribute }),
+		(Macro { str_WORLDBROWSER_API,                                      MT_Expression, MF_Allow_As_Attribute }),
 		(Macro { str_UE_INTERNAL,                                           MT_Expression, MF_Allow_As_Attribute }),
 		(Macro { str_UNREALED_API,                                          MT_Expression, MF_Allow_As_Attribute }),
 		(Macro { str_LYRAGAME_API,                                          MT_Expression, MF_Allow_As_Attribute }),
 		(Macro { str_COMMONUI_API ,                                         MT_Expression, MF_Allow_As_Attribute }),
+		(Macro { str_MODULARGAMEPLAY_API ,                                  MT_Expression, MF_Allow_As_Attribute }),
 		(Macro { str_OUT,                                                   MT_Expression }),
 		(Macro { str_IN,                                                    MT_Expression })
 	));

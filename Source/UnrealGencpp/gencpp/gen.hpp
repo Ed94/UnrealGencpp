@@ -42,7 +42,7 @@
 	|  \_____|\___}_l |_|\___} ,__/| ,__/ (_____/ \__\__/_|\__, |\___}\__,_l                       |
 	|  Unreal Engine         | |   | |                      __} |                                  |
 	|                        l_l   l_l                     {___/                                   |
-	! ----------------------------------------------------------------------- VERSION: v0.23-Alpha |
+	! ----------------------------------------------------------------------- VERSION: v0.25-Alpha |
 	! ============================================================================================ |
 	! WARNING: THIS IS AN ALPHA VERSION OF THE LIBRARY, USE AT YOUR OWN DISCRETION                 |
 	! NEVER DO CODE GENERATION WITHOUT AT LEAST HAVING CONTENT IN A CODEBASE UNDER VERSION CONTROL |
@@ -599,7 +599,7 @@ inline Str spec_to_str(Specifier type)
 		{ "noexcept",               sizeof("noexcept") - 1               },
 		{ "override",               sizeof("override") - 1               },
 		{ "= 0",		            sizeof("= 0") - 1                    },
-		{ "= delete",		            sizeof("= delete") - 1                    },
+		{ "= delete",               sizeof("= delete") - 1               },
 		{ "volatile",               sizeof("volatile") - 1               },
 	};
 	return lookup[type];
@@ -905,17 +905,18 @@ enum TokFlags : u32
 {
 	TF_Operator              = bit(0),
 	TF_Assign                = bit(1),
-	TF_Preprocess            = bit(2),
-	TF_Preprocess_Cond       = bit(3),
-	TF_Attribute             = bit(6),
-	TF_AccessOperator        = bit(7),
-	TF_AccessSpecifier       = bit(8),
-	TF_Specifier             = bit(9),
-	TF_EndDefinition         = bit(10),    // Either ; or }
-	TF_Formatting            = bit(11),
-	TF_Literal               = bit(12),
-	TF_Macro_Functional      = bit(13),
-	TF_Macro_Expects_Body    = bit(14),
+	TF_Identifier            = bit(2),
+	TF_Preprocess            = bit(3),
+	TF_Preprocess_Cond       = bit(4),
+	TF_Attribute             = bit(5),
+	TF_AccessOperator        = bit(6),
+	TF_AccessSpecifier       = bit(7),
+	TF_Specifier             = bit(8),
+	TF_EndDefinition         = bit(9),    // Either ; or }
+	TF_Formatting            = bit(10),
+	TF_Literal               = bit(11),
+	TF_Macro_Functional      = bit(12),
+	TF_Macro_Expects_Body    = bit(13),
 
 	TF_Null = 0,
 	TF_UnderlyingType = GEN_U32_MAX,
@@ -1301,6 +1302,7 @@ typedef AST_Stmt_If*       CodeStmt_If;
 typedef AST_Stmt_For*      CodeStmt_For;
 typedef AST_Stmt_Goto*     CodeStmt_Goto;
 typedef AST_Stmt_Label*    CodeStmt_Label;
+typedef AST_Stmt_Lambda*   CodeStmt_Lambda;
 typedef AST_Stmt_Switch*   CodeStmt_Switch;
 typedef AST_Stmt_While*    CodeStmt_While;
 #else
@@ -1316,6 +1318,7 @@ struct CodeStmt_If;
 struct CodeStmt_For;
 struct CodeStmt_Goto;
 struct CodeStmt_Label;
+struct CodeStmt_Lambda;
 struct CodeStmt_Switch;
 struct CodeStmt_While;
 #endif
@@ -1347,18 +1350,18 @@ template< class Type> FORCEINLINE Type tmpl_cast( Code self ) { return * rcast( 
 
 #pragma region Code C-Interface
 
-GEN_API void       code_append           (Code code, Code other );
+        void       code_append           (Code code, Code other );
 GEN_API Str        code_debug_str        (Code code);
 GEN_API Code       code_duplicate        (Code code);
-GEN_API Code*      code_entry            (Code code, u32 idx );
-GEN_API bool       code_has_entries      (Code code);
-GEN_API bool       code_is_body          (Code code);
+        Code*      code_entry            (Code code, u32 idx );
+        bool       code_has_entries      (Code code);
+        bool       code_is_body          (Code code);
 GEN_API bool       code_is_equal         (Code code, Code other);
-GEN_API bool       code_is_valid         (Code code);
-GEN_API void       code_set_global       (Code code);
+        bool       code_is_valid         (Code code);
+        void       code_set_global       (Code code);
 GEN_API StrBuilder code_to_strbuilder    (Code self );
-GEN_API void       code_to_strbuilder_ptr(Code self, StrBuilder* result );
-GEN_API Str        code_type_str         (Code self );
+GEN_API void       code_to_strbuilder_ref(Code self, StrBuilder* result );
+        Str        code_type_str         (Code self );
 GEN_API bool       code_validate_body    (Code self );
 
 #pragma endregion Code C-Interface
@@ -1395,7 +1398,7 @@ struct Code
 	FORCEINLINE Code*      entry(u32 idx)                    { return code_entry(* this, idx); }
 	FORCEINLINE bool       has_entries()                     { return code_has_entries(* this); }
 	FORCEINLINE StrBuilder to_strbuilder()                   { return code_to_strbuilder(* this); }
-	FORCEINLINE void       to_strbuilder(StrBuilder& result) { return code_to_strbuilder_ptr(* this, & result); }
+	FORCEINLINE void       to_strbuilder(StrBuilder& result) { return code_to_strbuilder_ref(* this, & result); }
 	FORCEINLINE Str        type_str()                        { return code_type_str(* this); }
 	FORCEINLINE bool       validate_body()                   { return code_validate_body(*this); }
 #endif
@@ -1507,7 +1510,7 @@ struct AST
 				Code  Value;            // Parameter, Variable
 			};
 			union {
-				Code  NextVar;          // Variable; Possible way to handle comma separated variables declarations. ( , NextVar->Specs NextVar->Name NextVar->ArrExpr = NextVar->Value )
+				Code  NextVar;          // Variable
 				Code  SuffixSpecs;      // Typename, Function (Thanks Unreal)
 				Code  PostNameMacro;    // Only used with parameters for specifically UE_REQUIRES (Thanks Unreal)
 			};
@@ -1581,58 +1584,59 @@ struct NullCode_ImplicitCaster;
 GEN_API void       body_append              ( CodeBody body, Code     other );
 GEN_API void       body_append_body         ( CodeBody body, CodeBody other );
 GEN_API StrBuilder body_to_strbuilder       ( CodeBody body );
-GEN_API void       body_to_strbuilder_ref   ( CodeBody body, StrBuilder* result );
+        void       body_to_strbuilder_ref   ( CodeBody body, StrBuilder* result );
 GEN_API void       body_to_strbuilder_export( CodeBody body, StrBuilder* result );
 
-GEN_API Code begin_CodeBody( CodeBody body);
-GEN_API Code end_CodeBody  ( CodeBody body );
-GEN_API Code next_CodeBody ( CodeBody body, Code entry_iter );
+Code begin_CodeBody( CodeBody body);
+Code end_CodeBody  ( CodeBody body );
+Code next_CodeBody ( CodeBody body, Code entry_iter );
 
-GEN_API void       class_add_interface    ( CodeClass self, CodeTypename interface );
+        void       class_add_interface    ( CodeClass self, CodeTypename interface );
 GEN_API StrBuilder class_to_strbuilder    ( CodeClass self );
 GEN_API void       class_to_strbuilder_def( CodeClass self, StrBuilder* result );
 GEN_API void       class_to_strbuilder_fwd( CodeClass self, StrBuilder* result );
 
-GEN_API void             define_params_append           (CodeDefineParams appendee, CodeDefineParams other );
-GEN_API CodeDefineParams define_params_get              (CodeDefineParams params, s32 idx);
-GEN_API bool             define_params_has_entries      (CodeDefineParams params );
-GEN_API StrBuilder       define_params_to_strbuilder    (CodeDefineParams params );
+        void             define_params_append           (CodeDefineParams appendee, CodeDefineParams other );
+        CodeDefineParams define_params_get              (CodeDefineParams params, s32 idx);
+        bool             define_params_has_entries      (CodeDefineParams params );
+        StrBuilder       define_params_to_strbuilder    (CodeDefineParams params );
 GEN_API void             define_params_to_strbuilder_ref(CodeDefineParams params, StrBuilder* result );
 
-GEN_API CodeDefineParams begin_CodeDefineParams(CodeDefineParams params);
-GEN_API CodeDefineParams end_CodeDefineParams  (CodeDefineParams params);
-GEN_API CodeDefineParams next_CodeDefineParams (CodeDefineParams params, CodeDefineParams entry_iter);
+CodeDefineParams begin_CodeDefineParams(CodeDefineParams params);
+CodeDefineParams end_CodeDefineParams  (CodeDefineParams params);
+CodeDefineParams next_CodeDefineParams (CodeDefineParams params, CodeDefineParams entry_iter);
 
-GEN_API void       params_append           (CodeParams appendee, CodeParams other );
-GEN_API CodeParams params_get              (CodeParams params, s32 idx);
-GEN_API bool       params_has_entries      (CodeParams params );
-GEN_API StrBuilder params_to_strbuilder    (CodeParams params );
+        void       params_append           (CodeParams appendee, CodeParams other );
+        CodeParams params_get              (CodeParams params, s32 idx);
+        bool       params_has_entries      (CodeParams params );
+        StrBuilder params_to_strbuilder    (CodeParams params );
 GEN_API void       params_to_strbuilder_ref(CodeParams params, StrBuilder* result );
 
-GEN_API CodeParams begin_CodeParams(CodeParams params);
-GEN_API CodeParams end_CodeParams  (CodeParams params);
-GEN_API CodeParams next_CodeParams (CodeParams params, CodeParams entry_iter);
+CodeParams begin_CodeParams(CodeParams params);
+CodeParams end_CodeParams  (CodeParams params);
+CodeParams next_CodeParams (CodeParams params, CodeParams entry_iter);
 
-GEN_API bool       specifiers_append           (CodeSpecifiers specifiers, Specifier spec);
-GEN_API s32        specifiers_has              (CodeSpecifiers specifiers, Specifier spec);
-GEN_API s32        specifiers_remove           (CodeSpecifiers specifiers, Specifier to_remove );
-GEN_API StrBuilder specifiers_to_strbuilder    (CodeSpecifiers specifiers);
+        bool       specifiers_append           (CodeSpecifiers specifiers, Specifier spec);
+        bool       specifiers_has              (CodeSpecifiers specifiers, Specifier spec);
+        s32        specifiers_index_of         (CodeSpecifiers specifiers, Specifier spec);
+        s32        specifiers_remove           (CodeSpecifiers specifiers, Specifier to_remove );
+        StrBuilder specifiers_to_strbuilder    (CodeSpecifiers specifiers);
 GEN_API void       specifiers_to_strbuilder_ref(CodeSpecifiers specifiers, StrBuilder* result);
 
-GEN_API Specifier* begin_CodeSpecifiers(CodeSpecifiers specifiers);
-GEN_API Specifier* end_CodeSpecifiers  (CodeSpecifiers specifiers);
-GEN_API Specifier* next_CodeSpecifiers (CodeSpecifiers specifiers, Specifier* spec_iter);
+Specifier* begin_CodeSpecifiers(CodeSpecifiers specifiers);
+Specifier* end_CodeSpecifiers  (CodeSpecifiers specifiers);
+Specifier* next_CodeSpecifiers (CodeSpecifiers specifiers, Specifier* spec_iter);
 
-GEN_API void       struct_add_interface    (CodeStruct self, CodeTypename interface);
+        void       struct_add_interface    (CodeStruct self, CodeTypename interface);
 GEN_API StrBuilder struct_to_strbuilder    (CodeStruct self);
 GEN_API void       struct_to_strbuilder_fwd(CodeStruct self, StrBuilder* result);
 GEN_API void       struct_to_strbuilder_def(CodeStruct self, StrBuilder* result);
 
-GEN_API StrBuilder attributes_to_strbuilder    (CodeAttributes attributes);
-GEN_API void       attributes_to_strbuilder_ref(CodeAttributes attributes, StrBuilder* result);
+        StrBuilder attributes_to_strbuilder    (CodeAttributes attributes);
+        void       attributes_to_strbuilder_ref(CodeAttributes attributes, StrBuilder* result);
 
-GEN_API StrBuilder comment_to_strbuilder    (CodeComment comment );
-GEN_API void       comment_to_strbuilder_ref(CodeComment comment, StrBuilder* result );
+        StrBuilder comment_to_strbuilder    (CodeComment comment );
+        void       comment_to_strbuilder_ref(CodeComment comment, StrBuilder* result );
 
 GEN_API StrBuilder constructor_to_strbuilder    (CodeConstructor constructor);
 GEN_API void       constructor_to_strbuilder_def(CodeConstructor constructor, StrBuilder* result );
@@ -1651,65 +1655,67 @@ GEN_API void       enum_to_strbuilder_fwd      (CodeEnum self, StrBuilder* resul
 GEN_API void       enum_to_strbuilder_class_def(CodeEnum self, StrBuilder* result );
 GEN_API void       enum_to_strbuilder_class_fwd(CodeEnum self, StrBuilder* result );
 
-GEN_API StrBuilder exec_to_strbuilder    (CodeExec exec);
-GEN_API void       exec_to_strbuilder_ref(CodeExec exec, StrBuilder* result);
+        StrBuilder exec_to_strbuilder    (CodeExec exec);
+        void       exec_to_strbuilder_ref(CodeExec exec, StrBuilder* result);
 
-GEN_API void extern_to_strbuilder(CodeExtern self, StrBuilder* result);
+        void extern_to_strbuilder(CodeExtern self, StrBuilder* result);
 
-GEN_API StrBuilder include_to_strbuilder    (CodeInclude self);
-GEN_API void       include_to_strbuilder_ref(CodeInclude self, StrBuilder* result);
+        StrBuilder include_to_strbuilder    (CodeInclude self);
+        void       include_to_strbuilder_ref(CodeInclude self, StrBuilder* result);
 
-GEN_API StrBuilder friend_to_strbuilder     (CodeFriend self);
-GEN_API void       friend_to_strbuilder_ref(CodeFriend self, StrBuilder* result);
+        StrBuilder friend_to_strbuilder     (CodeFriend self);
+        void       friend_to_strbuilder_ref(CodeFriend self, StrBuilder* result);
 
 GEN_API StrBuilder fn_to_strbuilder    (CodeFn self);
 GEN_API void       fn_to_strbuilder_def(CodeFn self, StrBuilder* result);
 GEN_API void       fn_to_strbuilder_fwd(CodeFn self, StrBuilder* result);
 
-GEN_API StrBuilder module_to_strbuilder    (CodeModule self);
+        StrBuilder module_to_strbuilder    (CodeModule self);
 GEN_API void       module_to_strbuilder_ref(CodeModule self, StrBuilder* result);
 
-GEN_API StrBuilder namespace_to_strbuilder    (CodeNS self);
-GEN_API void       namespace_to_strbuilder_ref(CodeNS self, StrBuilder* result);
+        StrBuilder namespace_to_strbuilder    (CodeNS self);
+        void       namespace_to_strbuilder_ref(CodeNS self, StrBuilder* result);
 
 GEN_API StrBuilder code_op_to_strbuilder    (CodeOperator self);
 GEN_API void       code_op_to_strbuilder_fwd(CodeOperator self, StrBuilder* result );
 GEN_API void       code_op_to_strbuilder_def(CodeOperator self, StrBuilder* result );
 
-GEN_API StrBuilder opcast_to_strbuilder     (CodeOpCast op_cast );
+GEN_API StrBuilder opcast_to_strbuilder    (CodeOpCast op_cast );
 GEN_API void       opcast_to_strbuilder_def(CodeOpCast op_cast, StrBuilder* result );
 GEN_API void       opcast_to_strbuilder_fwd(CodeOpCast op_cast, StrBuilder* result );
 
-GEN_API StrBuilder pragma_to_strbuilder    (CodePragma self);
-GEN_API void       pragma_to_strbuilder_ref(CodePragma self, StrBuilder* result);
+        StrBuilder pragma_to_strbuilder    (CodePragma self);
+        void       pragma_to_strbuilder_ref(CodePragma self, StrBuilder* result);
 
 GEN_API StrBuilder preprocess_to_strbuilder       (CodePreprocessCond cond);
-GEN_API void       preprocess_to_strbuilder_if    (CodePreprocessCond cond, StrBuilder* result );
-GEN_API void       preprocess_to_strbuilder_ifdef (CodePreprocessCond cond, StrBuilder* result );
-GEN_API void       preprocess_to_strbuilder_ifndef(CodePreprocessCond cond, StrBuilder* result );
-GEN_API void       preprocess_to_strbuilder_elif  (CodePreprocessCond cond, StrBuilder* result );
-GEN_API void       preprocess_to_strbuilder_else  (CodePreprocessCond cond, StrBuilder* result );
-GEN_API void       preprocess_to_strbuilder_endif (CodePreprocessCond cond, StrBuilder* result );
+        void       preprocess_to_strbuilder_if    (CodePreprocessCond cond, StrBuilder* result );
+        void       preprocess_to_strbuilder_ifdef (CodePreprocessCond cond, StrBuilder* result );
+        void       preprocess_to_strbuilder_ifndef(CodePreprocessCond cond, StrBuilder* result );
+        void       preprocess_to_strbuilder_elif  (CodePreprocessCond cond, StrBuilder* result );
+        void       preprocess_to_strbuilder_else  (CodePreprocessCond cond, StrBuilder* result );
+        void       preprocess_to_strbuilder_endif (CodePreprocessCond cond, StrBuilder* result );
 
-GEN_API StrBuilder template_to_strbuilder    (CodeTemplate self);
+        StrBuilder template_to_strbuilder    (CodeTemplate self);
 GEN_API void       template_to_strbuilder_ref(CodeTemplate self, StrBuilder* result);
 
-GEN_API StrBuilder typename_to_strbuilder    (CodeTypename self);
-GEN_API void       typename_to_strbuilder_ref(CodeTypename self, StrBuilder* result);
-
-GEN_API StrBuilder typedef_to_strbuilder    (CodeTypedef self);
+        StrBuilder typedef_to_strbuilder    (CodeTypedef self);
 GEN_API void       typedef_to_strbuilder_ref(CodeTypedef self, StrBuilder* result );
+
+        StrBuilder typename_to_strbuilder    (CodeTypename self);
+GEN_API void       typename_to_strbuilder_ref(CodeTypename self, StrBuilder* result);
 
 GEN_API StrBuilder union_to_strbuilder    (CodeUnion self);
 GEN_API void       union_to_strbuilder_def(CodeUnion self, StrBuilder* result);
 GEN_API void       union_to_strbuilder_fwd(CodeUnion self, StrBuilder* result);
 
-GEN_API StrBuilder using_to_strbuilder    (CodeUsing op_cast );
+        StrBuilder using_to_strbuilder    (CodeUsing op_cast );
 GEN_API void       using_to_strbuilder_ref(CodeUsing op_cast, StrBuilder* result );
-GEN_API void       using_to_strbuilder_ns (CodeUsing op_cast, StrBuilder* result );
+        void       using_to_strbuilder_ns (CodeUsing op_cast, StrBuilder* result );
 
-GEN_API StrBuilder var_to_strbuilder    (CodeVar self);
+        StrBuilder var_to_strbuilder    (CodeVar self);
 GEN_API void       var_to_strbuilder_ref(CodeVar self, StrBuilder* result);
+
+// TODO(Ed): Move C-Interface inlines here...
 
 #pragma endregion Code Type C-Interface
 
@@ -1810,7 +1816,8 @@ struct CodeSpecifiers
 #if ! GEN_C_LIKE_CPP
 	Using_Code( CodeSpecifiers );
 	bool       append( Specifier spec )            { return specifiers_append(* this, spec); }
-	s32        has( Specifier spec )               { return specifiers_has(* this, spec); }
+	bool       has( Specifier spec )               { return specifiers_has(* this, spec); }
+	s32        index_of(Specifier spec)            { return specifiers_index_of(* this, spec); }
 	s32        remove( Specifier to_remove )       { return specifiers_remove(* this, to_remove); }
 	StrBuilder to_strbuilder()                     { return specifiers_to_strbuilder(* this ); }
 	void       to_strbuilder( StrBuilder& result ) { return specifiers_to_strbuilder_ref(* this, & result); }
@@ -2632,7 +2639,8 @@ FORCEINLINE StrBuilder to_strbuilder(CodeParams params )                       {
 FORCEINLINE void       to_strbuilder(CodeParams params, StrBuilder& result )   { return params_to_strbuilder_ref(params, & result); }
   
 FORCEINLINE bool       append       (CodeSpecifiers specifiers, Specifier spec)       { return specifiers_append(specifiers, spec); }
-FORCEINLINE s32        has          (CodeSpecifiers specifiers, Specifier spec)       { return specifiers_has(specifiers, spec); }
+FORCEINLINE bool       has          (CodeSpecifiers specifiers, Specifier spec)       { return specifiers_has(specifiers, spec); }
+FORCEINLINE s32        index_of     (CodeSpecifiers specifiers, Specifier spec)       { return specifiers_index_of(specifiers, spec); }
 FORCEINLINE s32        remove       (CodeSpecifiers specifiers, Specifier to_remove ) { return specifiers_remove(specifiers, to_remove); }
 FORCEINLINE StrBuilder to_strbuilder(CodeSpecifiers specifiers)                       { return specifiers_to_strbuilder(specifiers); }
 FORCEINLINE void       to_strbuilder(CodeSpecifiers specifiers, StrBuilder& result)   { return specifiers_to_strbuilder_ref(specifiers, & result);  }
@@ -2955,7 +2963,7 @@ struct AST_Enum
 	Code                   Parent;
 	CodeType               Type;
 	ModuleFlag             ModuleFlags;
-	char                   _PAD_UNUSED_[ sizeof(ModuleFlag) + sizeof(u32) ];
+	char                   _PAD_UNUSED_[ sizeof(u32) ];
 };
 static_assert( sizeof(AST_Enum) == sizeof(AST), "ERROR: AST_Enum is not the same size as AST");
 
@@ -3466,8 +3474,8 @@ static_assert( sizeof(AST_PreprocessCond) == sizeof(AST), "ERROR: AST_Preprocess
 struct AST_Specifiers
 {
 	Specifier      ArrSpecs[ AST_ArrSpecs_Cap ];
-	StrCached      Name;
 	CodeSpecifiers NextSpecs;
+	StrCached      Name;
 	Code           Prev;
 	Code           Next;
 	Token*         Tok;
@@ -3784,7 +3792,7 @@ struct AST_Typename
 			CodeSpecifiers SpecsFuncSuffix; // Only used for function signatures
 		};
 	};
-	StrCached           Name;
+	StrCached              Name;
 	Code                   Prev;
 	Code                   Next;
 	Token*                 Tok;
@@ -3810,7 +3818,7 @@ struct AST_Typedef
 			char           _PAD_PROPERTIES_2_[ sizeof(AST*) * 3 ];
 		};
 	};
-	StrCached           Name;
+	StrCached              Name;
 	Code                   Prev;
 	Code                   Next;
 	Token*                 Tok;
@@ -3995,6 +4003,11 @@ struct Context
 	s32 temp_serialize_indent;
 };
 
+// TODO(Ed): Eventually this library should opt out of an implicit context for baseline implementation
+// This would automatically make it viable for multi-threaded purposes among other things
+// An implicit context interface will be provided instead as wrapper procedures as convience.
+GEN_API extern Context* _ctx;
+
 // Initialize the library. There first ctx initialized must exist for lifetime of other contextes that come after as its the one that
 GEN_API void init(Context* ctx);
 
@@ -4052,7 +4065,7 @@ struct Opts_def_struct {
 	CodeAttributes attributes;
 	CodeTypename*  interfaces;
 	s32            num_interfaces;
-	CodeSpecifiers specifers; // Only used for final specifier for now.
+	CodeSpecifiers specifiers; // Only used for final specifier for now.
 	ModuleFlag     mflags;
 };
 GEN_API CodeClass def_class( Str name, Opts_def_struct opts GEN_PARAM_DEFAULT );
@@ -4090,7 +4103,7 @@ GEN_API CodeEnum def_enum( Str name, Opts_def_enum opts GEN_PARAM_DEFAULT );
 
 GEN_API CodeExec   def_execution  ( Str content );
 GEN_API CodeExtern def_extern_link( Str name, CodeBody body );
-GEN_API CodeFriend def_friend     ( Code symbol );
+GEN_API CodeFriend def_friend     ( Code code );
 
 struct Opts_def_function {
 	CodeParams      params;
@@ -4126,7 +4139,7 @@ struct Opts_def_operator_cast {
 GEN_API CodeOpCast def_operator_cast( CodeTypename type, Opts_def_operator_cast opts GEN_PARAM_DEFAULT );
 
 struct Opts_def_param { Code value; };
-GEN_API CodeParams  def_param ( CodeTypename type, Str name, Opts_def_param opts GEN_PARAM_DEFAULT );
+GEN_API CodeParams def_param ( CodeTypename type, Str name, Opts_def_param opts GEN_PARAM_DEFAULT );
 GEN_API CodePragma def_pragma( Str directive );
 
 GEN_API CodePreprocessCond def_preprocess_cond( EPreprocessCond type, Str content );
@@ -4140,7 +4153,7 @@ GEN_API CodeTemplate def_template( CodeParams params, Code definition, Opts_def_
 
 struct Opts_def_type {
 	ETypenameTag   type_tag;
-	Code           arrayexpr;
+	Code           array_expr;
 	CodeSpecifiers specifiers;
 	CodeAttributes attributes;
 };
@@ -4176,7 +4189,7 @@ struct Opts_def_variable
 GEN_API CodeVar def_variable( CodeTypename type, Str name, Opts_def_variable opts GEN_PARAM_DEFAULT );
 
 // Constructs an empty body. Use AST::validate_body() to check if the body is was has valid entries.
-GEN_API CodeBody def_body( CodeType type );
+CodeBody def_body( CodeType type );
 
 // There are two options for defining a struct body, either varadically provided with the args macro to auto-deduce the arg num,
 /// or provide as an array of Code objects.
@@ -4284,7 +4297,7 @@ GEN_API CodeVar         parse_variable     ( Str var_def         );
 
 GEN_API ssize token_fmt_va( char* buf, usize buf_size, s32 num_tokens, va_list va );
 //! Do not use directly. Use the token_fmt macro instead.
-GEN_API Str token_fmt_impl( ssize, ... );
+Str   token_fmt_impl( ssize, ... );
 
 GEN_API Code untyped_str( Str content);
 GEN_API Code untyped_fmt      ( char const* fmt, ... );
@@ -4366,7 +4379,398 @@ So the full call for this example would be:
 
 #pragma endregion Gen Interface
 
+#pragma region Constants
+// Predefined typename codes. Are set to readonly and are setup during gen::init()
+
+GEN_API extern Macro enum_underlying_macro;
+
+GEN_API extern Code access_public;
+GEN_API extern Code access_protected;
+GEN_API extern Code access_private;
+
+GEN_API extern CodeAttributes attrib_api_export;
+GEN_API extern CodeAttributes attrib_api_import;
+
+GEN_API extern Code module_global_fragment;
+GEN_API extern Code module_private_fragment;
+
+GEN_API extern Code fmt_newline;
+
+GEN_API extern CodePragma pragma_once;
+
+GEN_API extern CodeParams param_varadic;
+
+GEN_API extern CodePreprocessCond preprocess_else;
+GEN_API extern CodePreprocessCond preprocess_endif;
+
+GEN_API extern CodeSpecifiers spec_const;
+GEN_API extern CodeSpecifiers spec_consteval;
+GEN_API extern CodeSpecifiers spec_constexpr;
+GEN_API extern CodeSpecifiers spec_constinit;
+GEN_API extern CodeSpecifiers spec_extern_linkage;
+GEN_API extern CodeSpecifiers spec_final;
+GEN_API extern CodeSpecifiers spec_FORCEINLINE;
+GEN_API extern CodeSpecifiers spec_global;
+GEN_API extern CodeSpecifiers spec_inline;
+GEN_API extern CodeSpecifiers spec_internal_linkage;
+GEN_API extern CodeSpecifiers spec_local_persist;
+GEN_API extern CodeSpecifiers spec_mutable;
+GEN_API extern CodeSpecifiers spec_neverinline;
+GEN_API extern CodeSpecifiers spec_noexcept;
+GEN_API extern CodeSpecifiers spec_override;
+GEN_API extern CodeSpecifiers spec_ptr;
+GEN_API extern CodeSpecifiers spec_pure;
+GEN_API extern CodeSpecifiers spec_ref;
+GEN_API extern CodeSpecifiers spec_register;
+GEN_API extern CodeSpecifiers spec_rvalue;
+GEN_API extern CodeSpecifiers spec_static_member;
+GEN_API extern CodeSpecifiers spec_thread_local;
+GEN_API extern CodeSpecifiers spec_virtual;
+GEN_API extern CodeSpecifiers spec_volatile;
+
+GEN_API extern CodeTypename t_empty; // Used with varaidc parameters. (Exposing just in case its useful for another circumstance)
+GEN_API extern CodeTypename t_auto;
+GEN_API extern CodeTypename t_void;
+GEN_API extern CodeTypename t_int;
+GEN_API extern CodeTypename t_bool;
+GEN_API extern CodeTypename t_char;
+GEN_API extern CodeTypename t_wchar_t;
+GEN_API extern CodeTypename t_class;
+GEN_API extern CodeTypename t_typename;
+
+#ifdef GEN_DEFINE_LIBRARY_CODE_CONSTANTS
+	GEN_API extern CodeTypename t_b32;
+
+	GEN_API extern CodeTypename t_s8;
+	GEN_API extern CodeTypename t_s16;
+	GEN_API extern CodeTypename t_s32;
+	GEN_API extern CodeTypename t_s64;
+
+	GEN_API extern CodeTypename t_u8;
+	GEN_API extern CodeTypename t_u16;
+	GEN_API extern CodeTypename t_u32;
+	GEN_API extern CodeTypename t_u64;
+
+	GEN_API extern CodeTypename t_ssize;
+	GEN_API extern CodeTypename t_usize;
+
+	GEN_API extern CodeTypename t_f32;
+	GEN_API extern CodeTypename t_f64;
+#endif
+
+#pragma endregion Constants
+
 #pragma region Inlines
+
+#pragma region Serialization
+inline
+StrBuilder attributes_to_strbuilder(CodeAttributes attributes) {
+	GEN_ASSERT(attributes);
+	char* raw = ccast(char*, str_duplicate( attributes->Content, get_context()->Allocator_Temp ).Ptr);
+	StrBuilder result = { raw };
+	return result;
+}
+
+inline
+void attributes_to_strbuilder_ref(CodeAttributes attributes, StrBuilder* result) {
+	GEN_ASSERT(attributes);
+	GEN_ASSERT(result);
+	strbuilder_append_str(result, attributes->Content);
+}
+
+inline
+StrBuilder comment_to_strbuilder(CodeComment comment) {
+	GEN_ASSERT(comment);
+	char* raw = ccast(char*, str_duplicate( comment->Content, get_context()->Allocator_Temp ).Ptr);
+	StrBuilder result = { raw };
+	return result;
+}
+
+inline
+void body_to_strbuilder_ref( CodeBody body, StrBuilder* result )
+{
+	GEN_ASSERT(body   != nullptr);
+	GEN_ASSERT(result != nullptr);
+	Code curr = body->Front;
+	s32  left = body->NumEntries;
+	while ( left -- )
+	{
+		code_to_strbuilder_ref(curr, result);
+		// strbuilder_append_fmt( result, "%SB", code_to_strbuilder(curr) );
+		++curr;
+	}
+}
+
+inline
+void comment_to_strbuilder_ref(CodeComment comment, StrBuilder* result) {
+	GEN_ASSERT(comment);
+	GEN_ASSERT(result);
+	strbuilder_append_str(result, comment->Content);
+}
+
+inline
+StrBuilder define_to_strbuilder(CodeDefine define)
+{
+	GEN_ASSERT(define);
+	StrBuilder result = strbuilder_make_reserve( _ctx->Allocator_Temp, 512 );
+	define_to_strbuilder_ref(define, & result);
+	return result;
+}
+
+inline
+StrBuilder define_params_to_strbuilder(CodeDefineParams params)
+{
+	GEN_ASSERT(params);
+	StrBuilder result = strbuilder_make_reserve( _ctx->Allocator_Temp, 128 );
+	define_params_to_strbuilder_ref( params, & result );
+	return result;
+}
+
+inline
+StrBuilder exec_to_strbuilder(CodeExec exec)
+{
+	GEN_ASSERT(exec);
+	char* raw = ccast(char*, str_duplicate( exec->Content, _ctx->Allocator_Temp ).Ptr);
+	StrBuilder result = { raw };
+	return result;
+}
+
+inline
+void exec_to_strbuilder_ref(CodeExec exec, StrBuilder* result) {
+	GEN_ASSERT(exec);
+	GEN_ASSERT(result);
+	strbuilder_append_str(result, exec->Content);
+}
+
+inline
+void extern_to_strbuilder(CodeExtern self, StrBuilder* result )
+{
+	GEN_ASSERT(self);
+	GEN_ASSERT(result);
+	if ( self->Body )
+		strbuilder_append_fmt( result, "extern \"%S\"\n{\n%SB\n}\n", self->Name, body_to_strbuilder(self->Body) );
+	else
+		strbuilder_append_fmt( result, "extern \"%S\"\n{}\n", self->Name );
+}
+
+inline
+StrBuilder friend_to_strbuilder(CodeFriend self)
+{
+	GEN_ASSERT(self);
+	StrBuilder result = strbuilder_make_reserve( _ctx->Allocator_Temp, 256 );
+	friend_to_strbuilder_ref( self, & result );
+	return result;
+}
+
+inline
+void friend_to_strbuilder_ref(CodeFriend self, StrBuilder* result )
+{
+	GEN_ASSERT(self);
+	GEN_ASSERT(result);
+	strbuilder_append_fmt( result, "friend %SB", code_to_strbuilder(self->Declaration) );
+
+	if ( self->Declaration->Type != CT_Function && self->Declaration->Type != CT_Operator && (* result)[ strbuilder_length(* result) - 1 ] != ';' )
+	{
+		strbuilder_append_str( result, txt(";") );
+	}
+
+	if ( self->InlineCmt )
+		strbuilder_append_fmt( result, "  %S", self->InlineCmt->Content );
+	else
+		strbuilder_append_str( result, txt("\n"));
+}
+
+inline
+StrBuilder include_to_strbuilder(CodeInclude include)
+{
+	GEN_ASSERT(include);
+	return strbuilder_fmt_buf( _ctx->Allocator_Temp, "#include %S\n", include->Content );
+}
+
+inline
+void include_to_strbuilder_ref( CodeInclude include, StrBuilder* result )
+{
+	GEN_ASSERT(include);
+	GEN_ASSERT(result);
+	strbuilder_append_fmt( result, "#include %S\n", include->Content );
+}
+
+inline
+StrBuilder module_to_strbuilder(CodeModule self)
+{
+	GEN_ASSERT(self);
+	StrBuilder result = strbuilder_make_reserve( _ctx->Allocator_Temp, 64 );
+	module_to_strbuilder_ref( self, & result );
+	return result;
+}
+
+inline
+StrBuilder namespace_to_strbuilder(CodeNS self)
+{
+	GEN_ASSERT(self);
+	StrBuilder result = strbuilder_make_reserve( _ctx->Allocator_Temp, 512 );
+	namespace_to_strbuilder_ref( self, & result );
+	return result;
+}
+
+inline
+void namespace_to_strbuilder_ref(CodeNS self, StrBuilder* result )
+{
+	GEN_ASSERT(self);
+	GEN_ASSERT(result);
+	if ( bitfield_is_set( u32, self->ModuleFlags, ModuleFlag_Export ))
+		strbuilder_append_str( result, txt("export ") );
+
+	strbuilder_append_fmt( result, "namespace %S\n{\n%SB\n}\n", self->Name, body_to_strbuilder(self->Body) );
+}
+
+inline
+StrBuilder params_to_strbuilder(CodeParams self)
+{
+	GEN_ASSERT(self);
+	StrBuilder result = strbuilder_make_reserve( _ctx->Allocator_Temp, 128 );
+	params_to_strbuilder_ref( self, & result );
+	return result;
+}
+
+inline
+StrBuilder pragma_to_strbuilder(CodePragma self)
+{
+	GEN_ASSERT(self);
+	StrBuilder result = strbuilder_make_reserve( _ctx->Allocator_Temp, 256 );
+	pragma_to_strbuilder_ref( self, & result );
+	return result;
+}
+
+inline
+void pragma_to_strbuilder_ref(CodePragma self, StrBuilder* result )
+{
+	GEN_ASSERT(self);
+	GEN_ASSERT(result);
+	strbuilder_append_fmt( result, "#pragma %S\n", self->Content );
+}
+
+inline
+void preprocess_to_strbuilder_if(CodePreprocessCond cond, StrBuilder* result )
+{
+	GEN_ASSERT(cond);
+	GEN_ASSERT(result);
+	strbuilder_append_fmt( result, "#if %S", cond->Content );
+}
+
+inline
+void preprocess_to_strbuilder_ifdef(CodePreprocessCond cond, StrBuilder* result )
+{
+	GEN_ASSERT(cond);
+	GEN_ASSERT(result);
+	strbuilder_append_fmt( result, "#ifdef %S\n", cond->Content );
+}
+
+inline
+void preprocess_to_strbuilder_ifndef(CodePreprocessCond cond, StrBuilder* result )
+{
+	GEN_ASSERT(cond);
+	GEN_ASSERT(result);
+	strbuilder_append_fmt( result, "#ifndef %S", cond->Content );
+}
+
+inline
+void preprocess_to_strbuilder_elif(CodePreprocessCond cond, StrBuilder* result )
+{
+	GEN_ASSERT(cond);
+	GEN_ASSERT(result);
+	strbuilder_append_fmt( result, "#elif %S\n", cond->Content );
+}
+
+inline
+void preprocess_to_strbuilder_else(CodePreprocessCond cond, StrBuilder* result )
+{
+	GEN_ASSERT(cond);
+	GEN_ASSERT(result);
+	strbuilder_append_str( result, txt("#else\n") );
+}
+
+inline
+void preprocess_to_strbuilder_endif(CodePreprocessCond cond, StrBuilder* result )
+{
+	GEN_ASSERT(cond);
+	GEN_ASSERT(result);
+	strbuilder_append_str( result, txt("#endif\n") );
+}
+
+inline
+StrBuilder specifiers_to_strbuilder(CodeSpecifiers self)
+{
+	GEN_ASSERT(self);
+	StrBuilder result = strbuilder_make_reserve( _ctx->Allocator_Temp, 64 );
+	specifiers_to_strbuilder_ref( self, & result );
+	return result;
+}
+
+inline
+StrBuilder template_to_strbuilder(CodeTemplate self)
+{
+	GEN_ASSERT(self);
+	StrBuilder result = strbuilder_make_reserve( _ctx->Allocator_Temp, 1024 );
+	template_to_strbuilder_ref( self, & result );
+	return result;
+}
+
+inline
+StrBuilder typedef_to_strbuilder(CodeTypedef self)
+{
+	GEN_ASSERT(self);
+	StrBuilder result = strbuilder_make_reserve( _ctx->Allocator_Temp, 128 );
+	typedef_to_strbuilder_ref( self, & result );
+	return result;
+}
+
+inline
+StrBuilder typename_to_strbuilder(CodeTypename self)
+{
+	GEN_ASSERT(self);
+	StrBuilder result = strbuilder_make_str( _ctx->Allocator_Temp, txt("") );
+	typename_to_strbuilder_ref( self, & result );
+	return result;
+}
+
+inline
+StrBuilder using_to_strbuilder(CodeUsing self)
+{
+	GEN_ASSERT(self);
+	StrBuilder result = strbuilder_make_reserve( _ctx->Allocator_Temp, 128 );
+	switch ( self->Type )
+	{
+		case CT_Using:
+			using_to_strbuilder_ref( self, & result );
+		break;
+		case CT_Using_Namespace:
+			using_to_strbuilder_ns( self, & result );
+		break;
+	}
+	return result;
+}
+
+inline
+void using_to_strbuilder_ns(CodeUsing self, StrBuilder* result )
+{
+	GEN_ASSERT(self);
+	GEN_ASSERT(result);
+	if ( self->InlineCmt )
+		strbuilder_append_fmt( result, "using namespace $S;  %S", self->Name, self->InlineCmt->Content );
+	else
+		strbuilder_append_fmt( result, "using namespace %S;\n", self->Name );
+}
+
+inline
+StrBuilder var_to_strbuilder(CodeVar self)
+{
+	GEN_ASSERT(self);
+	StrBuilder result = strbuilder_make_reserve( get_context()->Allocator_Temp, 256 );
+	var_to_strbuilder_ref( self, & result );
+	return result;
+}
+#pragma endregion Serialization
 
 #pragma region Code
 inline
@@ -4439,7 +4843,7 @@ bool code_is_valid(Code self)
 	return self != nullptr && self->Type != CT_Invalid;
 }
 FORCEINLINE
-bool code_has_entries(AST* self)
+bool code_has_entries(Code self)
 {
 	GEN_ASSERT(self);
 	return self->NumEntries > 0;
@@ -4534,12 +4938,12 @@ void class_add_interface( CodeClass self, CodeTypename type )
 		// then you'll need to move this over to ParentType->next and update ParentAccess accordingly.
 	}
 
-	while ( possible_slot != nullptr )
+	while ( possible_slot->Next != nullptr )
 	{
 		possible_slot = cast(CodeTypename, possible_slot->Next);
 	}
 
-	possible_slot = type;
+	possible_slot->Next = cast(Code, type);
 }
 #pragma endregion CodeClass
 
@@ -4661,7 +5065,17 @@ bool specifiers_append(CodeSpecifiers self, Specifier spec )
 	return true;
 }
 inline
-s32 specifiers_has(CodeSpecifiers self, Specifier spec)
+bool specifiers_has(CodeSpecifiers self, Specifier spec)
+{
+	GEN_ASSERT(self != nullptr);
+	for ( s32 idx = 0; idx < self->NumEntries; idx++ ) {
+		if ( self->ArrSpecs[ idx ] == spec )
+			return true;
+	}
+	return false;
+}
+inline
+s32 specifiers_index_of(CodeSpecifiers self, Specifier spec)
 {
 	GEN_ASSERT(self != nullptr);
 	for ( s32 idx = 0; idx < self->NumEntries; idx++ ) {
@@ -4743,12 +5157,12 @@ void struct_add_interface(CodeStruct self, CodeTypename type )
 		// then you'll need to move this over to ParentType->next and update ParentAccess accordingly.
 	}
 
-	while ( possible_slot != nullptr )
+	while ( possible_slot->Next != nullptr )
 	{
 		possible_slot = cast(CodeTypename, possible_slot->Next);
 	}
 
-	possible_slot = type;
+	possible_slot->Next = cast(Code, type);
 }
 #pragma endregion Code
 
@@ -5778,89 +6192,6 @@ GEN_OPITMIZE_MAPPINGS_END
 #pragma endregion generated AST / Code cast implementation
 
 #pragma endregion Inlines
-
-#pragma region Constants
-
-GEN_API extern Macro enum_underlying_macro;
-
-GEN_API extern Code access_public;
-GEN_API extern Code access_protected;
-GEN_API extern Code access_private;
-
-GEN_API extern CodeAttributes attrib_api_export;
-GEN_API extern CodeAttributes attrib_api_import;
-
-GEN_API extern Code module_global_fragment;
-GEN_API extern Code module_private_fragment;
-
-GEN_API extern Code fmt_newline;
-
-GEN_API extern CodePragma pragma_once;
-
-GEN_API extern CodeParams param_varadic;
-
-GEN_API extern CodePreprocessCond preprocess_else;
-GEN_API extern CodePreprocessCond preprocess_endif;
-
-GEN_API extern CodeSpecifiers spec_const;
-GEN_API extern CodeSpecifiers spec_consteval;
-GEN_API extern CodeSpecifiers spec_constexpr;
-GEN_API extern CodeSpecifiers spec_constinit;
-GEN_API extern CodeSpecifiers spec_extern_linkage;
-GEN_API extern CodeSpecifiers spec_final;
-GEN_API extern CodeSpecifiers spec_FORCEINLINE;
-GEN_API extern CodeSpecifiers spec_global;
-GEN_API extern CodeSpecifiers spec_inline;
-GEN_API extern CodeSpecifiers spec_internal_linkage;
-GEN_API extern CodeSpecifiers spec_local_persist;
-GEN_API extern CodeSpecifiers spec_mutable;
-GEN_API extern CodeSpecifiers spec_neverinline;
-GEN_API extern CodeSpecifiers spec_noexcept;
-GEN_API extern CodeSpecifiers spec_override;
-GEN_API extern CodeSpecifiers spec_ptr;
-GEN_API extern CodeSpecifiers spec_pure;
-GEN_API extern CodeSpecifiers spec_ref;
-GEN_API extern CodeSpecifiers spec_register;
-GEN_API extern CodeSpecifiers spec_rvalue;
-GEN_API extern CodeSpecifiers spec_static_member;
-GEN_API extern CodeSpecifiers spec_thread_local;
-GEN_API extern CodeSpecifiers spec_virtual;
-GEN_API extern CodeSpecifiers spec_volatile;
-
-GEN_API extern CodeTypename t_empty; // Used with varaidc parameters. (Exposing just in case its useful for another circumstance)
-GEN_API extern CodeTypename t_auto;
-GEN_API extern CodeTypename t_void;
-GEN_API extern CodeTypename t_int;
-GEN_API extern CodeTypename t_bool;
-GEN_API extern CodeTypename t_char;
-GEN_API extern CodeTypename t_wchar_t;
-GEN_API extern CodeTypename t_class;
-GEN_API extern CodeTypename t_typename;
-
-#ifdef GEN_DEFINE_LIBRARY_CODE_CONSTANTS
-	// Predefined typename codes. Are set to readonly and are setup during gen::init()
-	GEN_API extern Context* _ctx;
-
-	GEN_API extern CodeTypename t_b32;
-
-	GEN_API extern CodeTypename t_s8;
-	GEN_API extern CodeTypename t_s16;
-	GEN_API extern CodeTypename t_s32;
-	GEN_API extern CodeTypename t_s64;
-
-	GEN_API extern CodeTypename t_u8;
-	GEN_API extern CodeTypename t_u16;
-	GEN_API extern CodeTypename t_u32;
-	GEN_API extern CodeTypename t_u64;
-
-	GEN_API extern CodeTypename t_ssize;
-	GEN_API extern CodeTypename t_usize;
-
-	GEN_API extern CodeTypename t_f32;
-	GEN_API extern CodeTypename t_f64;
-#endif
-
-#pragma endregion Constants
 
 GEN_NS_END
 

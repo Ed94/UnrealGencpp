@@ -577,11 +577,11 @@ Code code_duplicate(Code self)
 StrBuilder code_to_strbuilder(Code self)
 {
 	StrBuilder result = strbuilder_make_str( _ctx->Allocator_Temp, txt("") );
-	code_to_strbuilder_ptr( self, & result );
+	code_to_strbuilder_ref( self, & result );
 	return result;
 }
 
-void code_to_strbuilder_ptr( Code self, StrBuilder* result )
+void code_to_strbuilder_ref( Code self, StrBuilder* result )
 {
 	GEN_ASSERT(self != nullptr);
 	local_persist thread_local
@@ -1500,21 +1500,6 @@ bool code_validate_body(Code self)
 	return false;
 }
 
-inline
-StrBuilder attributes_to_strbuilder(CodeAttributes attributes) {
-	GEN_ASSERT(attributes);
-	char* raw = ccast(char*, str_duplicate( attributes->Content, _ctx->Allocator_Temp ).Ptr);
-	StrBuilder result = { raw };
-	return result;
-}
-
-inline
-void attributes_to_strbuilder_ref(CodeAttributes attributes, StrBuilder* result) {
-	GEN_ASSERT(attributes);
-	GEN_ASSERT(result);
-	strbuilder_append_str(result, attributes->Content);
-}
-
 StrBuilder body_to_strbuilder(CodeBody body)
 {
 	GEN_ASSERT(body);
@@ -1544,20 +1529,6 @@ StrBuilder body_to_strbuilder(CodeBody body)
 	return result;
 }
 
-void body_to_strbuilder_ref( CodeBody body, StrBuilder* result )
-{
-	GEN_ASSERT(body   != nullptr);
-	GEN_ASSERT(result != nullptr);
-	Code curr = body->Front;
-	s32  left = body->NumEntries;
-	while ( left -- )
-	{
-		code_to_strbuilder_ptr(curr, result);
-		// strbuilder_append_fmt( result, "%SB", code_to_strbuilder(curr) );
-		++curr;
-	}
-}
-
 void body_to_strbuilder_export( CodeBody body, StrBuilder* result )
 {
 	GEN_ASSERT(body   != nullptr);
@@ -1568,7 +1539,7 @@ void body_to_strbuilder_export( CodeBody body, StrBuilder* result )
 	s32  left = body->NumEntries;
 	while ( left-- )
 	{
-		code_to_strbuilder_ptr(curr, result);
+		code_to_strbuilder_ref(curr, result);
 		// strbuilder_append_fmt( result, "%SB", code_to_strbuilder(curr) );
 		++curr;
 	}
@@ -1576,23 +1547,9 @@ void body_to_strbuilder_export( CodeBody body, StrBuilder* result )
 	strbuilder_append_fmt( result, "};\n" );
 }
 
-inline
-StrBuilder comment_to_strbuilder(CodeComment comment) {
-	GEN_ASSERT(comment);
-	char* raw = ccast(char*, str_duplicate( comment->Content, _ctx->Allocator_Temp ).Ptr);
-	StrBuilder result = { raw };
-	return result;
-}
-
-inline
-void comment_to_strbuilder_ref(CodeComment comment, StrBuilder* result) {
-	GEN_ASSERT(comment);
-	GEN_ASSERT(result);
-	strbuilder_append_str(result, comment->Content);
-}
-
 StrBuilder constructor_to_strbuilder(CodeConstructor self)
 {
+	GEN_ASSERT(self);
 	StrBuilder result = strbuilder_make_reserve( _ctx->Allocator_Temp, 128 );
 	switch (self->Type)
 	{
@@ -1608,6 +1565,8 @@ StrBuilder constructor_to_strbuilder(CodeConstructor self)
 
 void constructor_to_strbuilder_def(CodeConstructor self, StrBuilder* result )
 {
+	GEN_ASSERT(self);
+	GEN_ASSERT(result);
 	Code ClassStructParent = self->Parent->Parent;
 	if (ClassStructParent) {
 		strbuilder_append_str( result, ClassStructParent->Name );
@@ -1632,6 +1591,8 @@ void constructor_to_strbuilder_def(CodeConstructor self, StrBuilder* result )
 
 void constructor_to_strbuilder_fwd(CodeConstructor self, StrBuilder* result )
 {
+	GEN_ASSERT(self);
+	GEN_ASSERT(result);
 	Code ClassStructParent = self->Parent->Parent;
 	if (ClassStructParent) {
 		strbuilder_append_str( result, ClassStructParent->Name );
@@ -1656,6 +1617,7 @@ void constructor_to_strbuilder_fwd(CodeConstructor self, StrBuilder* result )
 
 StrBuilder class_to_strbuilder( CodeClass self )
 {
+	GEN_ASSERT(self);
 	StrBuilder result = strbuilder_make_reserve( _ctx->Allocator_Temp, 512 );
 	switch ( self->Type )
 	{
@@ -1672,6 +1634,7 @@ StrBuilder class_to_strbuilder( CodeClass self )
 void class_to_strbuilder_def( CodeClass self, StrBuilder* result )
 {
 	GEN_ASSERT(self);
+	GEN_ASSERT(result);
 
 	if ( bitfield_is_set( u32, self->ModuleFlags, ModuleFlag_Export ))
 		strbuilder_append_str( result, txt("export ") );
@@ -1683,11 +1646,11 @@ void class_to_strbuilder_def( CodeClass self, StrBuilder* result )
 		strbuilder_append_fmt( result, "%SB ", attributes_to_strbuilder(self->Attributes) );
 	}
 
-	if (self->Name)
+	if ( self->Name.Len )
 		strbuilder_append_str( result, self->Name );
-	
-	if (self->Specs && self->Specs.has(Spec_Final))
-		strbuilder_append_str( result, txt(" final"));
+
+	if (self->Specs && specifiers_has(self->Specs, Spec_Final))
+		strbuilder_append_str(result, txt(" final"));
 
 	if ( self->ParentType )
 	{
@@ -1719,6 +1682,7 @@ void class_to_strbuilder_def( CodeClass self, StrBuilder* result )
 void class_to_strbuilder_fwd( CodeClass self, StrBuilder* result )
 {
 	GEN_ASSERT(self);
+	GEN_ASSERT(result);
 
 	if ( bitfield_is_set( u32, self->ModuleFlags, ModuleFlag_Export ))
 		strbuilder_append_str( result, txt("export ") );
@@ -1738,13 +1702,6 @@ void class_to_strbuilder_fwd( CodeClass self, StrBuilder* result )
 	}
 }
 
-StrBuilder define_to_strbuilder(CodeDefine define)
-{
-	StrBuilder result = strbuilder_make_reserve( _ctx->Allocator_Temp, 512 );
-	define_to_strbuilder_ref(define, & result);
-	return result;
-}
-
 void define_to_strbuilder_ref(CodeDefine define, StrBuilder* result )
 {
 	GEN_ASSERT(define);
@@ -1757,14 +1714,6 @@ void define_to_strbuilder_ref(CodeDefine define, StrBuilder* result )
 	else {
 		strbuilder_append_fmt( result, "#define %S %S", define->Name, define->Body->Content );
 	}
-}
-
-StrBuilder define_params_to_strbuilder(CodeDefineParams params)
-{
-	GEN_ASSERT(params);
-	StrBuilder result = strbuilder_make_reserve( _ctx->Allocator_Temp, 128 );
-	define_params_to_strbuilder_ref( params, & result );
-	return result;
 }
 
 void define_params_to_strbuilder_ref(CodeDefineParams self, StrBuilder* result)
@@ -1786,6 +1735,7 @@ void define_params_to_strbuilder_ref(CodeDefineParams self, StrBuilder* result)
 
 StrBuilder destructor_to_strbuilder(CodeDestructor self)
 {
+	GEN_ASSERT(self);
 	StrBuilder result = strbuilder_make_reserve( _ctx->Allocator_Temp, 128 );
 	switch ( self->Type )
 	{
@@ -1801,6 +1751,8 @@ StrBuilder destructor_to_strbuilder(CodeDestructor self)
 
 void destructor_to_strbuilder_def(CodeDestructor self, StrBuilder* result )
 {
+	GEN_ASSERT(self);
+	GEN_ASSERT(result);
 	if ( self->Name.Len )
 	{
 		strbuilder_append_fmt( result, "%S()", self->Name );
@@ -1820,6 +1772,8 @@ void destructor_to_strbuilder_def(CodeDestructor self, StrBuilder* result )
 
 void destructor_to_strbuilder_fwd(CodeDestructor self, StrBuilder* result )
 {
+	GEN_ASSERT(self);
+	GEN_ASSERT(result);
 	if ( self->Specs )
 	{
 		if ( specifiers_has(self->Specs, Spec_Virtual ) )
@@ -1843,6 +1797,7 @@ void destructor_to_strbuilder_fwd(CodeDestructor self, StrBuilder* result )
 
 StrBuilder enum_to_strbuilder(CodeEnum self)
 {
+	GEN_ASSERT(self);
 	StrBuilder result = strbuilder_make_reserve( _ctx->Allocator_Temp, 512 );
 	switch ( self->Type )
 	{
@@ -1864,6 +1819,8 @@ StrBuilder enum_to_strbuilder(CodeEnum self)
 
 void enum_to_strbuilder_def(CodeEnum self, StrBuilder* result )
 {
+	GEN_ASSERT(self);
+	GEN_ASSERT(result);
 	if ( bitfield_is_set( u32, self->ModuleFlags, ModuleFlag_Export ))
 		strbuilder_append_str( result, txt("export ") );
 
@@ -1897,6 +1854,8 @@ void enum_to_strbuilder_def(CodeEnum self, StrBuilder* result )
 
 void enum_to_strbuilder_fwd(CodeEnum self, StrBuilder* result )
 {
+	GEN_ASSERT(self);
+	GEN_ASSERT(result);
 	if ( bitfield_is_set( u32, self->ModuleFlags, ModuleFlag_Export ))
 		strbuilder_append_str( result, txt("export ") );
 
@@ -1924,6 +1883,8 @@ void enum_to_strbuilder_fwd(CodeEnum self, StrBuilder* result )
 
 void enum_to_strbuilder_class_def(CodeEnum self, StrBuilder* result )
 {
+	GEN_ASSERT(self);
+	GEN_ASSERT(result);
 	if ( bitfield_is_set( u32, self->ModuleFlags, ModuleFlag_Export ))
 		strbuilder_append_str( result, txt("export ") );
 
@@ -1956,6 +1917,8 @@ void enum_to_strbuilder_class_def(CodeEnum self, StrBuilder* result )
 
 void enum_to_strbuilder_class_fwd(CodeEnum self, StrBuilder* result )
 {
+	GEN_ASSERT(self);
+	GEN_ASSERT(result);
 	if ( bitfield_is_set( u32, self->ModuleFlags, ModuleFlag_Export ))
 		strbuilder_append_str( result, txt("export ") );
 
@@ -1975,56 +1938,9 @@ void enum_to_strbuilder_class_fwd(CodeEnum self, StrBuilder* result )
 	}
 }
 
-StrBuilder exec_to_strbuilder(CodeExec exec)
-{
-	GEN_ASSERT(exec);
-	char* raw = ccast(char*, str_duplicate( exec->Content, _ctx->Allocator_Temp ).Ptr);
-	StrBuilder result = { raw };
-	return result;
-}
-
-void extern_to_strbuilder(CodeExtern self, StrBuilder* result )
-{
-	if ( self->Body )
-		strbuilder_append_fmt( result, "extern \"%S\"\n{\n%SB\n}\n", self->Name, body_to_strbuilder(self->Body) );
-	else
-		strbuilder_append_fmt( result, "extern \"%S\"\n{}\n", self->Name );
-}
-
-StrBuilder include_to_strbuilder(CodeInclude include)
-{
-	return strbuilder_fmt_buf( _ctx->Allocator_Temp, "#include %S\n", include->Content );
-}
-
-void include_to_strbuilder_ref( CodeInclude include, StrBuilder* result )
-{
-	strbuilder_append_fmt( result, "#include %S\n", include->Content );
-}
-
-StrBuilder friend_to_strbuilder(CodeFriend self)
-{
-	StrBuilder result = strbuilder_make_reserve( _ctx->Allocator_Temp, 256 );
-	friend_to_strbuilder_ref( self, & result );
-	return result;
-}
-
-void friend_to_strbuilder_ref(CodeFriend self, StrBuilder* result )
-{
-	strbuilder_append_fmt( result, "friend %SB", code_to_strbuilder(self->Declaration) );
-
-	if ( self->Declaration->Type != CT_Function && self->Declaration->Type != CT_Operator && (* result)[ strbuilder_length(* result) - 1 ] != ';' )
-	{
-		strbuilder_append_str( result, txt(";") );
-	}
-
-	if ( self->InlineCmt )
-		strbuilder_append_fmt( result, "  %S", self->InlineCmt->Content );
-	else
-		strbuilder_append_str( result, txt("\n"));
-}
-
 StrBuilder fn_to_strbuilder(CodeFn self)
 {
+	GEN_ASSERT(self);
 	StrBuilder result = strbuilder_make_reserve( _ctx->Allocator_Temp, 512 );
 	switch ( self->Type )
 	{
@@ -2040,6 +1956,8 @@ StrBuilder fn_to_strbuilder(CodeFn self)
 
 void fn_to_strbuilder_def(CodeFn self, StrBuilder* result )
 {
+	GEN_ASSERT(self);
+	GEN_ASSERT(result);
 	if ( bitfield_is_set( u32, self->ModuleFlags, ModuleFlag_Export ))
 		strbuilder_append_str( result, txt("export") );
 
@@ -2097,6 +2015,8 @@ void fn_to_strbuilder_def(CodeFn self, StrBuilder* result )
 
 void fn_to_strbuilder_fwd(CodeFn self, StrBuilder* result )
 {
+	GEN_ASSERT(self);
+	GEN_ASSERT(result);
 	if ( bitfield_is_set( u32, self->ModuleFlags, ModuleFlag_Export ))
 		strbuilder_append_str( result, txt("export ") );
 
@@ -2145,14 +2065,10 @@ void fn_to_strbuilder_fwd(CodeFn self, StrBuilder* result )
 				strbuilder_append_fmt( result, " %.*s", spec_str.Len, spec_str.Ptr );
 			}
 		}
-	}
 
-	if (self->Specs)
-	{
-		if ( specifiers_has(self->Specs, Spec_Pure ) >= 0 )
+		if ( specifiers_has(self->Specs, Spec_Pure ) )
 			strbuilder_append_str( result, txt(" = 0") );
-		
-		if ( specifiers_has(self->Specs, Spec_Delete ) >= 0 )
+		else if ( specifiers_has(self->Specs, Spec_Delete ) )
 			strbuilder_append_str( result, txt(" = delete") );
 	}
 
@@ -2169,15 +2085,10 @@ void fn_to_strbuilder_fwd(CodeFn self, StrBuilder* result )
 		strbuilder_append_str( result, txt(";\n") );
 }
 
-StrBuilder module_to_strbuilder(CodeModule self)
-{
-	StrBuilder result = strbuilder_make_reserve( _ctx->Allocator_Temp, 64 );
-	module_to_strbuilder_ref( self, & result );
-	return result;
-}
-
 void module_to_strbuilder_ref(CodeModule self, StrBuilder* result )
 {
+	GEN_ASSERT(self);
+	GEN_ASSERT(result);
 	if (((scast(u32, ModuleFlag_Export) & scast(u32, self->ModuleFlags)) == scast(u32, ModuleFlag_Export)))
 		strbuilder_append_str( result, txt("export "));
 
@@ -2187,23 +2098,9 @@ void module_to_strbuilder_ref(CodeModule self, StrBuilder* result )
 	strbuilder_append_fmt( result, "%S;\n", self->Name );
 }
 
-StrBuilder namespace_to_strbuilder(CodeNS self)
-{
-	StrBuilder result = strbuilder_make_reserve( _ctx->Allocator_Temp, 512 );
-	namespace_to_strbuilder_ref( self, & result );
-	return result;
-}
-
-void namespace_to_strbuilder_ref(CodeNS self, StrBuilder* result )
-{
-	if ( bitfield_is_set( u32, self->ModuleFlags, ModuleFlag_Export ))
-		strbuilder_append_str( result, txt("export ") );
-
-	strbuilder_append_fmt( result, "namespace %S\n{\n%SB\n}\n", self->Name, body_to_strbuilder(self->Body) );
-}
-
 StrBuilder code_op_to_strbuilder(CodeOperator self)
 {
+	GEN_ASSERT(self);
 	StrBuilder result = strbuilder_make_reserve( _ctx->Allocator_Temp, 512 );
 	switch ( self->Type )
 	{
@@ -2221,6 +2118,8 @@ StrBuilder code_op_to_strbuilder(CodeOperator self)
 
 void code_op_to_strbuilder_def(CodeOperator self, StrBuilder* result )
 {
+	GEN_ASSERT(self);
+	GEN_ASSERT(result);
 	if ( bitfield_is_set( u32, self->ModuleFlags, ModuleFlag_Export ))
 		strbuilder_append_str( result, txt("export ") );
 
@@ -2275,6 +2174,8 @@ void code_op_to_strbuilder_def(CodeOperator self, StrBuilder* result )
 
 void code_op_to_strbuilder_fwd(CodeOperator self, StrBuilder* result )
 {
+	GEN_ASSERT(self);
+	GEN_ASSERT(result);
 	if ( bitfield_is_set( u32, self->ModuleFlags, ModuleFlag_Export ))
 		strbuilder_append_str( result, txt("export ") );
 
@@ -2326,6 +2227,7 @@ void code_op_to_strbuilder_fwd(CodeOperator self, StrBuilder* result )
 
 StrBuilder opcast_to_strbuilder(CodeOpCast self)
 {
+	GEN_ASSERT(self);
 	StrBuilder result = strbuilder_make_reserve( _ctx->Allocator_Temp, 128 );
 	switch ( self->Type )
 	{
@@ -2341,6 +2243,8 @@ StrBuilder opcast_to_strbuilder(CodeOpCast self)
 
 void opcast_to_strbuilder_def(CodeOpCast self, StrBuilder* result )
 {
+	GEN_ASSERT(self);
+	GEN_ASSERT(result);
 	if ( self->Specs )
 	{
 		for ( Specifier* spec = begin_CodeSpecifiers(self->Specs); spec != end_CodeSpecifiers(self->Specs); spec = next_CodeSpecifiers(self->Specs, spec) )
@@ -2378,6 +2282,8 @@ void opcast_to_strbuilder_def(CodeOpCast self, StrBuilder* result )
 
 void opcast_to_strbuilder_fwd(CodeOpCast self, StrBuilder* result )
 {
+	GEN_ASSERT(self);
+	GEN_ASSERT(result);
 	if ( self->Specs )
 	{
 		for ( Specifier* spec = begin_CodeSpecifiers(self->Specs); spec != end_CodeSpecifiers(self->Specs); spec = next_CodeSpecifiers(self->Specs, spec) )
@@ -2411,14 +2317,6 @@ void opcast_to_strbuilder_fwd(CodeOpCast self, StrBuilder* result )
 		strbuilder_append_fmt( result, "operator %SB();  %SB", typename_to_strbuilder(self->ValueType) );
 	else
 		strbuilder_append_fmt( result, "operator %SB();\n", typename_to_strbuilder(self->ValueType) );
-}
-
-StrBuilder params_to_strbuilder(CodeParams self)
-{
-	GEN_ASSERT(self);
-	StrBuilder result = strbuilder_make_reserve( _ctx->Allocator_Temp, 128 );
-	params_to_strbuilder_ref( self, & result );
-	return result;
 }
 
 void params_to_strbuilder_ref( CodeParams self, StrBuilder* result )
@@ -2488,62 +2386,6 @@ StrBuilder preprocess_to_strbuilder(CodePreprocessCond self)
 	return result;
 }
 
-void preprocess_to_strbuilder_if(CodePreprocessCond cond, StrBuilder* result )
-{
-	GEN_ASSERT(cond);
-	strbuilder_append_fmt( result, "#if %S", cond->Content );
-}
-
-void preprocess_to_strbuilder_ifdef(CodePreprocessCond cond, StrBuilder* result )
-{
-	GEN_ASSERT(cond);
-	strbuilder_append_fmt( result, "#ifdef %S\n", cond->Content );
-}
-
-void preprocess_to_strbuilder_ifndef(CodePreprocessCond cond, StrBuilder* result )
-{
-	GEN_ASSERT(cond);
-	strbuilder_append_fmt( result, "#ifndef %S", cond->Content );
-}
-
-void preprocess_to_strbuilder_elif(CodePreprocessCond cond, StrBuilder* result )
-{
-	GEN_ASSERT(cond);
-	strbuilder_append_fmt( result, "#elif %S\n", cond->Content );
-}
-
-void preprocess_to_strbuilder_else(CodePreprocessCond cond, StrBuilder* result )
-{
-	GEN_ASSERT(cond);
-	strbuilder_append_str( result, txt("#else\n") );
-}
-
-void preprocess_to_strbuilder_endif(CodePreprocessCond cond, StrBuilder* result )
-{
-	GEN_ASSERT(cond);
-	strbuilder_append_str( result, txt("#endif\n") );
-}
-
-StrBuilder pragma_to_strbuilder(CodePragma self)
-{
-	GEN_ASSERT(self);
-	StrBuilder result = strbuilder_make_reserve( _ctx->Allocator_Temp, 256 );
-	pragma_to_strbuilder_ref( self, & result );
-	return result;
-}
-
-void pragma_to_strbuilder_ref(CodePragma self, StrBuilder* result )
-{
-	strbuilder_append_fmt( result, "#pragma %S\n", self->Content );
-}
-
-StrBuilder specifiers_to_strbuilder(CodeSpecifiers self)
-{
-	StrBuilder result = strbuilder_make_reserve( _ctx->Allocator_Temp, 64 );
-	specifiers_to_strbuilder_ref( self, & result );
-	return result;
-}
-
 void specifiers_to_strbuilder_ref( CodeSpecifiers self, StrBuilder* result )
 {
 	GEN_ASSERT(self);
@@ -2600,18 +2442,18 @@ void struct_to_strbuilder_def( CodeStruct self, StrBuilder* result )
 	{
 		strbuilder_append_fmt( result, "%SB ", attributes_to_strbuilder(self->Attributes) );
 	}
-	
+
 	if ( self->Name.Len )
 		strbuilder_append_str( result, self->Name );
 
-	if (self->Specs && self->Specs.has(Spec_Final))
+	if (self->Specs && specifiers_has(self->Specs, Spec_Final))
 		strbuilder_append_str( result, txt(" final"));
 
 	if ( self->ParentType )
 	{
 		Str access_level = access_spec_to_str( self->ParentAccess );
 
-		strbuilder_append_fmt( result, " : %S %SB", self->Name, access_level, typename_to_strbuilder(self->ParentType) );
+		strbuilder_append_fmt( result, " : %S %SB", access_level, typename_to_strbuilder(self->ParentType) );
 
 		CodeTypename interface = cast(CodeTypename, self->ParentType->Next);
 		if ( interface )
@@ -2656,14 +2498,6 @@ void struct_to_strbuilder_fwd( CodeStruct self, StrBuilder* result )
 	}
 }
 
-StrBuilder template_to_strbuilder(CodeTemplate self)
-{
-	GEN_ASSERT(self);
-	StrBuilder result = strbuilder_make_reserve( _ctx->Allocator_Temp, 1024 );
-	template_to_strbuilder_ref( self, & result );
-	return result;
-}
-
 void template_to_strbuilder_ref(CodeTemplate self, StrBuilder* result )
 {
 	GEN_ASSERT(self);
@@ -2677,15 +2511,10 @@ void template_to_strbuilder_ref(CodeTemplate self, StrBuilder* result )
 		strbuilder_append_fmt( result, "template<>\n%SB", code_to_strbuilder(self->Declaration) );
 }
 
-StrBuilder typedef_to_strbuilder(CodeTypedef self)
-{
-	StrBuilder result = strbuilder_make_reserve( _ctx->Allocator_Temp, 128 );
-	typedef_to_strbuilder_ref( self, & result );
-	return result;
-}
-
 void typedef_to_strbuilder_ref(CodeTypedef self, StrBuilder* result )
 {
+	GEN_ASSERT(self);
+	GEN_ASSERT(result);
 	if ( bitfield_is_set( u32, self->ModuleFlags, ModuleFlag_Export ))
 		strbuilder_append_str( result, txt("export ") );
 
@@ -2719,15 +2548,10 @@ void typedef_to_strbuilder_ref(CodeTypedef self, StrBuilder* result )
 		strbuilder_append_str( result, txt("\n"));
 }
 
-StrBuilder typename_to_strbuilder(CodeTypename self)
-{
-	StrBuilder result = strbuilder_make_str( _ctx->Allocator_Temp, txt("") );
-	typename_to_strbuilder_ref( self, & result );
-	return result;
-}
-
 void typename_to_strbuilder_ref(CodeTypename self, StrBuilder* result )
 {
+	GEN_ASSERT(self);
+	GEN_ASSERT(result);
 	#if defined(GEN_USE_NEW_TYPENAME_PARSING)
 		if ( self->ReturnType && self->Params )
 		{
@@ -2784,6 +2608,7 @@ void typename_to_strbuilder_ref(CodeTypename self, StrBuilder* result )
 
 StrBuilder union_to_strbuilder(CodeUnion self)
 {
+	GEN_ASSERT(self);
 	StrBuilder result = strbuilder_make_reserve( _ctx->Allocator_Temp, 512 );
 	switch ( self->Type )
 	{
@@ -2799,6 +2624,8 @@ StrBuilder union_to_strbuilder(CodeUnion self)
 
 void union_to_strbuilder_def(CodeUnion self, StrBuilder* result )
 {
+	GEN_ASSERT(self);
+	GEN_ASSERT(result);
 	if ( bitfield_is_set( u32, self->ModuleFlags, ModuleFlag_Export ))
 		strbuilder_append_str( result, txt("export ") );
 
@@ -2847,22 +2674,6 @@ void union_to_strbuilder_fwd(CodeUnion self, StrBuilder* result )
 		strbuilder_append_str( result, txt(";\n"));
 }
 
-StrBuilder using_to_strbuilder(CodeUsing self)
-{
-	GEN_ASSERT(self);
-	StrBuilder result = strbuilder_make_reserve( _ctx->Allocator_Temp, 128 );
-	switch ( self->Type )
-	{
-		case CT_Using:
-			using_to_strbuilder_ref( self, & result );
-		break;
-		case CT_Using_Namespace:
-			using_to_strbuilder_ns( self, & result );
-		break;
-	}
-	return result;
-}
-
 void using_to_strbuilder_ref(CodeUsing self, StrBuilder* result )
 {
 	GEN_ASSERT(self);
@@ -2898,26 +2709,6 @@ void using_to_strbuilder_ref(CodeUsing self, StrBuilder* result )
 		strbuilder_append_fmt( result, "  %S\n", self->InlineCmt->Content );
 	else
 		strbuilder_append_str( result, txt("\n"));
-}
-
-inline
-void using_to_strbuilder_ns(CodeUsing self, StrBuilder* result )
-{
-	GEN_ASSERT(self);
-	GEN_ASSERT(result);
-	if ( self->InlineCmt )
-		strbuilder_append_fmt( result, "using namespace $SC;  %S", self->Name, self->InlineCmt->Content );
-	else
-		strbuilder_append_fmt( result, "using namespace %S;\n", self->Name );
-}
-
-inline
-StrBuilder var_to_strbuilder(CodeVar self)
-{
-	GEN_ASSERT(self);
-	StrBuilder result = strbuilder_make_reserve( _ctx->Allocator_Temp, 256 );
-	var_to_strbuilder_ref( self, & result );
-	return result;
 }
 
 neverinline
@@ -4104,7 +3895,7 @@ CodeClass def_class( Str name, Opts_def_struct p )
 	result->Name         = cache_str( name );
 	result->ModuleFlags  = p.mflags;
 	result->Attributes   = p.attributes;
-	result->Specs        = p.specifers;
+	result->Specs        = p.specifiers;
 	result->ParentAccess = p.parent_access;
 	result->ParentType   = p.parent;
 	if ( p.body )
@@ -4638,14 +4429,13 @@ CodeStruct def_struct( Str name, Opts_def_struct p )
 		result->Type = CT_Struct_Fwd;
 	}
 	result->Attributes   = p.attributes;
+	result->Specs        = p.specifiers;
 	result->ParentAccess = p.parent_access;
 	result->ParentType   = p.parent;
 
 	for (s32 idx = 0; idx < p.num_interfaces; idx++ ) {
 		struct_add_interface(result, p.interfaces[idx] );
 	}
-
-	result->Specs = p.specifers;
 	return result;
 }
 
@@ -4687,7 +4477,7 @@ CodeTypename def_type( Str name, Opts_def_type p )
 		GEN_DEBUG_TRAP();
 		return InvalidCode;
 	}
-	Code           arrayexpr  = p.arrayexpr;
+	Code           array_expr = p.array_expr;
 	CodeSpecifiers specifiers = p.specifiers;
 	CodeAttributes attributes = p.attributes;
 	if ( p.attributes && p.attributes->Type != CT_PlatformAttributes ) {
@@ -4700,8 +4490,8 @@ CodeTypename def_type( Str name, Opts_def_type p )
 		GEN_DEBUG_TRAP();
 		return InvalidCode;
 	}
-	if ( p.arrayexpr && p.arrayexpr->Type != CT_Untyped ) {
-		log_failure( "gen::def_type: arrayexpr is not of untyped type - %s", code_debug_str((Code)p.arrayexpr) );
+	if ( p.array_expr && p.array_expr->Type != CT_Untyped ) {
+		log_failure( "gen::def_type: arrayexpr is not of untyped type - %s", code_debug_str((Code)p.array_expr) );
 		GEN_DEBUG_TRAP();
 		return InvalidCode;
 	}
@@ -4711,7 +4501,7 @@ CodeTypename def_type( Str name, Opts_def_type p )
 	result->Type       = CT_Typename;
 	result->Attributes = p.attributes;
 	result->Specs      = p.specifiers;
-	result->ArrExpr    = p.arrayexpr;
+	result->ArrExpr    = p.array_expr;
 	result->TypeTag    = p.type_tag;
 	return result;
 }
@@ -6158,6 +5948,10 @@ void lex_found_token( LexContext* ctx )
 	}
 
 	TokType type = str_to_toktype( ctx->token.Text );
+
+	if (type == Tok_Preprocess_Define || type == Tok_Preprocess_Include) {
+		ctx->token.Flags |= TF_Identifier;
+	}
 
 	if (type <= Tok_Access_Public && type >= Tok_Access_Private ) {
 		ctx->token.Flags |= TF_AccessSpecifier;
@@ -7799,6 +7593,7 @@ Code parse_class_struct( TokType which, bool inplace_def )
 		specifiers = def_specifier(Spec_Final);
 		eat(Tok_Spec_Final);
 	}
+	// <ModuleFlags> <class/struct> <Attributes> <Name> <final>
 
 	local_persist
 	char interface_arr_mem[ kilobytes(4) ] = {0};
@@ -7811,22 +7606,22 @@ Code parse_class_struct( TokType which, bool inplace_def )
 	if ( check( Tok_Assign_Classifer ) )
 	{
 		eat( Tok_Assign_Classifer );
-		// <ModuleFlags> <class/struct> <Attributes> <Name> :
+		// <ModuleFlags> <class/struct> <Attributes> <Name> <final> :
 
 		if ( tok_is_access_specifier(currtok) ) {
 			access = tok_to_access_specifier(currtok);
-			// <ModuleFlags> <class/struct> <Attributes> <Name> : <Access Specifier>
+			// <ModuleFlags> <class/struct> <Attributes> <Name> <final> : <Access Specifier>
 			eat( currtok.Type );
 		}
 
 		Token parent_tok = parse_identifier(nullptr);
 		parent = def_type( parent_tok.Text );
-		// <ModuleFlags> <class/struct> <Attributes> <Name> : <Access Specifier> <Parent/Interface Name>
+		// <ModuleFlags> <class/struct> <Attributes> <Name> <final> : <Access Specifier> <Parent/Interface Name>
 
 		while ( check(Tok_Comma) )
 		{
 			eat( Tok_Comma );
-			// <ModuleFlags> <class/struct> <Attributes> <Name> : <Access Specifier> <Name>,
+			// <ModuleFlags> <class/struct> <Attributes> <Name> <final> : <Access Specifier> <Name>,
 
 			if ( tok_is_access_specifier(currtok) ) {
 				eat(currtok.Type);
@@ -7834,25 +7629,25 @@ Code parse_class_struct( TokType which, bool inplace_def )
 			Token interface_tok = parse_identifier(nullptr);
 
 			array_append( interfaces, def_type( interface_tok.Text ) );
-			// <ModuleFlags> <class/struct> <Attributes> <Name> : <Access Specifier> <Name>, ...
+			// <ModuleFlags> <class/struct> <Attributes> <Name> <final> : <Access Specifier> <Name>, ...
 		}
 	}
 
 	if ( check( Tok_BraceCurly_Open ) ) {
 		body = parse_class_struct_body( which, name );
 	}
-	// <ModuleFlags> <class/struct> <Attributes> <Name> : <Access Specifier> <Name>, ... { <Body> }
+	// <ModuleFlags> <class/struct> <Attributes> <Name> <final> : <Access Specifier> <Name>, ... { <Body> }
 
 	CodeComment inline_cmt = NullCode;
 	if ( ! inplace_def )
 	{
 		Token stmt_end = currtok;
 		eat( Tok_Statement_End );
-		// <ModuleFlags> <class/struct> <Attributes> <Name> : <Access Specifier> <Name>, ... { <Body> };
+		// <ModuleFlags> <class/struct> <Attributes> <Name> <final> : <Access Specifier> <Name>, ... { <Body> };
 
 		if ( currtok_noskip.Type == Tok_Comment && currtok_noskip.Line == stmt_end.Line )
 			inline_cmt = parse_comment();
-		// <ModuleFlags> <class/struct> <Attributes> <Name> : <Access Specifier> <Name>, ... { <Body> }; <InlineCmt>
+		// <ModuleFlags> <class/struct> <Attributes> <Name> <final> : <Access Specifier> <Name>, ... { <Body> }; <InlineCmt>
 	}
 
 	if ( which == Tok_Decl_Class )
@@ -8231,9 +8026,11 @@ Code parse_complicated_definition( TokType which )
 {
 	push_scope();
 
+	b32 is_inplace = false;
+	b32 is_fn_def  = false;
+
 	TokArray tokens = _ctx->parser.Tokens;
 
-	// Look ahead to find valid end of definition along with whether it's a definition or had parenthesis.
 	s32 idx         = tokens.Idx;
 	s32 level       = 0;
 	b32 had_def     = false;
@@ -8248,17 +8045,13 @@ Code parse_complicated_definition( TokType which )
 			had_def = level == 0;
 		}
 
-		if (level == 0 && tokens.Arr[idx].Type == Tok_Paren_Open )
-			had_paren = true;
-		
 		b32 found_fn_def = had_def && had_paren;
 
-		if ( level == 0 && (tokens.Arr[ idx ].Type == Tok_Statement_End || found_fn_def)  )
+		if ( level == 0 && (tokens.Arr[ idx ].Type == Tok_Statement_End || found_fn_def) )
 			break;
 	}
 
-	b32 is_inplace = false;
-	b32 is_fn_def  = had_def && had_paren;
+	is_fn_def = had_def && had_paren;
 	if (is_fn_def)
 	{
 		// Function definition with <which> on return type
@@ -8268,16 +8061,11 @@ Code parse_complicated_definition( TokType which )
 		return result;
 	}
 
-	b32
-	is_forward_declaration  = ( idx - 2 ) == tokens.Idx;
-	is_forward_declaration |= ( idx - 3 ) == tokens.Idx && tokens.Arr[(idx - 2)].Type == Tok_Decl_Class; // enum class
-	if ( is_forward_declaration )
+	if ( ( idx - 2 ) == tokens.Idx )
 	{
 		// It's a forward declaration only
 		Code result = parse_forward_or_definition( which, is_inplace );
 		// <class, enum, struct, or union> <Name>;
-		// or
-		// <enum> <class> <Name>;
 		parser_pop(& _ctx->parser);
 		return result;
 	}
@@ -8318,7 +8106,7 @@ Code parse_complicated_definition( TokType which )
 
 		if ( tok.Type == Tok_BraceCurly_Close )
 		{
-			// Its an inplacs definition
+			// Its an inplace definition
 			// <which> <type_identifier ?> { ... } <identifier>;
 			ok_to_parse = true;
 			is_inplace  = true;
@@ -8448,8 +8236,10 @@ Code parse_assignment_expression()
 		eat( currtok.Type );
 	}
 
-	expr_tok.Text.Len = ( ( sptr )currtok.Text.Ptr + currtok.Text.Len ) - ( sptr )expr_tok.Text.Ptr - 1;
-	expr              = untyped_str( expr_tok.Text );
+	if (left) {
+		expr_tok.Text.Len = ( ( sptr )currtok.Text.Ptr + currtok.Text.Len ) - ( sptr )expr_tok.Text.Ptr - 1;
+	}
+	expr = untyped_str( expr_tok.Text );
 	// = <Expression>
 	return expr;
 }
@@ -8845,7 +8635,7 @@ CodeBody parse_global_nspace( CodeType which )
 			}
 			break;
 
-			case Tok_Preprocess_Macro_Expr:
+			case Tok_Preprocess_Macro_Expr: 
 			{
 				if (tok_is_attribute(currtok))
 				{
@@ -9128,9 +8918,12 @@ Token parse_identifier( bool* possible_member_function )
 	Token name = currtok;
 	_ctx->parser.Scope->Name = name.Text;
 
+	Macro* macro = lookup_macro(currtok.Text);
+	b32 accept_as_identifier = macro && bitfield_is_set(MacroFlags, macro->Flags, MF_Allow_As_Identifier );
+
 	// Typename can be: '::' <name>
 	// If that is the case first  option will be Tok_Access_StaticSymbol below
-	if (check(Tok_Identifier))
+	if (check(Tok_Identifier) || accept_as_identifier)
 		eat( Tok_Identifier );
 	// <Name>
 
@@ -9551,7 +9344,7 @@ CodeOperator parse_operator_after_ret_type(
 		eat( currtok.Type );
 	}
 	// <ExportFlag> <Attributes> <Specifiers> <ReturnType> <Qualifier::...> operator <Op> ( <Parameters> ) <Specifiers>
-	
+		
 	// TODO(Ed): Add proper "delete" and "new" awareness
 	// We're dealing with either a "= delete" or operator deletion
 	if (check(Tok_Operator) && currtok.Text.Ptr[0] == '=')
@@ -9868,10 +9661,10 @@ CodeParams parse_params( bool use_template_capture )
 		}
 		// ( <Macro> <ValueType>
 
-		if ( check( Tok_Identifier ) )
+		if ( check( Tok_Identifier ) || bitfield_is_set(u32, currtok.Flags, TF_Identifier) )
 		{
 			name = currtok;
-			eat( Tok_Identifier );
+			eat( currtok.Type );
 			// ( <Macro> <ValueType> <Name>
 		}
 
@@ -9979,10 +9772,10 @@ CodeParams parse_params( bool use_template_capture )
 
 			name = NullToken;
 
-			if ( check( Tok_Identifier ) )
+			if ( check( Tok_Identifier ) || bitfield_is_set(u32, currtok.Flags, TF_Identifier) )
 			{
 				name = currtok;
-				eat( Tok_Identifier );
+				eat( currtok.Type );
 				// ( <Macro> <ValueType> <Name> = <Expression>, <Macro> <ValueType> <Name>
 			}
 
@@ -9995,7 +9788,7 @@ CodeParams parse_params( bool use_template_capture )
 				// ( <Macro> <ValueType> <Name> = <Expression>, <Macro> <ValueType> <PostNameMacro>
 			}
 
-			// C++ allows typename = expression... so anything goes....
+			/// C++ allows typename = expression... so anything goes....
 			if ( bitfield_is_set( u32, currtok.Flags, TF_Assign ) )
 			{
 				eat( Tok_Operator );
@@ -12613,6 +12406,9 @@ CodeUsing parser_parse_using()
 		
 		if ( bitfield_is_set( u32, currtok.Flags, TF_Assign ))
 		{
+			attributes = parse_attributes();
+			// <ModuleFlags> using <Name> <Attributes>
+
 			eat( Tok_Operator );
 			// <ModuleFlags> using <Name> <Attributes> =
 
